@@ -6,13 +6,9 @@ import React from 'react'
 import images from '@/public/images'
 import { usePathname, useRouter } from 'next/navigation'
 import CustomImage from '@/app/components/ui/image'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 
-type Props = {}
-
-const Sidebar = (props: Props) => {
-    const router = useRouter()
-    const { data: session, status } = useSession()
+const Sidebar = () => {
     const sidebar = [
         {
             icon: <Icons.DashboardIcon />,

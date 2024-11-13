@@ -1,19 +1,17 @@
 'use client'
-import React, { ReactNode, useContext, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import Sidebar from './shared/Sidebar';
 import CustomImage from './ui/image';
 import images from '@/public/images';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { AdminUserContext, AdminUserContextData } from '../context/AdminUserContext';
 import { initializeIcons, loadTheme } from "@fluentui/react";
 
 type Props = {
     children: ReactNode
-    placeholder: string
 }
 
-const Layout = ({ children, placeholder }: Props) => {
+const Layout = ({ children }: Props) => {
     const { data: session, status } = useSession();
     const pathname = usePathname()
 
