@@ -4,9 +4,8 @@ import { Icons } from '@/app/components/ui/icons'
 import Link from 'next/link'
 import React from 'react'
 import images from '@/public/images'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import CustomImage from '@/app/components/ui/image'
-import { useSession } from 'next-auth/react'
 
 const Sidebar = () => {
     const sidebar = [
