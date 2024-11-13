@@ -1,6 +1,6 @@
 import React from "react";
 
-interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement> & {
     text: React.JSX.Element
 }
 

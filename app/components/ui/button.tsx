@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ButtonLoader } from "@/app/components/loader/ComponentLoader";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     btnIcon?: React.ReactElement;
     hideLoader?: boolean
 }
