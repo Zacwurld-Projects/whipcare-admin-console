@@ -2,20 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* @media (prefers-color-scheme: dark) {
+} */
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  .display-large {
+    @apply text-[56px] leading-[100%] tracking-[-4%] font-normal;
+  }
+  .display-small {
+    @apply display-large text-[48px];
+  }
+
+  /* HEADINGS */
+  .heading-h1 {
+    @apply text-[40px] leading-[100%] tracking-[-4%] font-normal;
+  }
+  .heading-h2 {
+    @apply heading-h1 text-[36px];
+  }
+  .heading-h3 {
+    @apply text-[32px] leading-[120%] tracking-[-2%] font-normal;
+  }
+  .heading-h4 {
+    @apply heading-h3 text-[28px];
+  }
+  .heading-h5 {
+    @apply heading-h3 text-[24px];
+  }
+  .heading-h6 {
+    @apply heading-h3 text-[20px];
+  }
+
+  /* PARAGRAPHS */
+  .text-large {
+    @apply text-[20px]  leading-[145%] tracking-[0%] font-normal;
+  }
+  .text-medium {
+    @apply text-large text-[18px];
+  }
+  .text-small {
+    @apply text-large text-[14px];
+  }
+  .text-xsmall {
+    @apply text-large text-[12px];
+  }
+
+  /* CAPTIONS */
+  .caption-large {
+    @apply text-[14px]  leading-[120%] tracking-[12%] font-semibold;
+  }
+  .caption-small {
+    @apply caption-large text-[12px];
+  }
+  .caption-xsmall {
+    @apply caption-large text-[10px];
+  }
+}
+
+@layer utilities {
+  .font-medium {
+    @apply font-[500];
+  }
 }
