@@ -6,7 +6,7 @@ import InputArea from "../components/InputArea";
 import FormButton from "../components/FormButton";
 import EnterOtp from "../components/EnterOtp";
 
-const createUserPage = () => {
+const CreateUserPage = () => {
   const steps = ["input-userInfo", "input-otp", "success"];
   const [currentStep, setCurrentStep] = useState(steps[0]);
   const [userInfo, setUserInfo] = useState({
@@ -85,4 +85,4 @@ const createUserPage = () => {
     </section>
   );
 };
-export default createUserPage;
+export default CreateUserPage;
