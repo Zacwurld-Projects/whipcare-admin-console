@@ -35,7 +35,7 @@ export default {
           800: "#012657",
           900: "#001633",
         },
-        grey: {
+        gray: {
           DEFAULT: "#98A2B3",
           50: "#F9FAFB",
           75: "#F7F9FC",
