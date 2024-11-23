@@ -1,11 +1,33 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FormButton from "./FormButton";
 import FormContainer from "./FormContainer";
 
 const EnterOtp = ({ action }: { action: () => void }) => {
   const [otp, setOtp] = useState(Array(6).fill(""));
+  const [countdown, setCountdown] = useState({
+    mins: 2,
+    secs: 0,
+  });
+
   const otpInputRefs = useRef<HTMLInputElement[]>([]);
+
+  //   timer interval
+  useEffect(() => {
+    let timeRemaining = countdown.mins * 60 + countdown.secs;
+
+    const timer = setInterval(() => {
+      if (timeRemaining > 0) {
+        timeRemaining--;
+        setCountdown({
+          mins: Math.floor(timeRemaining / 60),
+          secs: timeRemaining % 60,
+        });
+      } else clearInterval(timer);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown]);
 
   const focusElementAndSelectValues = (element: HTMLInputElement) => {
     element.focus();
@@ -106,7 +128,9 @@ const EnterOtp = ({ action }: { action: () => void }) => {
               <p className='text-gray-900'>Didn’t get a code?</p>
               <button className='text-[#d35d24] font-medium'>Resend</button>
             </div>
-            <p className='text-small font-medium text-gray-600'>2:00</p>
+            <p className='text-small font-medium text-gray-600'>
+              {countdown.mins}:{countdown.secs.toString().padStart(2, "0")}
+            </p>
           </div>
         </div>
         <FormButton

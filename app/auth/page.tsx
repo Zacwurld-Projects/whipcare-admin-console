@@ -22,7 +22,7 @@ const SignInPage = () => {
         <h3 className='heading-h3 font-semibold text-gray-800 text-center'>
           Welcome back!
         </h3>
-        <form className='flex-column gap-8'>
+        <form className='flex-column gap-8 w-full'>
           <InputArea
             type='email'
             name='email'

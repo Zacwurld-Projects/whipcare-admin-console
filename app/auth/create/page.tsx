@@ -5,6 +5,7 @@ import FormContainer from "../components/FormContainer";
 import InputArea from "../components/InputArea";
 import FormButton from "../components/FormButton";
 import EnterOtp from "../components/EnterOtp";
+import SuccessCreate from "../components/SuccessCreate";
 
 const CreateUserPage = () => {
   const steps = ["input-userInfo", "input-otp", "success"];
@@ -82,6 +83,7 @@ const CreateUserPage = () => {
       {currentStep === "input-otp" && (
         <EnterOtp action={() => setCurrentStep(steps[2])} />
       )}
+      {currentStep === "success" && <SuccessCreate />}
     </section>
   );
 };
