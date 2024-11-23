@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { ChangeEvent, use, useState } from "react";
 import FormContainer from "../components/FormContainer";
 import InputArea from "../components/InputArea";
 import FormButton from "../components/FormButton";
@@ -8,9 +8,18 @@ import SuccessCreate from "../components/SuccessCreate";
 
 const ForgotPassword = () => {
   const steps = ["input-email", "input-otp", "create-password", "success"];
-  const [email, setEmail] = useState("");
-  const [currentStep, setCurrentStep] = useState(steps[0]);
+  const [currentStep, setCurrentStep] = useState(steps[2]);
 
+  const [userInfo, setUserInfo] = useState({
+    email: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserInfo((prev) => ({ ...prev, [name]: value }));
+  };
   return (
     <section className='center-grid'>
       {currentStep === "input-email" && (
@@ -26,15 +35,56 @@ const ForgotPassword = () => {
               title='Email address'
               type='email'
               name='email'
-              value={email}
-              handleChange={(e) => setEmail(e.target.value)}
+              value={userInfo.email}
+              handleChange={handleInputChange}
             />
-            <FormButton text='Continue' type='submit' disabled={!email} />
+            <FormButton
+              text='Continue'
+              type='submit'
+              disabled={!userInfo.email}
+            />
           </form>
         </FormContainer>
       )}
       {currentStep === "input-otp" && (
         <EnterOtp action={() => setCurrentStep(steps[2])} />
+      )}
+      {currentStep === "create-password" && (
+        <FormContainer>
+          <h3 className='heading-h3 text-gray-800 font-semibold'>
+            Create new password
+          </h3>
+          <form
+            className='flex-column w-full items-center gap-8'
+            onSubmit={() => setCurrentStep(steps[3])}
+          >
+            <div className='w-full gap-[18px] items-center flex-column'>
+              <InputArea
+                type='password'
+                name='newPassword'
+                title='Password'
+                handleChange={handleInputChange}
+                value={userInfo.newPassword}
+              />
+              <InputArea
+                type='password'
+                name='confirmPassword'
+                title='Confirm Password'
+                handleChange={handleInputChange}
+                value={userInfo.confirmPassword}
+              />
+            </div>
+            <FormButton
+              type='submit'
+              text='Continue'
+              disabled={
+                !userInfo.newPassword ||
+                !userInfo.confirmPassword ||
+                userInfo.newPassword !== userInfo.confirmPassword
+              }
+            />
+          </form>
+        </FormContainer>
       )}
       {currentStep === "success" && <SuccessCreate />}
     </section>
