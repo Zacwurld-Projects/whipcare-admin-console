@@ -1,14 +1,16 @@
 "use client";
-import { ChangeEvent, use, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import FormContainer from "../components/FormContainer";
 import InputArea from "../components/InputArea";
 import FormButton from "../components/FormButton";
 import EnterOtp from "../components/EnterOtp";
 import SuccessCreate from "../components/SuccessCreate";
+import { toast } from "sonner";
+import { defaultInfo, signUserIn } from "../mock";
 
 const ForgotPassword = () => {
   const steps = ["input-email", "input-otp", "create-password", "success"];
-  const [currentStep, setCurrentStep] = useState(steps[2]);
+  const [currentStep, setCurrentStep] = useState(steps[0]);
 
   const [userInfo, setUserInfo] = useState({
     email: "",
@@ -30,7 +32,14 @@ const ForgotPassword = () => {
           <p className='text-medium text-[#5a524a] text-center'>
             Enter email address registered with this account
           </p>
-          <form className='flex-column w-full items-center gap-8'>
+          <form
+            className='flex-column w-full items-center gap-8'
+            onSubmit={(e) => {
+              e.preventDefault();
+              toast.success("OTP sent to registered email");
+              setCurrentStep(steps[1]);
+            }}
+          >
             <InputArea
               title='Email address'
               type='email'
@@ -47,7 +56,10 @@ const ForgotPassword = () => {
         </FormContainer>
       )}
       {currentStep === "input-otp" && (
-        <EnterOtp action={() => setCurrentStep(steps[2])} />
+        <EnterOtp
+          action={() => setCurrentStep(steps[2])}
+          sentOtp={defaultInfo.otp}
+        />
       )}
       {currentStep === "create-password" && (
         <FormContainer>
@@ -56,7 +68,11 @@ const ForgotPassword = () => {
           </h3>
           <form
             className='flex-column w-full items-center gap-8'
-            onSubmit={() => setCurrentStep(steps[3])}
+            onSubmit={(e) => {
+              e.preventDefault();
+              signUserIn();
+              setCurrentStep(steps[3]);
+            }}
           >
             <div className='w-full gap-[18px] items-center flex-column'>
               <InputArea
@@ -66,17 +82,30 @@ const ForgotPassword = () => {
                 handleChange={handleInputChange}
                 value={userInfo.newPassword}
               />
-              <InputArea
-                type='password'
-                name='confirmPassword'
-                title='Confirm Password'
-                handleChange={handleInputChange}
-                value={userInfo.confirmPassword}
-              />
+              <div className='flex-column w-full gap-[8px]'>
+                <InputArea
+                  type='password'
+                  name='confirmPassword'
+                  title='Confirm Password'
+                  handleChange={handleInputChange}
+                  value={userInfo.confirmPassword}
+                />
+                <p
+                  className={`text-xsmall  font-medium self-end text-[#d34124] transition-opacity ${
+                    userInfo.confirmPassword !== "" &&
+                    userInfo.confirmPassword !== userInfo.newPassword
+                      ? "opacity-100"
+                      : "opacity-0"
+                  }`}
+                >
+                  Passwords do not match
+                </p>
+              </div>
             </div>
             <FormButton
               type='submit'
               text='Continue'
+              className='-mt-[4px]'
               disabled={
                 !userInfo.newPassword ||
                 !userInfo.confirmPassword ||

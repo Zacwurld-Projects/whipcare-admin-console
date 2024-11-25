@@ -1,11 +1,11 @@
 "use client";
-
 import { ChangeEvent, useState } from "react";
 import FormContainer from "../components/FormContainer";
 import InputArea from "../components/InputArea";
 import FormButton from "../components/FormButton";
 import EnterOtp from "../components/EnterOtp";
 import SuccessCreate from "../components/SuccessCreate";
+import { defaultInfo, signUserIn } from "../mock";
 
 const CreateUserPage = () => {
   const steps = ["input-userInfo", "input-otp", "success"];
@@ -58,17 +58,30 @@ const CreateUserPage = () => {
                 name='password'
                 value={userInfo.password}
               />
-              <InputArea
-                title='Confirm Password'
-                type='password'
-                handleChange={handleInputChange}
-                name='confirmPassword'
-                value={userInfo.confirmPassword}
-              />
+              <div className='flex-column w-full gap-[8px]'>
+                <InputArea
+                  type='password'
+                  name='confirmPassword'
+                  title='Confirm Password'
+                  handleChange={handleInputChange}
+                  value={userInfo.confirmPassword}
+                />
+                <p
+                  className={`text-xsmall  font-medium self-end text-[#d34124] transition-opacity ${
+                    userInfo.confirmPassword !== "" &&
+                    userInfo.confirmPassword !== userInfo.password
+                      ? "opacity-100"
+                      : "opacity-0"
+                  }`}
+                >
+                  Passwords do not match
+                </p>
+              </div>
             </div>
             <FormButton
               type='submit'
               text='Continue'
+              className='-mt-[4px]'
               disabled={
                 !userInfo.name ||
                 !userInfo.email ||
@@ -81,7 +94,13 @@ const CreateUserPage = () => {
         </FormContainer>
       )}
       {currentStep === "input-otp" && (
-        <EnterOtp action={() => setCurrentStep(steps[2])} />
+        <EnterOtp
+          action={() => {
+            signUserIn();
+            setCurrentStep(steps[2]);
+          }}
+          sentOtp={defaultInfo.otp}
+        />
       )}
       {currentStep === "success" && <SuccessCreate />}
     </section>

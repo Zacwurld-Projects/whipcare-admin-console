@@ -2,8 +2,15 @@
 import { useEffect, useRef, useState } from "react";
 import FormButton from "./FormButton";
 import FormContainer from "./FormContainer";
+import { toast } from "sonner";
 
-const EnterOtp = ({ action }: { action: () => void }) => {
+const EnterOtp = ({
+  action,
+  sentOtp,
+}: {
+  action: () => void;
+  sentOtp: string;
+}) => {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [countdown, setCountdown] = useState({
     mins: 2,
@@ -74,6 +81,33 @@ const EnterOtp = ({ action }: { action: () => void }) => {
     }
   };
 
+  const handlePaste = (
+    e: React.ClipboardEvent<HTMLInputElement>,
+    pos: number
+  ) => {
+    const pastedText = e.clipboardData.getData("text");
+    if (!/^\d+$/.test(pastedText) || pastedText.length > otp.length - pos)
+      return;
+
+    setOtp((prev) => {
+      const updatedOtp = [...prev];
+      let pastedIndex = pos;
+
+      // iterate through otp from the current position
+      for (
+        let i = pos;
+        i < updatedOtp.length && pastedIndex < pastedText.length;
+        i++
+      ) {
+        if (updatedOtp[i] === "") {
+          updatedOtp[i] = pastedText[pastedIndex++];
+        }
+      }
+
+      return updatedOtp;
+    });
+  };
+
   const shiftFocusToCurrentPos = () => {
     const currentDigitPos = otp.findIndex((item) => item === "");
     if (currentDigitPos >= 0)
@@ -92,8 +126,11 @@ const EnterOtp = ({ action }: { action: () => void }) => {
         className='w-full flex-column gap-8'
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(otp);
-          action();
+          console.log(otp.join(""));
+          if (otp.join("") !== sentOtp) {
+            toast.error("Inavlid OTP. Try again.");
+            setOtp(Array(6).fill(""));
+          } else action();
         }}
       >
         <div className='flex-column gap-2 w-full'>
@@ -111,6 +148,7 @@ const EnterOtp = ({ action }: { action: () => void }) => {
                   id={`otp-${index}`}
                   value={value}
                   aria-label={"otp digit " + index + 1}
+                  onPaste={(e) => handlePaste(e, index)}
                   onClick={shiftFocusToCurrentPos}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   ref={(el) => {
@@ -126,7 +164,16 @@ const EnterOtp = ({ action }: { action: () => void }) => {
           <div className='flex w-full justify-between items-center'>
             <div className='text-medium flex gap-1'>
               <p className='text-gray-900'>Didn’t get a code?</p>
-              <button className='text-[#d35d24] font-medium'>Resend</button>
+              <button
+                disabled={countdown.mins * 60 + countdown.secs > 0}
+                onClick={() => {
+                  setOtp(Array(6).fill(""));
+                  setCountdown({ mins: 2, secs: 0 });
+                }}
+                className='text-[#d35d24] font-medium disabled:opacity-50 transition-opacity'
+              >
+                Resend
+              </button>
             </div>
             <p className='text-small font-medium text-gray-600'>
               {countdown.mins}:{countdown.secs.toString().padStart(2, "0")}

@@ -7,16 +7,20 @@ const FormButton = ({
   type,
   text,
   linkTo,
+  className,
 }: {
   disabled?: boolean;
   type: "submit" | "reset" | "button" | "link" | undefined;
   text: string;
   linkTo?: Url;
+  className?: string;
 }) => {
   if (type === "link" && linkTo) {
     return (
       <Link
-        className='bg-primary-900 rounded-[2em] center-grid h-[51px] w-full text-white block'
+        className={`bg-primary-900 rounded-[2em] center-grid h-[51px] w-full text-white block ${
+          className ? className : ""
+        }`}
         href={linkTo}
       >
         {text}
@@ -27,7 +31,9 @@ const FormButton = ({
   return (
     <button
       disabled={disabled}
-      className='bg-primary-900 rounded-[2em] center-grid h-[51px] w-full text-white disabled:opacity-50 transition-opacity'
+      className={`bg-primary-900 rounded-[2em] center-grid h-[51px] w-full text-white disabled:opacity-50 transition-opacity  ${
+        className ? className : ""
+      }`}
       type={type !== "link" ? type : "button"}
     >
       <p>{text}</p>
