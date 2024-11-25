@@ -1,5 +1,5 @@
 "use client";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import FormContainer from "./components/FormContainer";
 import InputArea from "./components/InputArea";
 import Link from "next/link";
@@ -13,6 +13,13 @@ const SignInPage = () => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
+  });
+
+  useEffect(() => {
+    const isMobileDevice = () =>
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobileDevice()) router.push("/phone-only");
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
