@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect } from "react";
 
 const PhoneOnly = () => {
@@ -10,8 +9,8 @@ const PhoneOnly = () => {
 
   return (
     <section className='center-grid h-[100vh] w-full'>
-      <h3 className='heading-h3 font-semibold text-gray-800 font-inter'>
-        This site can&apos;t be viewed on your mobile device 🫡
+      <h3 className='heading-h3 text-center font-semibold text-gray-800 font-inter'>
+        This site can&apos;t be viewed on your mobile device. 🫡
       </h3>
     </section>
   );

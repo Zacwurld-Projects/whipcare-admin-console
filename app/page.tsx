@@ -1,23 +1,17 @@
-"use client";
+'use client';
 
-import { getCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { getCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined") return;
-    const isMobileDevice = () =>
-      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isAuth = getCookie('auth-token');
 
-    if (isMobileDevice()) router.push("/phone-only");
-
-    const isAuth = getCookie("auth-token");
-
-    if (!isAuth) router.push("/auth");
-    else router.push("/dashboard");
+    if (!isAuth) router.push('/auth');
+    else router.push('/dashboard');
   });
 
   return (
