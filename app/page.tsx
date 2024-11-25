@@ -8,6 +8,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof window !== "undefined") return;
     const isMobileDevice = () =>
       /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
