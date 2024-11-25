@@ -1,18 +1,19 @@
-"use client";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import FormContainer from "./components/FormContainer";
-import InputArea from "./components/InputArea";
-import Link from "next/link";
-import FormButton from "./components/FormButton";
-import { defaultInfo, signUserIn } from "./mock";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+'use client';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import FormContainer from './components/FormContainer';
+import InputArea from './components/InputArea';
+import Link from 'next/link';
+import FormButton from './components/FormButton';
+import { defaultInfo, signUserIn } from './mock';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const SignInPage = () => {
   const router = useRouter();
   const [userInfo, setUserInfo] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -24,23 +25,18 @@ const SignInPage = () => {
     e.preventDefault();
     const { email, password } = defaultInfo;
     if (userInfo.email !== email || userInfo.password !== password)
-      toast.error("Invalid user details. Try again.");
+      toast.error('Invalid user details. Try again.');
     else {
       signUserIn();
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   };
 
   return (
     <section className='center-grid'>
       <FormContainer>
-        <h3 className='heading-h3 font-semibold text-gray-800 text-center'>
-          Welcome back!
-        </h3>
-        <form
-          className='flex-column gap-8 w-full'
-          onSubmit={(e) => handleSignIn(e)}
-        >
+        <h3 className='heading-h3 font-semibold text-gray-800 text-center'>Welcome back!</h3>
+        <form className='flex-column gap-8 w-full' onSubmit={(e) => handleSignIn(e)}>
           <InputArea
             type='email'
             name='email'
@@ -57,7 +53,7 @@ const SignInPage = () => {
               handleChange={handleInputChange}
             />
             <Link
-              href={"/auth/forgot-password"}
+              href={'/auth/forgot-password'}
               className='text-[#d35d24] text-xsmall self-end font-medium'
             >
               Forgot Password?
