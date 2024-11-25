@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 9530",
+    "prepare": "husky install",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettierrc": "prettier --write .",
-    "prepare": "husky"
+    "format": "prettier --write .",
+    "eslint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@svgr/webpack": "^8.1.0",
