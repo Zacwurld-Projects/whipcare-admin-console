@@ -1,7 +1,7 @@
 import { setCookie } from "cookies-next";
 
 export const defaultInfo = {
-  email: "whipcare@zacwurld",
+  email: "whipcare@zacwurld.com",
   password: "Whipcare2024#",
   otp: "000000",
 };

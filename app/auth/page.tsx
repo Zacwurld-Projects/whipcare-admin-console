@@ -16,11 +16,14 @@ const SignInPage = () => {
   });
 
   useEffect(() => {
-    const isMobileDevice = () =>
-      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isMobileDevice()) router.push("/phone-only");
-  });
+    if (typeof window !== "undefined") {
+      const isMobileDevice = () =>
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobileDevice()) {
+        router.push("/phone-only");
+      }
+    }
+  }, [router]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
