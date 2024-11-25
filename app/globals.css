@@ -43,7 +43,7 @@ body {
     @apply text-[20px]  leading-[145%] tracking-[0%] font-normal;
   }
   .text-medium {
-    @apply text-large text-[18px];
+    @apply text-large text-[16px];
   }
   .text-small {
     @apply text-large text-[14px];
@@ -65,7 +65,10 @@ body {
 }
 
 @layer utilities {
-  .font-medium {
-    @apply font-[500];
+  .center-grid {
+    @apply grid place-items-center;
+  }
+  .flex-column {
+    @apply flex flex-col;
   }
 }
