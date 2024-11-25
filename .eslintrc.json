@@ -10,5 +10,6 @@
   "root": true,
   "rules": {
     "@typescript-eslint/ban-ts-comment": "warn"
-  }
+  },
+  "ignorePatterns": ["!.*", "!src/**/*"]
 }

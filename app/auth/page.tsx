@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import FormContainer from './components/FormContainer';
 import InputArea from './components/InputArea';
 import Link from 'next/link';
@@ -7,7 +7,6 @@ import FormButton from './components/FormButton';
 import { defaultInfo, signUserIn } from './mock';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 const SignInPage = () => {
   const router = useRouter();
@@ -35,8 +34,8 @@ const SignInPage = () => {
   return (
     <section className='center-grid'>
       <FormContainer>
-        <h3 className='heading-h3 font-semibold text-gray-800 text-center'>Welcome back!</h3>
-        <form className='flex-column gap-8 w-full' onSubmit={(e) => handleSignIn(e)}>
+        <h3 className='heading-h3 text-center font-semibold text-gray-800'>Welcome back!</h3>
+        <form className='flex-column w-full gap-8' onSubmit={(e) => handleSignIn(e)}>
           <InputArea
             type='email'
             name='email'
@@ -44,7 +43,7 @@ const SignInPage = () => {
             title='Email address'
             handleChange={handleInputChange}
           />
-          <div className='w-full flex-column gap-2'>
+          <div className='flex-column w-full gap-2'>
             <InputArea
               type='password'
               name='password'
@@ -54,7 +53,7 @@ const SignInPage = () => {
             />
             <Link
               href={'/auth/forgot-password'}
-              className='text-[#d35d24] text-xsmall self-end font-medium'
+              className='text-xsmall self-end font-medium text-[#d35d24]'
             >
               Forgot Password?
             </Link>
