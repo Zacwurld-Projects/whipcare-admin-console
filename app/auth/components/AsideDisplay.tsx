@@ -141,20 +141,26 @@ const AsideDisplay = () => {
   });
 
   return (
-    <section className='center-grid bg-primary-800 text-white'>
-      <div className='flex flex-col items-center gap-[1.8rem] xl:gap-[3rem]'>
+    <section className='center-grid overflow-hidden bg-primary-800 text-white'>
+      <div className='flex flex-col items-center gap-[1.2rem] min-[1440px]:gap-[1.5rem]'>
         <div className='center-grid'>
-          <Image alt='whipcare logo' src={'/images/png/logo.png'} width={110} height={110} />
+          <Image
+            alt='whipcare logo'
+            className='size-[80px] object-contain min-[1440px]:size-[110px]'
+            src={'/images/png/logo.png'}
+            width={110}
+            height={110}
+          />
         </div>
         <div
-          className='max-h-[700px] w-[280px] overflow-hidden min-[1200px]:w-[320px] min-[1440px]:w-[362px]'
+          className='max-h-[700px] w-[280px] overflow-hidden min-[1200px]:w-[300px] min-[1440px]:w-[350px]'
           ref={slidesWindowRef}
         >
           <div className='flex w-max' ref={slidesContainer}>
             {slidesData.map((item, index) => (
               <div
                 key={item.id}
-                className={`flex w-[280px] flex-col gap-8 transition-all duration-[1s] ease-in min-[1200px]:w-[320px] min-[1440px]:w-[362px] ${
+                className={`flex w-[280px] flex-col gap-8 transition-all duration-[1s] ease-in min-[1200px]:w-[300px] min-[1440px]:w-[350px] ${
                   index < 1 ? 'scale-100 opacity-30' : 'scale-90 opacity-20'
                 } ${displayedSlide === index ? '!scale-100 !opacity-100' : ''} `}
               >
@@ -168,14 +174,16 @@ const AsideDisplay = () => {
                   />
                 </div>
                 <div className='flex w-full flex-col gap-[14px] text-center'>
-                  <h5 className='xl:heading-h5 heading-h6 font-semibold'>{item.heading}</h5>
-                  <p className='xl:text-medium text-small text-primary-50'>{item.text}</p>
+                  <h5 className='min-[1440px]:heading-h5 heading-h6 font-semibold'>
+                    {item.heading}
+                  </h5>
+                  <p className='min-[1440px]:text-medium text-small text-primary-50'>{item.text}</p>
                 </div>
               </div>
             ))}
           </div>
           <div
-            className='mt-4 flex items-center justify-center gap-[2px] xl:mt-6'
+            className='mt-4 flex items-center justify-center gap-[2px] min-[1440px]:mt-6'
             ref={slidesButtonContainerRef}
           >
             {slidesData.map((item, index) => (

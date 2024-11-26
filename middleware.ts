@@ -17,9 +17,10 @@ export function middleware(request: NextRequest) {
   //   }
 
   // handle phone users trying to access non-phone pages
-  if (isPhone && !pathname.startsWith(PHONE_REDIRECT_PATH)) {
-    return NextResponse.redirect(new URL('/phone-only', request.url));
-  }
+
+  // if (isPhone && !pathname.startsWith(PHONE_REDIRECT_PATH)) {
+  //   return NextResponse.redirect(new URL('/phone-only', request.url));
+  // }
 
   // handle non-phone users trying to access the phone-only page
   if (!isPhone && pathname.startsWith(PHONE_REDIRECT_PATH)) {
