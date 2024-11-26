@@ -1,41 +1,47 @@
 import { FunctionComponent, ReactElement } from 'react';
 
 type ComponentLoaderProps = {
-
-    /**
-     * The optional classnames to be added
-     */
-    className?: string
-}
+  /**
+   * The optional classnames to be added
+   */
+  className?: string;
+};
 
 type FullPageLoaderProps = ComponentLoaderProps & {
-    containerClassName?: string
-}
+  containerClassName?: string;
+};
 
-export const ComponentLoader: FunctionComponent<ComponentLoaderProps> = (
-    { className }): ReactElement => {
+export const ComponentLoader: FunctionComponent<ComponentLoaderProps> = ({
+  className,
+}): ReactElement => {
+  return (
+    <div
+      className={`h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent ${className}`}
+    />
+  );
+};
 
-    return (
-        <div className={`w-16 h-16 border-4 border-primary border-t-transparent border-solid rounded-full animate-spin ${className}`} />
-    );
-}
+export const ButtonLoader: FunctionComponent<ComponentLoaderProps> = ({
+  className,
+}): ReactElement => {
+  return (
+    <div className='pointer-events-none absolute left-0 top-0 grid h-full w-full place-items-center bg-primary'>
+      <div
+        className={`h-6 w-6 animate-spin rounded-full border-4 border-solid border-white border-t-transparent ${className}`}
+      />
+    </div>
+  );
+};
 
-export const ButtonLoader: FunctionComponent<ComponentLoaderProps> = (
-    { className }): ReactElement => {
-
-    return (
-        <div className='absolute w-full h-full top-0 left-0 bg-primary grid place-items-center pointer-events-none'>
-            <div className={`w-6 h-6 border-4 border-white border-t-transparent border-solid rounded-full animate-spin ${className}`} />
-        </div>
-    );
-}
-
-export const FullPageLoader: FunctionComponent<FullPageLoaderProps> = (
-    { className, containerClassName }): ReactElement => {
-
-    return (
-        <div className={`h-52 w-full grid place-items-center ${containerClassName}`}>
-            <div className={`w-12 h-12 border-4 border-primary border-t-transparent border-solid rounded-full animate-spin ${className}`} />
-        </div>
-    );
-}
+export const FullPageLoader: FunctionComponent<FullPageLoaderProps> = ({
+  className,
+  containerClassName,
+}): ReactElement => {
+  return (
+    <div className={`grid h-52 w-full place-items-center ${containerClassName}`}>
+      <div
+        className={`h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent ${className}`}
+      />
+    </div>
+  );
+};

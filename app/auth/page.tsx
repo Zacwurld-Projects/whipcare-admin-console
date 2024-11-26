@@ -1,29 +1,19 @@
-"use client";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import FormContainer from "./components/FormContainer";
-import InputArea from "./components/InputArea";
-import Link from "next/link";
-import FormButton from "./components/FormButton";
-import { defaultInfo, signUserIn } from "./mock";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+'use client';
+import { ChangeEvent, FormEvent, useState } from 'react';
+import FormContainer from './components/FormContainer';
+import InputArea from './components/InputArea';
+import Link from 'next/link';
+import FormButton from './components/FormButton';
+import { defaultInfo, signUserIn } from './mock';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 const SignInPage = () => {
   const router = useRouter();
   const [userInfo, setUserInfo] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isMobileDevice = () =>
-        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if (isMobileDevice()) {
-        router.push("/phone-only");
-      }
-    }
-  }, [router]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,23 +24,18 @@ const SignInPage = () => {
     e.preventDefault();
     const { email, password } = defaultInfo;
     if (userInfo.email !== email || userInfo.password !== password)
-      toast.error("Invalid user details. Try again.");
+      toast.error('Invalid user details. Try again.');
     else {
       signUserIn();
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   };
 
   return (
     <section className='center-grid'>
       <FormContainer>
-        <h3 className='heading-h3 font-semibold text-gray-800 text-center'>
-          Welcome back!
-        </h3>
-        <form
-          className='flex-column gap-8 w-full'
-          onSubmit={(e) => handleSignIn(e)}
-        >
+        <h3 className='heading-h3 text-center font-semibold text-gray-800'>Welcome back!</h3>
+        <form className='flex-column w-full gap-8' onSubmit={(e) => handleSignIn(e)}>
           <InputArea
             type='email'
             name='email'
@@ -58,7 +43,7 @@ const SignInPage = () => {
             title='Email address'
             handleChange={handleInputChange}
           />
-          <div className='w-full flex-column gap-2'>
+          <div className='flex-column w-full gap-2'>
             <InputArea
               type='password'
               name='password'
@@ -67,8 +52,8 @@ const SignInPage = () => {
               handleChange={handleInputChange}
             />
             <Link
-              href={"/auth/forgot-password"}
-              className='text-[#d35d24] text-xsmall self-end font-medium'
+              href={'/auth/forgot-password'}
+              className='text-xsmall self-end font-medium text-[#d35d24]'
             >
               Forgot Password?
             </Link>

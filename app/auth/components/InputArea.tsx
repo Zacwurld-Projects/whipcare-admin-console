@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ChangeEvent, useState } from "react";
-import EyeIcon from "../assets/eyeIcon.svg";
-import EyeSlash from "../assets/eyeSlash.svg";
+import { ChangeEvent, useState } from 'react';
+import EyeIcon from '../assets/eyeIcon.svg';
+import EyeSlash from '../assets/eyeSlash.svg';
 
 const InputArea = ({
   value,
@@ -12,7 +12,7 @@ const InputArea = ({
   handleChange,
 }: {
   value: string;
-  type: "email" | "password" | "text";
+  type: 'email' | 'password' | 'text';
   name: string;
   title: string;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -22,34 +22,28 @@ const InputArea = ({
   return (
     <label
       htmlFor={name}
-      className='border w-full h-[54px] border-gray-200 rounded-[5px] grid items-center'
+      className='grid h-[54px] w-full items-center rounded-[5px] border border-gray-200'
     >
-      <div className='w-[92%] relative justify-self-center flex items-center gap-2'>
+      <div className='relative flex w-[92%] items-center gap-2 justify-self-center'>
         <input
-          type={
-            type === "password"
-              ? isViewingPassword
-                ? "text"
-                : "password"
-              : type
-          }
+          type={type === 'password' ? (isViewingPassword ? 'text' : 'password') : type}
           name={name}
           required
           id={name}
           value={value}
           onChange={handleChange}
-          className={`focus:outline-none peer flex-1 text-small text-gray-700 focus:mt-3  ${
-            value ? "mt-3" : ""
+          className={`text-small peer flex-1 text-gray-700 focus:mt-3 focus:outline-none ${
+            value ? 'mt-3' : ''
           }`}
         />
         <p
-          className={`absolute top-1/2 -translate-y-1/2 justify-self-start text-gray-800 opacity-50 pointer-events-none peer-focus:text-xsmall peer-focus:font-medium peer-focus:translate-y-[-110%] transition-all ${
-            value ? "text-xsmall font-medium translate-y-[-110%]" : "text-small"
+          className={`peer-focus:text-xsmall pointer-events-none absolute top-1/2 -translate-y-1/2 justify-self-start text-gray-800 opacity-50 transition-all peer-focus:translate-y-[-110%] peer-focus:font-medium ${
+            value ? 'text-xsmall translate-y-[-110%] font-medium' : 'text-small'
           }`}
         >
           {title}
         </p>
-        {type === "password" && (
+        {type === 'password' && (
           <button
             className=''
             type='button'

@@ -1,6 +1,6 @@
 const FormContainer = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className='py-[36px] px-[20px] rounded-t-[32px] shadow-[1px_1px_12px_rgba(109,110,113,0.1)] flex flex-col gap-8 w-[40vw] lg:w-[463px] items-center'>
+    <div className='flex w-[40vw] flex-col items-center gap-8 rounded-t-[32px] px-[20px] py-[36px] shadow-[1px_1px_12px_rgba(109,110,113,0.1)] xl:w-[463px]'>
       {children}
     </div>
   );

@@ -1,20 +1,20 @@
-"use client";
-import { ChangeEvent, useState } from "react";
-import FormContainer from "../components/FormContainer";
-import InputArea from "../components/InputArea";
-import FormButton from "../components/FormButton";
-import EnterOtp from "../components/EnterOtp";
-import SuccessCreate from "../components/SuccessCreate";
-import { defaultInfo, signUserIn } from "../mock";
+'use client';
+import { ChangeEvent, useState } from 'react';
+import FormContainer from '../components/FormContainer';
+import InputArea from '../components/InputArea';
+import FormButton from '../components/FormButton';
+import EnterOtp from '../components/EnterOtp';
+import SuccessCreate from '../components/SuccessCreate';
+import { defaultInfo, signUserIn } from '../mock';
 
 const CreateUserPage = () => {
-  const steps = ["input-userInfo", "input-otp", "success"];
+  const steps = ['input-userInfo', 'input-otp', 'success'];
   const [currentStep, setCurrentStep] = useState(steps[0]);
   const [userInfo, setUserInfo] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -24,11 +24,9 @@ const CreateUserPage = () => {
 
   return (
     <section className='center-grid'>
-      {currentStep === "input-userInfo" && (
+      {currentStep === 'input-userInfo' && (
         <FormContainer>
-          <h3 className='heading-h3 text-gray-800 font-semibold'>
-            Create an account
-          </h3>
+          <h3 className='heading-h3 font-semibold text-gray-800'>Create an account</h3>
           <form
             className='flex-column w-full gap-8'
             onSubmit={(e) => {
@@ -67,11 +65,11 @@ const CreateUserPage = () => {
                   value={userInfo.confirmPassword}
                 />
                 <p
-                  className={`text-xsmall  font-medium self-end text-[#d34124] transition-opacity ${
-                    userInfo.confirmPassword !== "" &&
+                  className={`text-xsmall self-end font-medium text-[#d34124] transition-opacity ${
+                    userInfo.confirmPassword !== '' &&
                     userInfo.confirmPassword !== userInfo.password
-                      ? "opacity-100"
-                      : "opacity-0"
+                      ? 'opacity-100'
+                      : 'opacity-0'
                   }`}
                 >
                   Passwords do not match
@@ -93,7 +91,7 @@ const CreateUserPage = () => {
           </form>
         </FormContainer>
       )}
-      {currentStep === "input-otp" && (
+      {currentStep === 'input-otp' && (
         <EnterOtp
           action={() => {
             signUserIn();
@@ -102,7 +100,7 @@ const CreateUserPage = () => {
           sentOtp={defaultInfo.otp}
         />
       )}
-      {currentStep === "success" && <SuccessCreate />}
+      {currentStep === 'success' && <SuccessCreate />}
     </section>
   );
 };
