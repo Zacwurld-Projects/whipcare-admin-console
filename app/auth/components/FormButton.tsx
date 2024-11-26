@@ -1,6 +1,6 @@
-"use client";
-import { Url } from "next/dist/shared/lib/router/router";
-import Link from "next/link";
+'use client';
+import { Url } from 'next/dist/shared/lib/router/router';
+import Link from 'next/link';
 
 const FormButton = ({
   disabled,
@@ -10,16 +10,16 @@ const FormButton = ({
   className,
 }: {
   disabled?: boolean;
-  type: "submit" | "reset" | "button" | "link" | undefined;
+  type: 'submit' | 'reset' | 'button' | 'link' | undefined;
   text: string;
   linkTo?: Url;
   className?: string;
 }) => {
-  if (type === "link" && linkTo) {
+  if (type === 'link' && linkTo) {
     return (
       <Link
-        className={`bg-primary-900 rounded-[2em] center-grid h-[51px] w-full text-white block ${
-          className ? className : ""
+        className={`center-grid block h-[51px] w-full rounded-[2em] bg-primary-900 text-white ${
+          className ? className : ''
         }`}
         href={linkTo}
       >
@@ -31,10 +31,10 @@ const FormButton = ({
   return (
     <button
       disabled={disabled}
-      className={`bg-primary-900 rounded-[2em] center-grid h-[51px] w-full text-white disabled:opacity-50 transition-opacity  ${
-        className ? className : ""
+      className={`center-grid h-[51px] w-full rounded-[2em] bg-primary-900 text-white transition-opacity disabled:opacity-50 ${
+        className ? className : ''
       }`}
-      type={type !== "link" ? type : "button"}
+      type={type !== 'link' ? type : 'button'}
     >
       <p>{text}</p>
     </button>

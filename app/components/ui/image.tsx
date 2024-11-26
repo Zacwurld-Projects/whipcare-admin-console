@@ -1,12 +1,10 @@
-import Image, { ImageProps } from 'next/image'
-import React from 'react'
+import Image, { ImageProps } from 'next/image';
+import React from 'react';
 
-type Props = ImageProps & {}
+type Props = ImageProps;
 
 const CustomImage = (props: Props) => {
-    return (
-        <Image {...props} sizes='auto' fill alt=''/>
-    )
-}
+  return <Image {...props} sizes='auto' fill alt='' />;
+};
 
-export default CustomImage
+export default CustomImage;

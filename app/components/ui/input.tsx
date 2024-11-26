@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react';
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & { }
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-    ({ className, type, placeholder, ...props }, ref) => {
-        return (
-            <input
-                type={type}
-                className={`w-full bg-white rounded-md border border-primary outline-none pe-3 sm:text-sm placeholder:text-mcNiff-light-gray-3 ${className}`}
-                placeholder={placeholder}
-                ref={ref}
-                {...props}
-            />
-        );
-    }
+  ({ className, type, placeholder, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={`placeholder:text-mcNiff-light-gray-3 w-full rounded-md border border-primary bg-white pe-3 outline-none sm:text-sm ${className}`}
+        placeholder={placeholder}
+        ref={ref}
+        {...props}
+      />
+    );
+  },
 );
 
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 export default Input;

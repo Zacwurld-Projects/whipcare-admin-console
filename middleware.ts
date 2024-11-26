@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-const PHONE_REDIRECT_PATH = "/phone-only";
-const AUTH_REDIRECT_PATH = "/auth";
+import { NextRequest, NextResponse } from 'next/server';
+const PHONE_REDIRECT_PATH = '/phone-only';
+// const AUTH_REDIRECT_PATH = '/auth';
 
 export function middleware(request: NextRequest) {
-  const userAgent = request.headers.get("user-agent") || "";
+  const userAgent = request.headers.get('user-agent') || '';
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
 
   // check if user is signed in via a cookie
@@ -18,12 +18,12 @@ export function middleware(request: NextRequest) {
 
   // handle phone users trying to access non-phone pages
   if (isPhone && !pathname.startsWith(PHONE_REDIRECT_PATH)) {
-    return NextResponse.redirect(new URL("/phone-only", request.url));
+    return NextResponse.redirect(new URL('/phone-only', request.url));
   }
 
   // handle non-phone users trying to access the phone-only page
   if (!isPhone && pathname.startsWith(PHONE_REDIRECT_PATH)) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
@@ -38,6 +38,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 };

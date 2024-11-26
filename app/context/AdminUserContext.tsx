@@ -1,11 +1,11 @@
-import React, { createContext, ReactNode, FunctionComponent, useState } from "react";
+import React, { createContext, ReactNode, FunctionComponent, useState } from 'react';
 
 /**
  * The data type for the application context
  */
 export type AdminUserContextData = {
-    isSetup: boolean,
-    updateSetup: () => void
+  isSetup: boolean;
+  updateSetup: () => void;
 };
 
 /**
@@ -15,24 +15,19 @@ const AdminUserContext = createContext<AdminUserContextData | undefined>(undefin
 
 // Create a provider component that takes children as props
 type AdminUserProviderProps = {
-    children: ReactNode;
+  children: ReactNode;
 };
 
 const AdminUserProvider: FunctionComponent<AdminUserProviderProps> = ({ children }) => {
+  const [isSetup, setIsSetup] = useState(false);
 
-    const [isSetup, setIsSetup] = useState(false);
+  // Define the values you want to share
+  const sharedData: AdminUserContextData = {
+    isSetup,
+    updateSetup: () => setIsSetup(!isSetup),
+  };
 
-    // Define the values you want to share
-    const sharedData: AdminUserContextData = {
-        isSetup,
-        updateSetup: () => setIsSetup(!isSetup)
-    };
-
-    return (
-        <AdminUserContext.Provider value={sharedData}>
-            {children}
-        </AdminUserContext.Provider>
-    );
+  return <AdminUserContext.Provider value={sharedData}>{children}</AdminUserContext.Provider>;
 };
 
 export { AdminUserProvider, AdminUserContext };

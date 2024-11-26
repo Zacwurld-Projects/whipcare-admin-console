@@ -5,5 +5,5 @@ export class ApplicationRoutes {
   /**
    * The route to the dashboard page
    */
-  static readonly Dashboard = "/";
+  static readonly Dashboard = '/';
 }
