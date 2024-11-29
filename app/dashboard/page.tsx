@@ -40,14 +40,6 @@ const Overview = () => {
           heading='Revenue'
           data={[800, 950, 600, 600]}
         />
-        <DoughnutChart
-          heading='Payment method'
-          colors={['#f56630', '#0f973d']}
-          data={[4000000, 2000000]}
-          xLabels={['Transfer', 'Card']}
-          yLabel='Amount Paid'
-          timestamp={Date.now() - 30 * 24 * 60 * 60 * 1000}
-        />
         <ProgressBarChart
           heading='Service Efficiency'
           timestamp={Date.now() - 30 * 24 * 60 * 60 * 1000}
@@ -57,6 +49,14 @@ const Overview = () => {
           xLabels={['Mech/Tech', 'Wash', 'Hauling', 'Detailing']}
           heading='Service Type'
           data={[830, 980, 670, 600]}
+        />
+        <DoughnutChart
+          heading='Payment method'
+          colors={['#f56630', '#0f973d']}
+          data={[4000000, 2000000]}
+          xLabels={['Transfer', 'Card']}
+          yLabel='Amount Paid'
+          timestamp={Date.now() - 30 * 24 * 60 * 60 * 1000}
         />
       </div>
     </div>
