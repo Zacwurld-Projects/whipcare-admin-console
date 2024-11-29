@@ -13,11 +13,13 @@ const NumbersOverview = ({
   className?: string;
 }) => {
   return (
-    <article className='grid grid-flow-col gap-4'>
+    <article
+      className={`grid w-full gap-4 [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))] ${className ? className : ''}`}
+    >
       {stats.map((stat, index) => (
         <div
           key={index}
-          className={`flex justify-between rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] ${className ? className : ''}`}
+          className={`mt-0 flex justify-between rounded-lg border border-gray-200 bg-white px-[22px] py-[15px]`}
         >
           <div className='flex-column'>
             <div className='center-grid mb-[10px] size-[40px] rounded-full bg-primary-50'>

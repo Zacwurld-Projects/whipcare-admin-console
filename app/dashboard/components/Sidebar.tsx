@@ -75,7 +75,7 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className='relative left-0 top-0 h-[100vh] w-[268px]'>
+    <aside className='sticky right-0 top-0 h-[100vh] min-h-[600px] w-[268px]'>
       <div className='center-grid h-[131px] w-full bg-primary-900'>
         {/* <Image
           src={'/images/png/logo.png'}
