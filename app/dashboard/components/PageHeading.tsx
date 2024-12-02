@@ -1,11 +1,14 @@
 'use client';
 import { useState } from 'react';
-import ChevronDownIcon from '../assets/chevronDown.svg';
-import CalendarIcon from '../assets/calendarIcon.svg';
+import DatePickerComponent from './DatePickerComponent';
 
 const PageHeading = ({ page, pageFilters }: { page: string; pageFilters?: boolean }) => {
   const filters = ['today', '1 week', '2 months'];
-  const [selectedFilter, setSelectedFilter] = useState('today');
+  const [selectedFilter, setSelectedFilter] = useState<string | Array<Date | null>>('today');
+  const [customDateFilter, setCustomDateFilter] = useState<[Date | null, Date | null]>([
+    null,
+    null,
+  ]);
 
   return (
     <div className='flex w-full items-center justify-between'>
@@ -15,17 +18,21 @@ const PageHeading = ({ page, pageFilters }: { page: string; pageFilters?: boolea
           {filters.map((filter) => (
             <button
               key={filter}
-              onClick={() => setSelectedFilter(filter)}
+              onClick={() => {
+                setSelectedFilter(filter);
+                // setCustomDateFilter([null, null]);
+              }}
               className={`capitalize ${selectedFilter === filter ? 'border-[#ff915b] bg-[#fcb59a]' : 'border-gray-200'}`}
             >
               {filter}
             </button>
           ))}
-          <button className='flex items-center gap-1 border-gray-200'>
-            <CalendarIcon />
-            <p>Select dates</p>
-            <ChevronDownIcon />
-          </button>
+          <DatePickerComponent
+            selectedFilter={selectedFilter}
+            customDateFilter={customDateFilter}
+            setCustomDateFilter={setCustomDateFilter}
+            setSelectedFilter={setSelectedFilter}
+          />
         </div>
       )}
     </div>

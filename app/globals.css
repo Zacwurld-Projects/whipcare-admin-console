@@ -10,6 +10,10 @@ body {
   background: var(--background);
 }
 
+@layer tailwind {
+  @tailwind base;
+}
+
 @layer components {
   .display-large {
     @apply text-[56px] font-normal leading-[100%] tracking-[-4%];
@@ -73,10 +77,29 @@ body {
   }
 }
 
-.chartsContainer {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(200px, 1fr));
-  /* grid-auto-rows: 0; */
-  /* grid-auto-flow: dense; */
-  gap: 26px;
+.calendarDay {
+  border: 2px solid #f0f2f5;
+}
+.calendarDay[data-in-range='true'] {
+  background: #ffece5 !important;
+  border-color: #ffece5 !important;
+}
+.calendarDay[data-selected='true'] {
+  background: #ffece5 !important;
+  border-color: #ffece5 !important;
+}
+.calendarDay[data-first-in-range='true'] {
+  border-color: #f56630 !important;
+}
+.calendarDay[data-today='true'] {
+  color: #f56630 !important;
+  /* border-color: #f56630 !important; */
+}
+.calendarDay[data-outside='true'] {
+  background: #f7f9fc !important;
+  border-color: #f7f9fc !important;
+  color: #d0d5dd !important;
+}
+.calendarDay[data-last-in-range='true'] {
+  border-color: #f56630 !important;
 }
