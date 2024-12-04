@@ -74,16 +74,14 @@ const links = [
 const Sidebar = () => {
   const pathname = usePathname();
 
+  const checkCurrentPage = (path: string) => {
+    if (path !== '/') return pathname.split('/').includes(path.split('/')[1]);
+    else if (pathname === '/dashboard') return true;
+  };
+
   return (
     <aside className='sticky right-0 top-0 h-[100vh] min-h-[600px] w-[268px]'>
       <div className='center-grid h-[131px] w-full bg-primary-900'>
-        {/* <Image
-          src={'/images/png/logo.png'}
-          alt='Whipcare logo'
-          height={268}
-          width={131}
-          className='border object-contain'
-        /> */}
         <LogoIcon />
       </div>
       <div className='flex-column ml-auto mt-4 w-[248px] gap-[7px]'>
@@ -91,17 +89,17 @@ const Sidebar = () => {
           <Link
             href={`/dashboard${item.link}`}
             key={index}
-            className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${pathname.split('/').includes(item.link.split('/')[1]) ? 'bg-primary-900 text-primary-50' : 'hover:bg-gray-200'}`}
+            className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50' : 'hover:bg-gray-200'}`}
           >
             {item.alternateIcon ? (
-              pathname.split('/').includes(item.link.split('/')[1]) ? (
+              checkCurrentPage(item.link) ? (
                 <item.alternateIcon />
               ) : (
                 <item.icon />
               )
             ) : (
               <item.icon
-                className={`${pathname.split('/').includes(item.link.split('/')[1]) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50' : ''}`}
+                className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50' : ''}`}
               />
             )}
             <p className='text-medium'>{item.title}</p>
