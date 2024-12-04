@@ -76,13 +76,6 @@ const CustomerMapping = () => {
           {markers.map(({ location, coordinates, color }) => (
             <Marker key={location} coordinates={coordinates}>
               <rect x={-6} y={-6} width={12} height={12} rx={2} ry={2} fill={color} />
-              {/* <text
-                textAnchor='middle'
-                y={-15}
-                style={{ fontFamily: 'system-ui', fill: '#5D5A6D' }}
-              >
-                {location}
-              </text> */}
             </Marker>
           ))}
         </ComposableMap>
