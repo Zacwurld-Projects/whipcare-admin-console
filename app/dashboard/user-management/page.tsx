@@ -35,7 +35,7 @@ const UserManagementPage = () => {
       <PageHeading page='User management' pageFilters />
       <NumbersOverview stats={userManagementStats} className='mt-8' />
       <div className='mt-6 grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2'>
-        <div className='grid grid-cols-2 gap-4 [row-gap:32px]'>
+        <div className='grid grid-cols-2 [column-gap:16px] [row-gap:32px]'>
           <LineChart filter className='col-span-2' />
           <UserGrowthChart />
           <ChurnRateChart />
