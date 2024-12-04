@@ -30,10 +30,10 @@ const overviewStats = [
 
 const Overview = () => {
   return (
-    <div className='px-5 py-8'>
+    <>
       <PageHeading page='overview' pageFilters />
       <NumbersOverview stats={overviewStats} className='mt-8' />
-      <div className='mt-6 grid grid-cols-1 gap-[26px] min-[1300px]:grid-cols-2'>
+      <div className='mt-6 grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2'>
         <BarChart
           yLabel='Amount(Thousands)'
           xLabels={['Mech/Tech', 'Wash', 'Hauling', 'Detailing']}
@@ -59,7 +59,7 @@ const Overview = () => {
           timestamp={Date.now() - 30 * 24 * 60 * 60 * 1000}
         />
       </div>
-    </div>
+    </>
   );
 };
 export default Overview;

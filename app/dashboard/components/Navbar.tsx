@@ -54,7 +54,7 @@ const Navbar = () => {
     useMenu(notificationsMenuBtnRef, notificationsMenuRef);
 
   return (
-    <nav className='sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px]'>
+    <nav className='sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm'>
       <div className='flex items-center gap-[12px]'>
         <button className='center-grid peer size-[32px] rounded-full bg-primary-50'>
           <LightModeIcon />
