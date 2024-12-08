@@ -1,5 +1,5 @@
 'use client';
-import { timeAgo } from '@/app/accessoryFunctions';
+import { timeAgo } from '@/app/lib/accessoryFunctions';
 
 const data = [
   {
