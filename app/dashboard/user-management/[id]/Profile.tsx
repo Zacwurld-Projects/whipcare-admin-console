@@ -31,22 +31,26 @@ const Profile = ({ userProfile }: { userProfile: UserProfile }) => {
 
   useEffect(() => {
     const reviewsContainerNode = reviewsContainer.current;
+
     const changeReviewsWindowHeight = () => {
-      if (reviewsContainerNode)
+      if (reviewsContainerNode) {
         setReviewsWindowHeight(
-          reviewsContainer.current?.getBoundingClientRect().height / userProfile.reviews.length,
+          reviewsContainerNode.getBoundingClientRect().height / userProfile.reviews.length,
         );
+      }
     };
 
     const observer = new ResizeObserver(() => {
       changeReviewsWindowHeight();
     });
 
-    if (reviewsContainer.current) observer.observe(reviewsContainer.current);
+    if (reviewsContainerNode) {
+      observer.observe(reviewsContainerNode);
+    }
 
     return () => {
       if (reviewsContainerNode) {
-        observer.unobserve(reviewsContainer.current);
+        observer.unobserve(reviewsContainerNode);
       }
       observer.disconnect();
     };
