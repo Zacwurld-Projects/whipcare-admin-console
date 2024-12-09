@@ -10,7 +10,7 @@ import LogoutIcon from '../assets/LogoutIcon.svg';
 import { useRef } from 'react';
 import Link from 'next/link';
 import useMenu from '@/app/hooks/useMenu';
-import { timeAgo } from '@/app/accessoryFunctions';
+import { timeAgo } from '@/app/lib/accessoryFunctions';
 import EmptyNotificationsIcon from '../assets/EmptyNotificationsIcon.svg';
 
 const mockNotifications = [

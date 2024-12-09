@@ -1,5 +1,5 @@
 'use client';
-import { timeAgo } from '@/app/accessoryFunctions';
+import { timeAgo } from '@/app/lib/accessoryFunctions';
 import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps';
 import countryLatLong from '../../data/country-lat-long.json';
 

@@ -1,7 +1,7 @@
 'use client';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { timeAgo } from '@/app/accessoryFunctions';
+import { timeAgo } from '@/app/lib/accessoryFunctions';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

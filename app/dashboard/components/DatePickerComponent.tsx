@@ -8,6 +8,7 @@ import useMenu from '@/app/hooks/useMenu';
 import ChevronRightIcon from '../assets/chevronRight.svg';
 import ChevronLeftIcon from '../assets/chevronLeft.svg';
 import { MantineProvider } from '@mantine/core';
+import { formatDateToDDMMYY } from '@/app/lib/accessoryFunctions';
 
 const DatePickerComponent = ({
   setSelectedFilter,
@@ -31,13 +32,6 @@ const DatePickerComponent = ({
     if (customDateFilter[0]) setSelectedFilter(customDateFilter);
     else setSelectedFilter('today');
   }, [customDateFilter]);
-
-  const formatDateToDDMMYY = (date: Date): string => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
-    return `${day}/${month}/${year}`;
-  };
 
   return (
     <MantineProvider>

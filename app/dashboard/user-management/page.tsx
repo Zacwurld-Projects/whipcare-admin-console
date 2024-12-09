@@ -7,6 +7,7 @@ import LineChart from '../components/charts/LineChart';
 import UserGrowthChart from '../components/charts/UserGrowthChart';
 import ChurnRateChart from '../components/charts/ChurnRateChart';
 import CustomerMapping from '../components/charts/CustomerMapping';
+import PlainTable from '../components/tables/PlainTable';
 
 const userManagementStats = [
   {
@@ -34,7 +35,7 @@ const UserManagementPage = () => {
     <>
       <PageHeading page='User management' pageFilters />
       <NumbersOverview stats={userManagementStats} className='mt-8' />
-      <div className='mt-6 grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2'>
+      <div className='mb-8 mt-6 grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2'>
         <div className='grid grid-cols-2 [column-gap:16px] [row-gap:32px]'>
           <LineChart filter className='col-span-2' />
           <UserGrowthChart />
@@ -42,6 +43,7 @@ const UserManagementPage = () => {
         </div>
         <CustomerMapping />
       </div>
+      <PlainTable />
     </>
   );
 };

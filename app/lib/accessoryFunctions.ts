@@ -24,3 +24,12 @@ export function timeAgo(timestamp: string | number) {
     return createdAt.toLocaleDateString(undefined, options as object);
   }
 }
+
+export const formatDateToDDMMYY = (date: Date | number): string => {
+  const timestamp = typeof date === 'number' ? new Date(date) : date;
+
+  const day = String(timestamp.getDate()).padStart(2, '0');
+  const month = String(timestamp.getMonth() + 1).padStart(2, '0');
+  const year = String(timestamp.getFullYear()).slice(-2);
+  return `${day}/${month}/${year}`;
+};
