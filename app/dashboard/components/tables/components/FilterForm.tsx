@@ -16,7 +16,7 @@ const FilterForm = () => {
             id='search'
             name='search'
             placeholder='Search here...'
-            className='placeholder:text-small focus:outline- w-full placeholder:text-gray-500'
+            className='placeholder:text-small w-full placeholder:text-gray-500 focus:outline-none'
           />
         </label>
       </form>

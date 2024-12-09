@@ -8,8 +8,10 @@ const TablePagination = ({
   totalPages,
   setCurrentPage,
   contentLength,
+  contentPerPage,
 }: {
   currentPage: number;
+  contentPerPage: number;
   totalPages: number;
   contentLength: number;
   setCurrentPage: Dispatch<number>;
@@ -41,11 +43,15 @@ const TablePagination = ({
     return range.map((page, index) => (
       <>
         {page === totalPages && totalPages - currentPage > 2 && (
-          <p className='text-small px-3 pb-1 pt-2 font-medium text-gray-800'>...</p>
+          <p key={'before_ellipse'} className='text-small px-3 pb-1 pt-2 font-medium text-gray-800'>
+            ...
+          </p>
         )}
         {renderButton(page, index)}
         {page === 1 && currentPage > 3 && (
-          <p className='text-small px-3 pb-1 pt-2 font-medium text-gray-800'>...</p>
+          <p key={'after_ellipse'} className='text-small px-3 pb-1 pt-2 font-medium text-gray-800'>
+            ...
+          </p>
         )}
       </>
     ));
@@ -54,9 +60,11 @@ const TablePagination = ({
   return (
     <div className='flex h-[74px] items-center justify-between px-2'>
       <p className='font-medium text-[#98a2b3]'>
-        Showing data {(currentPage - 1) * 15 + 1} to{' '}
-        {currentPage * 15 < contentLength ? currentPage * 15 : contentLength} of {contentLength}{' '}
-        entires
+        Showing data {(currentPage - 1) * contentPerPage + 1} to{' '}
+        {currentPage * contentPerPage < contentLength
+          ? currentPage * contentPerPage
+          : contentLength}{' '}
+        of {contentLength} entires
       </p>
       <div className='flex items-center gap-2'>
         <button
