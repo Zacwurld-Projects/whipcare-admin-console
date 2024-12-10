@@ -3,7 +3,6 @@ import Image from 'next/image';
 import LightModeIcon from '../assets/lightModeIcon.svg';
 import ChevronDownIcon from '../assets/chevronDown.svg';
 import FlagIcon from '../assets/FlagIcon.png';
-import SearchIcon from '../assets/searchIcon.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
@@ -71,16 +70,6 @@ const Navbar = () => {
             <ChevronDownIcon />
           </button>
         </div>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label className='flex items-center gap-2 rounded-[5px] border border-gray-200 p-[10px]'>
-            <input
-              type='text'
-              placeholder='Search'
-              className='h-[24px] w-[140px] placeholder:text-[#98a2b3] focus:outline-none'
-            />
-            <SearchIcon />
-          </label>
-        </form>
         <div className='relative'>
           <button
             aria-label='notifications'
