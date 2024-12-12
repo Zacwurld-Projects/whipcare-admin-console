@@ -20,3 +20,25 @@ export type UserProfile = {
     timestamp: number;
   }>;
 };
+
+export type Booking = {
+  id: string;
+  bookingDate: number;
+  phoneNo: string;
+  location: string;
+  status: 'pending' | 'on going' | 'completed' | 'cancelled';
+  bookingStatus:
+    | 'accepted'
+    | 'received'
+    | 'in progress'
+    | 'ready for delivery'
+    | 'delivered'
+    | 'completed'
+    | '';
+  car: string;
+  service: string;
+  serviceType: string;
+  serviceProvider: string;
+  brakeServices: string;
+  total: string;
+};

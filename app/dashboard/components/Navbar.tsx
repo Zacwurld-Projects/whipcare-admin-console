@@ -1,8 +1,7 @@
 'use client';
-import Image from 'next/image';
 import LightModeIcon from '../assets/lightModeIcon.svg';
 import ChevronDownIcon from '../assets/chevronDown.svg';
-import FlagIcon from '../assets/FlagIcon.png';
+import FlagIcon from '../assets/FlagIcon.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
@@ -66,7 +65,7 @@ const Navbar = () => {
       <div className='flex items-center gap-4 pr-[25px]'>
         <div>
           <button className='flex items-center gap-2'>
-            <Image src={FlagIcon} alt='flag icon' height={17.86} width={25} />
+            <FlagIcon />
             <ChevronDownIcon />
           </button>
         </div>
