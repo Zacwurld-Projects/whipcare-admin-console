@@ -6,8 +6,8 @@ import SpendingsIcon from '../../assets/spendingsIcon.svg';
 import Image from 'next/image';
 import { useState } from 'react';
 import Profile from './Profile';
-import Bookings from './Bookings';
-import Activities from './Activities';
+import HistoryTable from '../../components/tables/HistoryTable';
+import ActivityTable from '../../components/tables/ActivityTable';
 
 const userProfile = {
   name: 'Isaac Zacwurld',
@@ -99,8 +99,47 @@ const UserProfilePage = () => {
         ))}
       </div>
       {selectedPageOption === 'profile' && <Profile userProfile={userProfile} />}
-      {selectedPageOption === 'bookings' && <Bookings />}
-      {selectedPageOption === 'activities' && <Activities />}
+      {selectedPageOption === 'bookings' && (
+        <HistoryTable
+          heading='Bookings History'
+          tableHeadings={[
+            'Booking ID',
+            'Booking Date',
+            'Phone Number',
+            'Location',
+            'Service Fee',
+            'Status',
+          ]}
+          tableContent={Array.from({ length: 12 }, (_, i) => {
+            return {
+              id: '12346WXYZ',
+              bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
+              phoneNo: '+1 356 786 3732',
+              location: '290 m near Grand Play Lekki Lagos',
+              status: i > 2 ? 'completed' : 'pending',
+              bookingStatus: i > 2 ? 'completed' : '',
+              car: 'BMW M6',
+              service: 'Mechanic Service',
+              serviceType: 'Pick Up Service',
+              serviceProvider: 'James Fox',
+              brakeServices: '2',
+              total: '2.49',
+            };
+          })}
+        />
+      )}
+      {selectedPageOption === 'activities' && (
+        <ActivityTable
+          tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
+          tableContent={Array.from({ length: 63 }, () => {
+            return {
+              type: 'Booking a Service',
+              description: 'Booked a mechanic for car repair',
+              timeStamp: Date.now() - 12 * 24 * 60 * 60 * 1000,
+            };
+          })}
+        />
+      )}
     </>
   );
 };

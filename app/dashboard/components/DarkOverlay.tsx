@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 const DarkOverlay = ({
   children,
   className = '',
@@ -9,6 +11,13 @@ const DarkOverlay = ({
   className?: string;
   exitFunction?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }) => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     <section
       onClick={(e) => {
