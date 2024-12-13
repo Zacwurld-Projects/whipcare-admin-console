@@ -6,10 +6,12 @@ import BookingDetails from '../modals/BookingDetails';
 import { Booking } from '@/app/lib/mockTypes';
 
 const HistoryTable = ({
+  type,
   tableHeadings,
   heading,
   tableContent,
 }: {
+  type: string;
   tableHeadings: string[];
   heading: string;
   tableContent: Booking[];
@@ -52,7 +54,11 @@ const HistoryTable = ({
                 <td>{formatDateToDDMMYY(item.bookingDate)}</td>
                 <td>{item.phoneNo}</td>
                 <td>{item.location.slice(0, 13)}...</td>
-                <td>${item.total}</td>
+                {tableHeadings.includes('fee') ? (
+                  <td>${item.total}</td>
+                ) : (
+                  <td>{item.serviceType}</td>
+                )}
                 <td>
                   <button
                     className={`text-medium w-[124px] rounded-[9.37px] text-center font-medium capitalize ${item.status === 'pending' ? 'bg-primary-50 text-[#ff915b]' : ''} ${item.status === 'cancelled' ? 'bg-[#fbeae9] text-[#dd524d]' : ''} ${item.status === 'completed' || item.status === 'on going' ? 'bg-[#91d6a8] text-[#099137]' : ''}`}
@@ -73,6 +79,7 @@ const HistoryTable = ({
       </article>
       {isDisplayingBookingDetails.display && (
         <BookingDetails
+          type={type}
           booking={isDisplayingBookingDetails.booking as Booking}
           setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}
         />

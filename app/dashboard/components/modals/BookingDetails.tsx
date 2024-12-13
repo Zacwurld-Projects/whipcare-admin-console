@@ -7,9 +7,11 @@ import dayjs from 'dayjs';
 import { Dispatch, useRef } from 'react';
 
 const BookingDetails = ({
+  type,
   booking,
   setIsDisplayingBookingDetails,
 }: {
+  type: string;
   booking: Booking;
   setIsDisplayingBookingDetails: Dispatch<{
     display: boolean;
@@ -121,7 +123,7 @@ const BookingDetails = ({
           <LeftArrowIcon />
         </button>
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium'>
-          <p>Booking history list</p>
+          <p>{type === 'orders' ? 'Order' : 'Booking'} history list</p>
           <p>{'>'}</p>
           <h5 className='heading-h5'>#{booking.id}</h5>
           <p

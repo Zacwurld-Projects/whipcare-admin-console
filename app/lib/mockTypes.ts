@@ -1,3 +1,5 @@
+import { StaticImageData } from 'next/image';
+
 export type UserProfile = {
   name: string;
   email: string;
@@ -19,6 +21,34 @@ export type UserProfile = {
     content: string;
     timestamp: number;
   }>;
+};
+export type ServiceProviderProfile = {
+  name: string;
+  email: string;
+  status: string;
+  phone: string;
+  userInfo: {
+    'Sign up date': number;
+    'Last login date': number;
+    Nationality: string;
+    Language: string;
+    NIN: string;
+  };
+  userAddress: {
+    work: string;
+  };
+  servicesProvided: {
+    type: string;
+    brand: string;
+    services: Array<{
+      image: StaticImageData;
+      price: string;
+      type: string;
+      title: string;
+      distance: string;
+      time: string;
+    }>;
+  };
 };
 
 export type Booking = {
