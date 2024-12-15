@@ -5,6 +5,7 @@ import ChevronRightIcon from '../assets/chevronRight.svg';
 import PageHeading from '../components/PageHeading';
 import NumbersOverview from '../components/NumbersOverview';
 import PlainTable from '../components/tables/PlainTable';
+import RecentProviders from '../components/RecentProviders';
 
 const serviceProviderStats = [
   {
@@ -47,19 +48,7 @@ const ServiceProviderPage = () => {
             <ChevronRightIcon className='*:fill-white' />
           </button>
         </div>
-        <ul className='mt-4 flex justify-between rounded-[10px] border border-gray-100 bg-white px-10 py-6'>
-          {recentServiceProviders.map((item, index) => (
-            <li key={index} className='flex-column items-center gap-2'>
-              <p className='center-grid size-12 rounded-full bg-primary-50 text-center text-[18px] font-semibold uppercase text-gray-700'>
-                {item.name.slice(0, 2)}
-              </p>
-              <div className='text-center'>
-                <p className='text-xsmall font-semibold text-gray-900'>{item.name}</p>
-                <p className='text-xsmall text-[#98a2b3]'>{item.email}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <RecentProviders recentServiceProviders={recentServiceProviders} />
       </div>
       <PlainTable
         link='service-provider/info'

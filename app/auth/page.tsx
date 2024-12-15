@@ -4,7 +4,7 @@ import FormContainer from './components/FormContainer';
 import InputArea from './components/InputArea';
 import Link from 'next/link';
 import FormButton from './components/FormButton';
-import { defaultInfo, signUserIn } from './mock';
+import { doCredentialLogin } from '../actions/authActions';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -20,14 +20,20 @@ const SignInPage = () => {
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSignIn = (e: FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { email, password } = defaultInfo;
-    if (userInfo.email !== email || userInfo.password !== password)
+    try {
+      const formData = new FormData(e.currentTarget);
+      const response = await doCredentialLogin(formData);
+
+      if (!!response.error) {
+        toast.error(response.error.message);
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error(err);
       toast.error('Invalid user details. Try again.');
-    else {
-      signUserIn();
-      router.push('/dashboard');
     }
   };
 

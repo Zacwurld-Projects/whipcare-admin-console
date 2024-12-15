@@ -5,11 +5,12 @@ import FlagIcon from '../assets/FlagIcon.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
-import { useRef } from 'react';
+import { FormEvent, useRef } from 'react';
 import Link from 'next/link';
 import useMenu from '@/app/hooks/useMenu';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
 import EmptyNotificationsIcon from '../assets/EmptyNotificationsIcon.svg';
+import { doLogout } from '@/app/actions/authActions';
 
 const mockNotifications = [
   {
@@ -50,6 +51,11 @@ const Navbar = () => {
   const notificationsMenuBtnRef = useRef<HTMLButtonElement>(null);
   const { isMenuOpen: isNotificationsMenuOpen, setIsMenuOpen: setIsNotificationsMenuOpen } =
     useMenu(notificationsMenuBtnRef, notificationsMenuRef);
+
+  const logUserOut = async (e: FormEvent) => {
+    e.preventDefault();
+    await doLogout();
+  };
 
   return (
     <nav className='sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm'>
@@ -160,10 +166,12 @@ const Navbar = () => {
                 <SettingsIcon />
                 <p>Settings</p>
               </Link>
-              <button className='text-small flex items-center gap-3 px-4 py-[6px]'>
-                <LogoutIcon />
-                <p>Log Out</p>
-              </button>
+              <form onSubmit={logUserOut}>
+                <button className='text-small flex items-center gap-3 px-4 py-[6px]' type='submit'>
+                  <LogoutIcon />
+                  <p>Log Out</p>
+                </button>
+              </form>
             </div>
           )}
         </div>

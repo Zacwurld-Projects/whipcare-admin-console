@@ -2,8 +2,9 @@
 // import Image from 'next/image';
 import LogoIcon from '../assets/logo.svg';
 import OverviewIcon from '../assets/overviewIcon.svg';
+import CronIcon from '../assets/cronIcon.svg';
 import ActivityIcon from '../assets/activityIcon.svg';
-import AnalyticsIcon from '../assets/analyticIcon.svg';
+import AlternateCronIcon from '../assets/alternativeCronIcon.svg';
 import CarMgtIcon from '../assets/carMgtIcon.svg';
 import FeedbackIcon from '../assets/feedbackIcon.svg';
 import FinancialIcon from '../assets/financialIcon.svg';
@@ -65,9 +66,10 @@ const links = [
     link: '/financials',
   },
   {
-    icon: AnalyticsIcon,
-    title: 'Analytics',
-    link: '/analytics',
+    icon: CronIcon,
+    alternateIcon: AlternateCronIcon,
+    title: 'CRON',
+    link: '/cron',
   },
 ];
 
@@ -80,31 +82,33 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className='sticky right-0 top-0 h-[100vh] min-h-[600px] w-[268px]'>
+    <aside className='sticky right-0 top-0 h-[100vh] w-[268px] scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-w-1'>
       <div className='center-grid h-[131px] w-full bg-primary-900'>
         <LogoIcon />
       </div>
-      <div className='flex-column ml-auto mt-4 w-[248px] gap-[7px]'>
-        {links.map((item, index) => (
-          <Link
-            href={`/dashboard${item.link}`}
-            key={index}
-            className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50' : 'hover:bg-gray-200'}`}
-          >
-            {item.alternateIcon ? (
-              checkCurrentPage(item.link) ? (
-                <item.alternateIcon />
+      <div className='h-full overflow-y-scroll scrollbar'>
+        <div className='flex-column ml-auto mt-4 min-h-[700px] w-[248px] gap-[7px]'>
+          {links.map((item, index) => (
+            <Link
+              href={`/dashboard${item.link}`}
+              key={index}
+              className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50' : 'hover:bg-gray-200'}`}
+            >
+              {item.alternateIcon ? (
+                checkCurrentPage(item.link) ? (
+                  <item.alternateIcon />
+                ) : (
+                  <item.icon />
+                )
               ) : (
-                <item.icon />
-              )
-            ) : (
-              <item.icon
-                className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50' : ''}`}
-              />
-            )}
-            <p className='text-medium'>{item.title}</p>
-          </Link>
-        ))}
+                <item.icon
+                  className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50' : ''}`}
+                />
+              )}
+              <p className='text-medium'>{item.title}</p>
+            </Link>
+          ))}
+        </div>
       </div>
     </aside>
   );
