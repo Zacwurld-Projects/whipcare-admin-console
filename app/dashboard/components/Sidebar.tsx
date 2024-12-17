@@ -86,7 +86,7 @@ const Sidebar = () => {
       <div className='center-grid h-[131px] w-full bg-primary-900'>
         <LogoIcon />
       </div>
-      <div className='h-full overflow-y-scroll scrollbar'>
+      <div className='h-full scrollbar [@media(max-height:700px)]:overflow-y-scroll'>
         <div className='flex-column ml-auto mt-4 min-h-[700px] w-[248px] gap-[7px]'>
           {links.map((item, index) => (
             <Link

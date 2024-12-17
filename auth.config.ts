@@ -11,18 +11,4 @@ export const authConfig: NextAuthConfig = {
     // newUser: '/auth/create',
   },
   providers: [],
-  callbacks: {
-    async jwt({ token, account, user }) {
-      if (account?.type === 'credentials' && user) {
-        token.userId = user.id; // associate userId with token
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      // safeguard session.user mutation
-      session.user = session.user || {};
-      session.user.id = token.userId as string;
-      return session;
-    },
-  },
 };
