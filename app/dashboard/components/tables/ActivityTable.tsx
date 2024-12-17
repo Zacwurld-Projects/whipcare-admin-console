@@ -1,19 +1,9 @@
 'use client';
-import ExportTable from '../../components/tables/components/ExportTable';
-import FilterForm from '../../components/tables/components/FilterForm';
+import ExportTable from './components/ExportTable';
+import FilterForm from './components/FilterForm';
 import DotsIcon from '../../assets/dotsIcon.svg';
-import TablePagination from '../../components/tables/components/TablePagination';
+import TablePagination from './components/TablePagination';
 import { useState, useEffect } from 'react';
-
-const tableHeadings = ['Activity Type', 'Description', 'Date & time added', 'Status', ''];
-
-const tableContent = Array.from({ length: 63 }, () => {
-  return {
-    type: 'Booking a Service',
-    description: 'Booked a mechanic for car repair',
-    timeStamp: Date.now() - 12 * 24 * 60 * 60 * 1000,
-  };
-});
 
 function formatTimestampToCustomDate(timestamp: number) {
   const date = new Date(timestamp);
@@ -39,7 +29,17 @@ function formatTimestampToCustomDate(timestamp: number) {
   );
 }
 
-const Activities = () => {
+const ActivityTable = ({
+  tableHeadings,
+  tableContent,
+}: {
+  tableHeadings: string[];
+  tableContent: {
+    type: string;
+    description: string;
+    timeStamp: number;
+  }[];
+}) => {
   const contentPerPage = 6;
   const totalPages = Math.ceil(tableContent.length / contentPerPage);
   const [currentPage, setCurrentPage] = useState(1);
@@ -106,4 +106,4 @@ const Activities = () => {
     </article>
   );
 };
-export default Activities;
+export default ActivityTable;

@@ -1,29 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-const PHONE_REDIRECT_PATH = '/phone-only';
-// const AUTH_REDIRECT_PATH = '/auth';
+import { authConfig } from './auth.config';
+import NextAuth from 'next-auth';
 
-export function middleware(request: NextRequest) {
+const { auth } = NextAuth(authConfig);
+const protectedRoutes = ['/dashboard'];
+const signInPath = '/auth';
+const phoneRedirectPath = '/phone-only';
+
+export async function middleware(request: NextRequest) {
+  const session = await auth();
+  const isAuthenticated = !!session?.user;
   const userAgent = request.headers.get('user-agent') || '';
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
-
-  // check if user is signed in via a cookie
-  //   const isAuthenticated = request.cookies.get("auth-token") !== undefined;
-
   const { pathname } = request.nextUrl;
 
-  // handle unauthenticated users
-  //   if (!isAuthenticated && pathname !== AUTH_REDIRECT_PATH) {
-  //     return NextResponse.redirect(new URL(AUTH_REDIRECT_PATH, request.url));
-  //   }
-
-  // handle phone users trying to access non-phone pages
-
-  if (isPhone && !pathname.startsWith(PHONE_REDIRECT_PATH)) {
-    return NextResponse.redirect(new URL('/phone-only', request.url));
+  // authentication: redirect unauthenticated users to sign-in
+  if (!isAuthenticated && protectedRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL(signInPath, request.url));
   }
 
-  // handle non-phone users trying to access the phone-only page
-  if (!isPhone && pathname.startsWith(PHONE_REDIRECT_PATH)) {
+  // redirect authenticated users away from the sign-in page
+  if (isAuthenticated && pathname === signInPath) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // user-agent checks: redirect mobile users to phone-only and non-mobile away
+  if (isPhone && !pathname.startsWith(phoneRedirectPath)) {
+    return NextResponse.redirect(new URL(phoneRedirectPath, request.url));
+  }
+  if (!isPhone && pathname.startsWith(phoneRedirectPath)) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
@@ -31,14 +36,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)'],
 };

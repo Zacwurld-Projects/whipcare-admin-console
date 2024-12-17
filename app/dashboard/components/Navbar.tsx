@@ -1,17 +1,16 @@
 'use client';
-import Image from 'next/image';
 import LightModeIcon from '../assets/lightModeIcon.svg';
 import ChevronDownIcon from '../assets/chevronDown.svg';
-import FlagIcon from '../assets/FlagIcon.png';
-import SearchIcon from '../assets/searchIcon.svg';
+import FlagIcon from '../assets/FlagIcon.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
-import { useRef } from 'react';
+import { FormEvent, useRef } from 'react';
 import Link from 'next/link';
 import useMenu from '@/app/hooks/useMenu';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
 import EmptyNotificationsIcon from '../assets/EmptyNotificationsIcon.svg';
+import { doLogout } from '@/app/actions/authActions';
 
 const mockNotifications = [
   {
@@ -53,6 +52,11 @@ const Navbar = () => {
   const { isMenuOpen: isNotificationsMenuOpen, setIsMenuOpen: setIsNotificationsMenuOpen } =
     useMenu(notificationsMenuBtnRef, notificationsMenuRef);
 
+  const logUserOut = async (e: FormEvent) => {
+    e.preventDefault();
+    await doLogout();
+  };
+
   return (
     <nav className='sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm'>
       <div className='flex items-center gap-[12px]'>
@@ -67,20 +71,10 @@ const Navbar = () => {
       <div className='flex items-center gap-4 pr-[25px]'>
         <div>
           <button className='flex items-center gap-2'>
-            <Image src={FlagIcon} alt='flag icon' height={17.86} width={25} />
+            <FlagIcon />
             <ChevronDownIcon />
           </button>
         </div>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label className='flex items-center gap-2 rounded-[5px] border border-gray-200 p-[10px]'>
-            <input
-              type='text'
-              placeholder='Search'
-              className='h-[24px] w-[140px] placeholder:text-[#98a2b3] focus:outline-none'
-            />
-            <SearchIcon />
-          </label>
-        </form>
         <div className='relative'>
           <button
             aria-label='notifications'
@@ -172,10 +166,12 @@ const Navbar = () => {
                 <SettingsIcon />
                 <p>Settings</p>
               </Link>
-              <button className='text-small flex items-center gap-3 px-4 py-[6px]'>
-                <LogoutIcon />
-                <p>Log Out</p>
-              </button>
+              <form onSubmit={logUserOut}>
+                <button className='text-small flex items-center gap-3 px-4 py-[6px]' type='submit'>
+                  <LogoutIcon />
+                  <p>Log Out</p>
+                </button>
+              </form>
             </div>
           )}
         </div>
