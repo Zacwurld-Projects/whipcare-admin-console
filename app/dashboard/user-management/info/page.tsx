@@ -7,6 +7,7 @@ const UserManagementInfo = () => {
       <PageHeading page='User management' pageFilters />
       <div className='mt-6 w-full'>
         <InfoTable
+          page='user-management'
           heading='Users Info'
           headings={[
             'No',

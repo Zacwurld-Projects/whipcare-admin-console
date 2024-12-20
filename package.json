@@ -16,6 +16,8 @@
     "@mantine/dates": "^7.14.3",
     "@mantine/hooks": "^7.14.3",
     "@svgr/webpack": "^8.1.0",
+    "@tanstack/react-query": "^5.62.8",
+    "@tanstack/react-query-devtools": "^5.62.8",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "chart.js": "^4.4.6",

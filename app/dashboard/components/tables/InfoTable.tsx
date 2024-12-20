@@ -10,10 +10,12 @@ import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 
 const InfoTable = ({
+  page,
   heading,
   content,
   headings,
 }: {
+  page: string;
   heading: string;
   content: {
     id: string;
@@ -89,7 +91,11 @@ const InfoTable = ({
                 className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
               >
                 <td>{(currentPage - 1) * contentPerPage + index + 1}</td>
-                <td>{item.name}</td>
+                <td>
+                  <Link className='hover:underline' href={`/dashboard/${page}/${item.id}`}>
+                    {item.name}
+                  </Link>
+                </td>
                 <td>{item.email}</td>
                 <td>{item.phone}</td>
                 {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}

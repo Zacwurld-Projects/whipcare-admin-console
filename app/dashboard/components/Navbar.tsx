@@ -9,8 +9,12 @@ import { FormEvent, useRef } from 'react';
 import Link from 'next/link';
 import useMenu from '@/app/hooks/useMenu';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
+import HamburgerIcon from '../assets/hamburgerMenuIcon.svg';
 import EmptyNotificationsIcon from '../assets/EmptyNotificationsIcon.svg';
 import { doLogout } from '@/app/actions/authActions';
+import { useGlobalContext } from '@/app/context/AppContext';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 const mockNotifications = [
   {
@@ -40,6 +44,13 @@ const mockNotifications = [
 ];
 
 const Navbar = () => {
+  const { data: session } = useSession({
+    required: true, // redirects to login if no session
+    onUnauthenticated() {
+      window.location.href = '/auth/login';
+    },
+  });
+  const { setIsSidebarOpen, isSidebarOpen } = useGlobalContext();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const userMenuBtnRef = useRef<HTMLButtonElement>(null);
   const { isMenuOpen: isUserMenuOpen, setIsMenuOpen: setIsUserMenuOpen } = useMenu(
@@ -58,14 +69,24 @@ const Navbar = () => {
   };
 
   return (
-    <nav className='sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm'>
-      <div className='flex items-center gap-[12px]'>
-        <button className='center-grid peer size-[32px] rounded-full bg-primary-50'>
-          <LightModeIcon />
+    <nav
+      className={`sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm ${isSidebarOpen ? 'brightness-50' : ''}`}
+    >
+      <div className='flex items-center gap-4'>
+        <button
+          className={`block min-[1100px]:hidden`}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          <HamburgerIcon className='*:fill-gray-800' />
         </button>
-        <div className='tooltip center-grid relative w-fit rounded-[4px] bg-primary-900 px-[8px] py-[8px] pl-[10px] text-white opacity-0 shadow-[0px_5.18px_10.36px_-3.98px_rgba(0,0,0,0.25)] transition-opacity duration-200 ease-in peer-hover:opacity-100'>
-          <div className='absolute left-[-12px] size-[0px] rotate-[270deg] [border-color:transparent_transparent_#711e00_transparent] [border-width:0_15px_12px_15px]'></div>
-          <p className='text-xsmall'>Light Mode</p>
+        <div className='flex items-center gap-[12px]'>
+          <button className='center-grid peer size-[32px] rounded-full bg-primary-50'>
+            <LightModeIcon />
+          </button>
+          <div className='tooltip center-grid relative w-fit rounded-[4px] bg-primary-900 px-[8px] py-[8px] pl-[10px] text-white opacity-0 shadow-[0px_5.18px_10.36px_-3.98px_rgba(0,0,0,0.25)] transition-opacity duration-200 ease-in peer-hover:opacity-100'>
+            <div className='absolute left-[-12px] size-[0px] rotate-[270deg] [border-color:transparent_transparent_#711e00_transparent] [border-width:0_15px_12px_15px]'></div>
+            <p className='text-xsmall'>Light Mode</p>
+          </div>
         </div>
       </div>
       <div className='flex items-center gap-4 pr-[25px]'>
@@ -141,7 +162,9 @@ const Navbar = () => {
             ref={userMenuBtnRef}
           >
             <div className='center-grid relative size-[40px] rounded-full bg-primary-50'>
-              <p className='text-small font-semibold text-[#f56630]'>ZI</p>
+              <p className='text-small font-semibold text-[#f56630]'>
+                {session?.user.name?.slice(0, 2).toUpperCase()}
+              </p>
             </div>
             <ChevronDownIcon />
           </button>
@@ -151,12 +174,24 @@ const Navbar = () => {
               className='fixed right-[20px] top-[74px] rounded bg-white py-[10px] shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)]'
             >
               <div className='mb-2 flex items-center gap-1 px-2'>
-                <div className='center-grid relative size-[40px] rounded-full bg-primary-50'>
-                  <p className='text-small font-semibold text-[#f56630]'>ZI</p>
-                </div>
+                {session?.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name + 'image'}
+                    height={40}
+                    width={40}
+                    className='rounded-full'
+                  />
+                ) : (
+                  <div className='center-grid relative size-[40px] rounded-full bg-primary-50'>
+                    <p className='text-small font-semibold text-[#f56630]'>
+                      {session?.user.name?.slice(0, 2).toUpperCase()}
+                    </p>
+                  </div>
+                )}
                 <div>
-                  <p className='text-small font-medium text-gray-800'>Zacwurld</p>
-                  <p className='text-xsmall text-gray-500'>admin@whipcare.com</p>
+                  <p className='text-small font-medium text-gray-800'>{session?.user?.name}</p>
+                  <p className='text-xsmall text-gray-500'>{session?.user?.email}</p>
                 </div>
               </div>
               <Link

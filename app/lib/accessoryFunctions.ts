@@ -33,3 +33,21 @@ export const formatDateToDDMMYY = (date: Date | number): string => {
   const year = String(timestamp.getFullYear()).slice(-2);
   return `${day}/${month}/${year}`;
 };
+
+export const convertBookingAndOrderStatus = (status: string) => {
+  if (status === 'completed' || status === 'cancelled') return status;
+  return 'pending';
+};
+
+export const reflectStatusStyle = (status: string) => {
+  switch (true) {
+    case status === 'cancelled':
+      return `bg-[#fbeae9] text-[#dd524d]`;
+    case status === 'pending':
+      return `bg-primary-50 text-[#ff915b]`;
+    case status === 'completed' || status === 'on going':
+      return `bg-[#e7f6ec] text-[#40b869]`;
+    default:
+      return '';
+  }
+};

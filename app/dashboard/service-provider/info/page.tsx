@@ -7,6 +7,7 @@ const ServiceProviderInfo = () => {
       <PageHeading page='Service Provider' pageFilters />
       <div className='mt-6 w-full'>
         <InfoTable
+          page='service-provider'
           heading='Service Providers Info'
           headings={[
             'No',

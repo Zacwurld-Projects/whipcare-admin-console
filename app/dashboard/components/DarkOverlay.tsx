@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const DarkOverlay = ({
   children,
@@ -18,15 +19,18 @@ const DarkOverlay = ({
     };
   }, []);
 
-  return (
+  return createPortal(
     <section
       onClick={(e) => {
         if (exitFunction) exitFunction(e);
       }}
-      className={`fixed left-0 top-0 z-[100] h-[100vh] w-[100vw] overflow-y-scroll bg-[rgba(105,101,101,0.60)] backdrop-blur-[2px] ${className}`}
+      className={`fixed inset-0 z-[1000] ${className}`}
     >
-      {children}
-    </section>
+      <div className='absolute inset-0 overflow-auto bg-[rgba(105,101,101,0.60)] backdrop-blur-[2px] scrollbar'>
+        {children}
+      </div>
+    </section>,
+    document.body,
   );
 };
 export default DarkOverlay;

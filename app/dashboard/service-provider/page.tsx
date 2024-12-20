@@ -1,79 +1,162 @@
+'use client';
 import BagIcon from '../assets/bagIcon.svg';
 import AllMatchIcon from '../assets/allMatchIcon.svg';
 import CheckCircleIcon from '../assets/checkCircleIcon.svg';
-import ChevronRightIcon from '../assets/chevronRight.svg';
 import PageHeading from '../components/PageHeading';
 import NumbersOverview from '../components/NumbersOverview';
 import PlainTable from '../components/tables/PlainTable';
-import RecentProviders from '../components/RecentProviders';
-
-const serviceProviderStats = [
-  {
-    icon: BagIcon,
-    title: 'Number of Users',
-    currentNumber: 123000,
-    previousNumber: 110000,
-  },
-  {
-    icon: AllMatchIcon,
-    title: 'Number of Active Users',
-    currentNumber: 100000,
-    previousNumber: 90000,
-  },
-  {
-    icon: CheckCircleIcon,
-    title: 'Number of Inactive Users',
-    currentNumber: 23000,
-    previousNumber: 20000,
-  },
-];
-
-const recentServiceProviders = Array.from({ length: 7 }, () => {
-  return {
-    name: 'Ariana Bush',
-    email: 'arianabush@gmail.com',
-  };
-});
+import RecentProviders from '../components/service-provider/RecentProviders';
+import { useQuery } from '@tanstack/react-query';
+import {
+  fetchServiceProvidersKpis,
+  fetchServiceProviderWaitList,
+  fetchServiceProviders,
+} from '@/app/api/apiClient';
+import { ComponentType, useEffect, useState } from 'react';
+import TopPerformers from '../components/service-provider/TopPerformers';
+import PageLoader from '../components/PageLoader';
 
 const ServiceProviderPage = () => {
+  const [serviceProviderStats, setServiceProviderStats] = useState<
+    Array<{ icon: ComponentType; title: string; currentNumber: number; previousNumber: number }>
+  >([
+    {
+      icon: BagIcon,
+      title: 'Number of Service Providers',
+      currentNumber: 0,
+      previousNumber: 0,
+    },
+    {
+      icon: AllMatchIcon,
+      title: 'Number of Active Service Providers',
+      currentNumber: 0,
+      previousNumber: 0,
+    },
+    {
+      icon: CheckCircleIcon,
+      title: 'Number of Inactive Service Providers',
+      currentNumber: 0,
+      previousNumber: 0,
+    },
+  ]);
+
+  const [waitlist, setWaitList] = useState(
+    Array.from({ length: 7 }, () => {
+      return {
+        _id: '5656566',
+        firstName: 'Ariana',
+        lastName: 'Bush',
+        image: null,
+        email: 'arianabush@gmail.com',
+      };
+    }),
+  );
+
+  const [serviceProviders, setServiceProviders] = useState<
+    Array<{
+      _id: string;
+      email: string;
+      image: null | string;
+      firstName: string;
+      lastName: string;
+      phone: null | string;
+      lastLogin: string;
+      createdAt: string;
+      services: string[];
+    }>
+  >([]);
+
+  const { data: statsData, isLoading: isStatsLoading } = useQuery({
+    queryKey: ['serviceProviderKPIs'],
+    queryFn: fetchServiceProvidersKpis,
+  });
+  const { data: waitlistData, isLoading: isWaitlistLoading } = useQuery({
+    queryKey: ['waitlist'],
+    queryFn: fetchServiceProviderWaitList,
+  });
+  const { data: serviceProviderData, isLoading: isServiceProviderLoadng } = useQuery({
+    queryKey: ['serviceProviders', 1, 15],
+    queryFn: () => fetchServiceProviders(1, 15),
+  });
+
+  useEffect(() => {
+    if (!isStatsLoading && statsData) {
+      const {
+        data: {
+          numberOfServiceProviders,
+          numberOfActiveServiceProviders,
+          numberOfInActiveServiceProviders,
+        },
+      } = statsData;
+      setServiceProviderStats((prev) =>
+        prev.map((item) => {
+          if (item.title === 'Number of Service Providers')
+            return {
+              ...item,
+              currentNumber: numberOfServiceProviders,
+              previousNumber: numberOfServiceProviders,
+            };
+          if (item.title === 'Number of Active Service Providers')
+            return {
+              ...item,
+              currentNumber: numberOfActiveServiceProviders,
+              previousNumber: numberOfActiveServiceProviders,
+            };
+          if (item.title === 'Number of Inactive Service Providers')
+            return {
+              ...item,
+              currentNumber: numberOfInActiveServiceProviders,
+              previousNumber: numberOfInActiveServiceProviders,
+            };
+          return item;
+        }),
+      );
+    }
+  }, [isStatsLoading, statsData]);
+
+  useEffect(() => {
+    if (!isWaitlistLoading && waitlistData) {
+      setWaitList(waitlistData.data);
+    }
+  }, [isWaitlistLoading, waitlistData]);
+
+  useEffect(() => {
+    if (!isServiceProviderLoadng && serviceProviderData) {
+      setServiceProviders(serviceProviderData.data);
+    }
+  }, [isServiceProviderLoadng, serviceProviderData]);
+
+  // if (isServiceProviderLoadng || isStatsLoading || isWaitlistLoading) {
+  //   return <PageLoader />;
+  // }
+
   return (
     <>
       <PageHeading page='Service Provider' pageFilters />
-      <NumbersOverview stats={serviceProviderStats} className='mt-8' />
-      <div className='my-8'>
-        <div className='flex items-center justify-between'>
-          <p className='text-large font-semibold text-gray-900'>Waitlist Service Provider</p>
-          <button className='text-small flex items-center gap-2 rounded-[6px] bg-[#eb5017] px-3 py-2 font-semibold text-white'>
-            <p>Check Spreadsheet</p>
-            <ChevronRightIcon className='*:fill-white' />
-          </button>
-        </div>
-        <RecentProviders recentServiceProviders={recentServiceProviders} />
-      </div>
-      <PlainTable
-        link='service-provider/info'
-        heading='Service Providers Info'
-        headings={[
-          'No',
-          'Name',
-          'Email address',
-          'Phone',
-          'Service Type',
-          'Sign up Date',
-          'Last Login Date',
-          'Status',
-        ]}
-        content={Array(15).fill({
-          id: '1234567',
-          name: 'Isaac Zacwurld',
-          email: 'Isaaczac@gmail.com',
-          phone: '+1 453 6780 690',
-          serviceType: 'Mechanics',
-          signUp: Date.now() - 30 * 24 * 60 * 60 * 1000,
-          lastLogin: Date.now() - 24 * 60 * 60 * 1000,
-          status: 'verified',
-        })}
-      />
+      {isServiceProviderLoadng || isStatsLoading || isWaitlistLoading ? (
+        <PageLoader />
+      ) : (
+        <>
+          <NumbersOverview stats={serviceProviderStats} className='mt-8' />
+          <RecentProviders recentServiceProviders={waitlist} />
+          <TopPerformers />
+          <PlainTable
+            page='service-provider'
+            heading='Service Providers Info'
+            headings={[
+              'No',
+              'Name',
+              'Email address',
+              'Phone',
+              'Service Type',
+              'Sign up Date',
+              'Last Login Date',
+              'Status',
+            ]}
+            content={serviceProviders}
+          />
+        </>
+      )}
     </>
   );
 };

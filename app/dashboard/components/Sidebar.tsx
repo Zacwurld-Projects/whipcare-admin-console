@@ -16,6 +16,8 @@ import AlternateMarketIcon from '../assets/alternateMarketing.svg';
 import AlternateServiceBookIcon from '../assets/alternateServiceIcon.svg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useGlobalContext } from '@/app/context/AppContext';
+import { useEffect, useRef } from 'react';
 
 const links = [
   {
@@ -74,6 +76,7 @@ const links = [
 ];
 
 const Sidebar = () => {
+  const { isSidebarOpen, setIsSidebarOpen } = useGlobalContext();
   const pathname = usePathname();
 
   const checkCurrentPage = (path: string) => {
@@ -81,13 +84,30 @@ const Sidebar = () => {
     else if (pathname === '/dashboard') return true;
   };
 
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkClick = (e: MouseEvent) => {
+      if (!sidebarRef.current?.contains(e.target as Node)) setIsSidebarOpen(false);
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener('click', checkClick);
+    }
+
+    return () => document.removeEventListener('click', checkClick);
+  }, [sidebarRef, isSidebarOpen]);
+
   return (
-    <aside className='sticky right-0 top-0 h-[100vh] w-[268px] scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-w-1'>
+    <aside
+      ref={sidebarRef}
+      className={`sticky right-0 top-0 z-[200] h-screen w-[268px] bg-white transition-transform scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-w-1 max-[1100px]:fixed max-[1100px]:left-0 ${isSidebarOpen ? 'max-[1100px]:translate-x-[0]' : 'max-[1100px]:-translate-x-[120%]'}`}
+    >
       <div className='center-grid h-[131px] w-full bg-primary-900'>
         <LogoIcon />
       </div>
-      <div className='h-full scrollbar [@media(max-height:700px)]:overflow-y-scroll'>
-        <div className='flex-column ml-auto mt-4 min-h-[700px] w-[248px] gap-[7px]'>
+      <div className='mt-4 h-[calc(100vh-140px)] overflow-y-auto scrollbar'>
+        <div className='flex-column ml-auto w-[248px] gap-[7px] pb-2'>
           {links.map((item, index) => (
             <Link
               href={`/dashboard${item.link}`}

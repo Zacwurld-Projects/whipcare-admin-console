@@ -4,7 +4,7 @@ import FilterForm from '../../components/tables/components/FilterForm';
 import RatingStar from '../../assets/starRate.svg';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import BookingDetails from '../../components/modals/BookingDetails';
+// import BookingDetails from '../../components/modals/BookingDetails';
 import { Booking } from '@/app/lib/mockTypes';
 
 const Reviews = ({
@@ -18,13 +18,7 @@ const Reviews = ({
     booking: Booking;
   }[];
 }) => {
-  const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState<{
-    display: boolean;
-    booking: Booking | null;
-  }>({
-    display: false,
-    booking: null,
-  });
+  const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState(false);
   const renderRatingStars = (rating: number) => {
     const stars = Array.from({ length: 5 }, (_, i) => i + 1);
     return (
@@ -63,12 +57,7 @@ const Reviews = ({
                 </div>
                 <button
                   className='text-small rounded-xl bg-primary-50 px-4 py-1 font-medium text-primary-900'
-                  onClick={() =>
-                    setIsDisplayingBookingDetails({
-                      display: true,
-                      booking: item.booking,
-                    })
-                  }
+                  onClick={() => setIsDisplayingBookingDetails(!isDisplayingBookingDetails)}
                 >
                   Track booking
                 </button>
@@ -77,13 +66,13 @@ const Reviews = ({
           ))}
         </ul>
       </article>
-      {isDisplayingBookingDetails.display && (
+      {/* {isDisplayingBookingDetails.display && (
         <BookingDetails
           type={'booking'}
           booking={isDisplayingBookingDetails.booking as Booking}
           setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}
         />
-      )}
+      )} */}
     </>
   );
 };

@@ -44,7 +44,7 @@ const UserManagementPage = () => {
         <CustomerMapping />
       </div>
       <PlainTable
-        link='user-management/info'
+        page='user-management'
         heading='Users Info'
         headings={[
           'No',

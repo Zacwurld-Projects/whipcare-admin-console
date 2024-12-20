@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Profile from './Profile';
-import HistoryTable from '../../components/tables/HistoryTable';
+// import HistoryTable from '../../components/tables/HistoryTable';
 import ActivityTable from '../../components/tables/ActivityTable';
-import BasicInfo from '../../components/profile/BasicInfo';
+// import BasicInfo from '../../components/profile/BasicInfo';
 import ProfileOptions from '../../components/profile/ProfileOptions';
 
 const userProfile = {
@@ -52,14 +52,14 @@ const UserProfilePage = () => {
         <p className='text-medium font-medium text-[#27231f]'>{'>'}</p>
         <p className='heading-h5 font-medium text-[#27231f]'>Isaac Zacwurld</p>
       </div>
-      <BasicInfo />
+      {/* <BasicInfo /> */}
       <ProfileOptions
         pageOptions={pageOptions}
         selectedPageOption={selectedPageOption}
         setSelectedPageOption={setSelectedPageOption}
       />
       {selectedPageOption === 'profile' && <Profile userProfile={userProfile} />}
-      {selectedPageOption === 'bookings' && (
+      {/* {selectedPageOption === 'bookings' && (
         <HistoryTable
           type='users'
           heading='Bookings History'
@@ -88,7 +88,7 @@ const UserProfilePage = () => {
             };
           })}
         />
-      )}
+      )} */}
       {selectedPageOption === 'activities' && (
         <ActivityTable
           tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}

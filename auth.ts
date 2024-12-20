@@ -18,7 +18,7 @@ declare module 'next-auth' {
 
   interface Token {
     userId: string;
-    token: string;
+    accessToken: string;
   }
 }
 
@@ -29,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, account, user }) {
       if (account?.type === 'credentials' && user) {
         token.userId = user.id; // associate userId with token
-        // token.token = user.token;
+        token.accessToken = user.token;
       }
       return token;
     },
@@ -37,7 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // safeguard session.user mutation
       session.user = session.user || {};
       session.user.id = token.userId as string;
-      // session.user.token = token.token;
+      session.user.token = token.accessToken as string;
       return session;
     },
   },
