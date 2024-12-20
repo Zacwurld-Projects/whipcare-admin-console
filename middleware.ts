@@ -25,6 +25,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // user-agent checks: redirect mobile users to phone-only and non-mobile away
+
   if (isPhone && !pathname.startsWith(phoneRedirectPath)) {
     return NextResponse.redirect(new URL(phoneRedirectPath, request.url));
   }

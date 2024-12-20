@@ -4,20 +4,13 @@ import CarIcon from '../../assets/carIcon.svg';
 import RatingStar from '../../assets/starRate.svg';
 import StarIcon from '../../assets/starIcon.svg';
 import ChevronRight from '../../assets/chevronRight.svg';
-import { Booking, UserProfile } from '@/app/lib/mockTypes';
+import { UserProfile } from '@/app/lib/mockTypes';
 import { useEffect, useRef, useState } from 'react';
 import DisplayInfo from '../../components/profile/DisplayInfo';
 import DisplayAddress from '../../components/profile/DisplayAddress';
-import BookingDetails from '../../components/modals/BookingDetails';
 
 const Profile = ({ userProfile }: { userProfile: UserProfile }) => {
-  const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState<{
-    display: boolean;
-    booking: Booking | null;
-  }>({
-    display: false,
-    booking: null,
-  });
+  const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState(false);
 
   const renderRatingStars = (rating: number) => {
     const stars = Array.from({ length: 5 }, (_, i) => i + 1);
@@ -131,24 +124,25 @@ const Profile = ({ userProfile }: { userProfile: UserProfile }) => {
                       </div>
                       <p className='text-[18px] leading-[28px] text-[#413b35]'>{item.content}</p>
                       <button
-                        onClick={() =>
-                          setIsDisplayingBookingDetails({
-                            display: true,
-                            booking: {
-                              id: '12346WXYZ',
-                              bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
-                              phoneNo: '+1 356 786 3732',
-                              location: '290 m near Grand Play Lekki Lagos',
-                              status: 'completed',
-                              bookingStatus: 'completed',
-                              car: 'BMW M6',
-                              service: 'Mechanic Service',
-                              serviceType: 'Pick Up Service',
-                              serviceProvider: 'James Fox',
-                              brakeServices: '2',
-                              total: '2.49',
-                            },
-                          })
+                        onClick={
+                          () => setIsDisplayingBookingDetails(!isDisplayingBookingDetails)
+                          // setIsDisplayingBookingDetails({
+                          //   display: true,
+                          //   booking: {
+                          //     id: '12346WXYZ',
+                          //     bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
+                          //     phoneNo: '+1 356 786 3732',
+                          //     location: '290 m near Grand Play Lekki Lagos',
+                          //     status: 'completed',
+                          //     bookingStatus: 'completed',
+                          //     car: 'BMW M6',
+                          //     service: 'Mechanic Service',
+                          //     serviceType: 'Pick Up Service',
+                          //     serviceProvider: 'James Fox',
+                          //     brakeServices: '2',
+                          //     total: '2.49',
+                          //   },
+                          // })
                         }
                         className='flex items-center gap-2 self-end'
                       >
@@ -166,13 +160,13 @@ const Profile = ({ userProfile }: { userProfile: UserProfile }) => {
           </button>
         </div>
       </article>
-      {isDisplayingBookingDetails.display && (
+      {/* {isDisplayingBookingDetails.display && (
         <BookingDetails
           type={'booking'}
           booking={isDisplayingBookingDetails.booking as Booking}
           setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}
         />
-      )}
+      )} */}
     </>
   );
 };

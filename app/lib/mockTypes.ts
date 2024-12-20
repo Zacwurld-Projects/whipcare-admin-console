@@ -1,5 +1,3 @@
-import { StaticImageData } from 'next/image';
-
 export type UserProfile = {
   name: string;
   email: string;
@@ -23,37 +21,30 @@ export type UserProfile = {
   }>;
 };
 export type ServiceProviderProfile = {
-  name: string;
-  email: string;
-  status: string;
-  phone: string;
-  userInfo: {
-    'Sign up date': number;
-    'Last login date': number;
-    Nationality: string;
-    Language: string;
-    NIN: string;
-  };
-  userAddress: {
-    work: string;
-  };
-  servicesProvided: {
-    type: string;
-    brand: string;
-    services: Array<{
-      image: StaticImageData;
-      price: string;
-      type: string;
-      title: string;
-      distance: string;
-      time: string;
-    }>;
-  };
+  signUpDate: number;
+  status?: string;
+  lastLoginDate: number;
+  nationality: string;
+  language: string;
+  NIN?: string;
+  address: [];
+  servicesProvided: Array<{
+    _id: string;
+    serviceType: string;
+    serviceTitle: string;
+    images: Array<string>;
+    preferredCarBrand: string;
+    minPrice: number;
+    maxPrice: number;
+    distance?: string;
+    time?: string;
+  }>;
 };
 
 export type Booking = {
   id: string;
   bookingDate: number;
+
   phoneNo: string;
   location: string;
   status: 'pending' | 'on going' | 'completed' | 'cancelled';
@@ -71,4 +62,26 @@ export type Booking = {
   serviceProvider: string;
   brakeServices: string;
   total: string;
+};
+
+export type Orders = {
+  _id: string;
+  createdAt: string;
+  carBrand: string;
+  carModel: string;
+  serviceType: string;
+  status: string;
+  location?: string;
+};
+
+export type OrderDetails = {
+  _id: string;
+  createdAt: string;
+  carBrand: string;
+  carModel: string;
+  serviceType: string;
+  serviceTitle: string;
+  status: string;
+  firstName: string[];
+  lastName: string[];
 };

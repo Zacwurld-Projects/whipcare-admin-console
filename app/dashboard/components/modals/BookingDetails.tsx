@@ -1,34 +1,73 @@
 'use client';
-import { Booking } from '@/app/lib/mockTypes';
+import { OrderDetails } from '@/app/lib/mockTypes';
 import DarkOverlay from '../DarkOverlay';
 import CheckMarkIcon from '../../assets/progressCheckmark.svg';
 import LeftArrowIcon from '../../assets/leftArrow.svg';
 import dayjs from 'dayjs';
 import { Dispatch, useRef } from 'react';
+import SpinLoader from '../SpinLoader';
+import { convertBookingAndOrderStatus, reflectStatusStyle } from '@/app/lib/accessoryFunctions';
+
+const ModalContainer = ({
+  children,
+  setIsDisplayingBookingDetails,
+}: {
+  children: React.ReactNode;
+  setIsDisplayingBookingDetails: Dispatch<boolean>;
+}) => {
+  const DetailsAsideRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <DarkOverlay
+      exitFunction={(e) => {
+        if (!DetailsAsideRef.current?.contains(e.target as Node)) {
+          setIsDisplayingBookingDetails(false);
+        }
+      }}
+    >
+      <aside
+        ref={DetailsAsideRef}
+        className='ml-auto min-h-full w-[calc(50%-132px)] min-w-[500px] bg-white p-6 opacity-100 max-[1100px]:w-[50%]'
+      >
+        <button
+          className='center-grid sticky top-6 mb-4 size-[36px] rounded-full border border-[#d1d5db]'
+          onClick={() => setIsDisplayingBookingDetails(false)}
+        >
+          <LeftArrowIcon />
+        </button>
+        {children}
+      </aside>
+    </DarkOverlay>
+  );
+};
 
 const BookingDetails = ({
   type,
   booking,
+  isLoading,
   setIsDisplayingBookingDetails,
 }: {
   type: string;
-  booking: Booking;
-  setIsDisplayingBookingDetails: Dispatch<{
-    display: boolean;
-    booking: Booking | null;
-  }>;
+  isLoading: boolean;
+  booking: OrderDetails;
+  setIsDisplayingBookingDetails: Dispatch<boolean>;
 }) => {
-  const info = [
-    { title: 'booking Date', value: dayjs(booking.bookingDate).format('MM/DD/YYYY / hh:mm A') },
-    { title: 'car', value: booking.car },
-    { title: 'service', value: booking.service },
-    { title: 'service type', value: booking.serviceType },
-    { title: 'service provider', value: booking.serviceProvider },
-  ];
+  if (isLoading || !booking) {
+    return (
+      <ModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
+        <div className='center-grid h-[80vh] w-full border-green-700'>
+          <SpinLoader size={64} color='#27231F' thickness={2} />
+        </div>
+      </ModalContainer>
+    );
+  }
 
-  const pricing = [
-    { title: 'brake services', value: booking.brakeServices },
-    { title: 'total', value: booking.total },
+  const info = [
+    { title: 'booking Date', value: dayjs(booking?.createdAt).format('MM/DD/YYYY / hh:mm A') },
+    { title: 'car', value: `${booking?.carBrand} ${booking?.carModel}` },
+    { title: 'service', value: booking?.serviceTitle },
+    { title: 'service type', value: booking?.serviceType },
+    { title: 'service provider', value: `${booking?.firstName} ${booking?.lastName}` },
   ];
 
   const trackBooking = (checkpoint: string) => {
@@ -40,7 +79,7 @@ const BookingDetails = ({
       'delivered',
       'completed',
     ];
-    const currentCheckpoint = bookingStatus.findIndex((item) => item === booking.bookingStatus);
+    const currentCheckpoint = bookingStatus.findIndex((item) => item === booking?.status);
     if (currentCheckpoint >= 0) {
       return bookingStatus.findIndex((item) => item === checkpoint) <= currentCheckpoint
         ? true
@@ -51,85 +90,47 @@ const BookingDetails = ({
   const bookingCheckpoints = [
     {
       title: 'Order Accepted',
-      date: dayjs(booking.bookingDate).format('DD-MMM-YYYY / hh:mm A'),
+      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
       checked: trackBooking('accepted'),
     },
     {
       title: 'Car Received at Mechanic Shop',
-      date: dayjs(booking.bookingDate).format('DD-MMM-YYYY / hh:mm A'),
+      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
       checked: trackBooking('received'),
     },
     {
       title: 'Order Service In Progress',
-      date: dayjs(booking.bookingDate).format('DD-MMM-YYYY / hh:mm A'),
+      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
       checked: trackBooking('in progress'),
     },
     {
       title: 'Ready For Pickup/Delivery',
-      date: dayjs(booking.bookingDate).format('DD-MMM-YYYY / hh:mm A'),
+      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
       checked: trackBooking('ready for delivery'),
     },
     {
       title: 'Delivered',
-      date: dayjs(booking.bookingDate).format('DD-MMM-YYYY / hh:mm A'),
+      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
       checked: trackBooking('delivered'),
     },
     {
       title: 'Payment',
-      date: dayjs(booking.bookingDate).format('DD-MMM-YYYY / hh:mm A'),
+      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
       checked: trackBooking('completed'),
     },
   ];
 
-  const reflectStatusStyle = () => {
-    switch (true) {
-      case booking.status === 'cancelled':
-        return `bg-[#fbeae9] text-[#dd524d]`;
-      case booking.status === 'pending':
-        return `bg-primary-50 text-[#ff915b]`;
-      case booking.status === 'completed' || booking.status === 'on going':
-        return `bg-[#e7f6ec] text-[#40b869]`;
-      default:
-        return '';
-    }
-  };
-
-  const DetailsAsideRef = useRef<HTMLDivElement>(null);
-
   return (
-    <DarkOverlay
-      exitFunction={(e) => {
-        if (!DetailsAsideRef.current?.contains(e.target as Node)) {
-          setIsDisplayingBookingDetails({
-            display: false,
-            booking: null,
-          });
-        }
-      }}
-    >
-      <aside
-        ref={DetailsAsideRef}
-        className='ml-auto min-h-full w-[calc(50%-132px)] bg-white p-6 opacity-100'
-      >
-        <button
-          className='center-grid sticky top-6 mb-4 size-[36px] rounded-full border border-[#d1d5db]'
-          onClick={() =>
-            setIsDisplayingBookingDetails({
-              display: false,
-              booking: null,
-            })
-          }
-        >
-          <LeftArrowIcon />
-        </button>
+    <ModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
+      <>
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium'>
           <p>{type === 'orders' ? 'Order' : 'Booking'} history list</p>
           <p>{'>'}</p>
-          <h5 className='heading-h5'>#{booking.id}</h5>
+          <h5 className='heading-h5 max-w-[189px] truncate'>#{booking._id}</h5>
           <p
-            className={`text-small rounded-[6px] px-[6px] py-[2px] capitalize ${reflectStatusStyle()}`}
+            className={`text-small rounded-[6px] px-[6px] py-[2px] capitalize ${reflectStatusStyle(convertBookingAndOrderStatus(booking.status))}`}
           >
-            {booking.status}
+            {convertBookingAndOrderStatus(booking.status)}
           </p>
         </div>
         <div className='flex-column mx-3 gap-6 p-5'>
@@ -141,12 +142,12 @@ const BookingDetails = ({
                 <p className='font-medium capitalize text-gray-900'>{item.value}</p>
               </li>
             ))}
-            {pricing.map((item) => (
-              <li className='flex items-center justify-between text-[14px]' key={item.title}>
-                <p className='capitalize text-gray-500'>{item.title}</p>
-                <p className='font-medium capitalize text-gray-900'>${item.value}</p>
-              </li>
-            ))}
+            {/* {pricing.map((item) => (
+                    <li className='flex items-center justify-between text-[14px]' key={item.title}>
+                      <p className='capitalize text-gray-500'>{item.title}</p>
+                      <p className='font-medium capitalize text-gray-900'>${item.value}</p>
+                    </li>
+                  ))} */}
           </ul>
           <ul>
             <p className='mb-5 text-[18px] font-medium text-gray-900'>Track Booking</p>
@@ -178,8 +179,8 @@ const BookingDetails = ({
             Track Location
           </button>
         </div>
-      </aside>
-    </DarkOverlay>
+      </>
+    </ModalContainer>
   );
 };
 export default BookingDetails;

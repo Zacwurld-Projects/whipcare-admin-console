@@ -7,150 +7,141 @@ import { useState } from 'react';
 import ActivityTable from '../../components/tables/ActivityTable';
 import HistoryTable from '../../components/tables/HistoryTable';
 import Profile from './Profile';
-import mockServiceImage from '../../assets/mockServiceImage.png';
 import Payment from './Payment';
 import Reviews from './Reviews';
+import { useQuery } from '@tanstack/react-query';
+import {
+  fetchServiceProviderKpis,
+  fetchServiceProviderOrders,
+  fetchServiceProviderProfile,
+} from '@/app/api/apiClient';
+import PageLoader from '../../components/PageLoader';
+import SpinLoader from '../../components/SpinLoader';
 
-const serviceProviderData = {
-  name: 'Isaac Zacwurld',
-  email: '',
-  status: 'verified',
-  phone: '',
-  userInfo: {
-    'Sign up date': Date.now() - 30 * 24 * 60 * 60 * 1000,
-    'Last login date': Date.now() - 24 * 60 * 60 * 1000,
-    Nationality: 'nigeria',
-    NIN: '123456789',
-    Language: 'english',
-  },
-  userAddress: {
-    work: '290 m near Grand Play Lekki Lagos',
-  },
-  servicesProvided: {
-    type: 'Mechanics',
-    brand: 'All Car Brands',
-    services: Array.from({ length: 3 }, () => {
-      return {
-        image: mockServiceImage,
-        price: '12,000',
-        title: 'Brake services',
-        type: 'mechanic service',
-        distance: '10 km',
-        time: '10 mins',
-      };
-    }),
-  },
-};
-
-const ServiceProviderProfilePage = () => {
+const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
-  const pageOptions = ['profile', 'orders', 'payment', 'activities', 'reviews'];
+  const pageOptions = ['profile', 'orders'];
+
+  const { data: kpisData, isLoading: isKpisLoading } = useQuery({
+    queryKey: ['serviceProviderKpis'],
+    queryFn: () => fetchServiceProviderKpis(params.id),
+  });
+
+  const { data: profileData, isLoading: isProfileDataLoading } = useQuery({
+    queryKey: ['serviceProviderProfile'],
+    queryFn: () => fetchServiceProviderProfile(params.id),
+  });
+
+  const { data: ordersData, isLoading: isOrdersDataLoading } = useQuery({
+    queryKey: ['serviceProviderOrders'],
+    queryFn: () => fetchServiceProviderOrders(params.id),
+    enabled: selectedPageOption === 'orders',
+  });
 
   return (
     <>
       <PageHeading page='Service Provider Profile' pageFilters />
-      <div className='mt-4 flex items-center gap-[10px]'>
-        <Link
-          href={'/dashboard/service-provider/info'}
-          className='text-medium font-medium text-[#27231f]'
-        >
-          Service provider Info
-        </Link>
-        <p className='text-medium font-medium text-[#27231f]'>{'>'}</p>
-        <p className='heading-h5 font-medium text-[#27231f]'>Isaac Zacwurld</p>
-      </div>
-      <BasicInfo />
-      <ProfileOptions
-        pageOptions={pageOptions}
-        selectedPageOption={selectedPageOption}
-        setSelectedPageOption={setSelectedPageOption}
-      />
-      {selectedPageOption === 'profile' && <Profile profileInfo={serviceProviderData} />}
-      {selectedPageOption === 'orders' && (
-        <HistoryTable
-          type='orders'
-          heading='Orders History'
-          tableHeadings={[
-            'Order ID',
-            'Order Date',
-            'Car serviced',
-            'Address',
-            'Service type',
-            'Status',
-          ]}
-          tableContent={Array.from({ length: 12 }, (_, i) => {
-            return {
-              id: '12346WXYZ',
-              bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
-              phoneNo: '+1 356 786 3732',
-              location: '290 m near Grand Play Lekki Lagos',
-              status: i > 2 ? 'completed' : 'pending',
-              bookingStatus: i > 2 ? 'completed' : '',
-              car: 'BMW M6',
-              service: 'Mechanic Service',
-              serviceType: 'Pick Up Service',
-              serviceProvider: 'James Fox',
-              brakeServices: '2',
-              total: '2.49',
-            };
-          })}
-        />
-      )}
-      {selectedPageOption === 'payment' && (
-        <Payment
-          paymentInfo={{
-            accountName: 'Isaac Whipcare',
-            accountNo: '100678934',
-            bank: 'Opay',
-            recentTransactions: Array.from({ length: 6 }, () => {
-              return {
-                title: 'Order #000085752257',
-                type: 'Order Payment',
-                amount: 326.8,
-                date: Date.now() - 30 * 24 * 60 * 60 * 1000,
-              };
-            }),
-          }}
-        />
-      )}
-      {selectedPageOption === 'activities' && (
-        <ActivityTable
-          tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
-          tableContent={Array.from({ length: 63 }, () => {
-            return {
-              type: 'Starting a Service',
-              description: 'Started a mechanic for car repair',
-              timeStamp: Date.now() - 12 * 24 * 60 * 60 * 1000,
-            };
-          })}
-        />
-      )}
-      {selectedPageOption === 'reviews' && (
-        <Reviews
-          reviewData={Array.from({ length: 8 }, () => {
-            return {
-              rating: 4,
-              booking: {
-                id: '12346WXYZ',
-                bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
-                phoneNo: '+1 356 786 3732',
-                location: '290 m near Grand Play Lekki Lagos',
-                status: 'completed',
-                bookingStatus: 'completed',
-                car: 'BMW M6',
-                service: 'Mechanic Service',
-                serviceType: 'Pick Up Service',
-                serviceProvider: 'James Fox',
-                brakeServices: '2',
-                total: '2.49',
-              },
-              date: Date.now() - 2 * 24 * 60 * 60 * 1000,
-              content:
-                "The service provider was professional and completed the work quickly. However, they didn't explain the additional charges beforehand",
-              user: 'Mary Smith',
-            };
-          })}
-        />
+      {isKpisLoading || isProfileDataLoading ? (
+        <PageLoader />
+      ) : (
+        <>
+          <div className='mt-4 flex items-center gap-[10px]'>
+            <Link
+              href={'/dashboard/service-provider/info'}
+              className='text-medium font-medium text-[#27231f]'
+            >
+              Service provider Info
+            </Link>
+            <p className='text-medium font-medium text-[#27231f]'>{'>'}</p>
+            <p className='heading-h5 font-medium text-[#27231f]'>
+              {kpisData.userContact.firstName} {kpisData.userContact.lastName}
+            </p>
+          </div>
+          <BasicInfo data={kpisData} />
+          <ProfileOptions
+            pageOptions={pageOptions}
+            selectedPageOption={selectedPageOption}
+            setSelectedPageOption={setSelectedPageOption}
+          />
+          {selectedPageOption === 'profile' && <Profile profileInfo={profileData} />}
+          {selectedPageOption === 'orders' &&
+            (isOrdersDataLoading ? (
+              <div className='center-grid h-[300px] w-full'>
+                <SpinLoader size={80} color='#8f2802' thickness={2} />
+              </div>
+            ) : (
+              <HistoryTable
+                type='orders'
+                userId={params.id}
+                heading='Orders History'
+                tableHeadings={[
+                  'Order ID',
+                  'Order Date',
+                  'Car serviced',
+                  'Address',
+                  'Service type',
+                  'Status',
+                ]}
+                tableContent={ordersData.data}
+              />
+            ))}
+          {selectedPageOption === 'payment' && (
+            <Payment
+              paymentInfo={{
+                accountName: 'Isaac Whipcare',
+                accountNo: '100678934',
+                bank: 'Opay',
+                recentTransactions: Array.from({ length: 6 }, () => {
+                  return {
+                    title: 'Order #000085752257',
+                    type: 'Order Payment',
+                    amount: 326.8,
+                    date: Date.now() - 30 * 24 * 60 * 60 * 1000,
+                  };
+                }),
+              }}
+            />
+          )}
+          {selectedPageOption === 'activities' && (
+            <ActivityTable
+              tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
+              tableContent={Array.from({ length: 63 }, () => {
+                return {
+                  type: 'Starting a Service',
+                  description: 'Started a mechanic for car repair',
+                  timeStamp: Date.now() - 12 * 24 * 60 * 60 * 1000,
+                };
+              })}
+            />
+          )}
+          {selectedPageOption === 'reviews' && (
+            <Reviews
+              reviewData={Array.from({ length: 8 }, () => {
+                return {
+                  rating: 4,
+                  booking: {
+                    id: '12346WXYZ',
+                    bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
+                    phoneNo: '+1 356 786 3732',
+                    location: '290 m near Grand Play Lekki Lagos',
+                    status: 'completed',
+                    bookingStatus: 'completed',
+                    car: 'BMW M6',
+                    service: 'Mechanic Service',
+                    serviceType: 'Pick Up Service',
+                    serviceProvider: 'James Fox',
+                    brakeServices: '2',
+                    total: '2.49',
+                  },
+                  date: Date.now() - 2 * 24 * 60 * 60 * 1000,
+                  content:
+                    "The service provider was professional and completed the work quickly. However, they didn't explain the additional charges beforehand",
+                  user: 'Mary Smith',
+                };
+              })}
+            />
+          )}
+        </>
       )}
     </>
   );

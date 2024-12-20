@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import FormContainer from './components/FormContainer';
 import InputArea from './components/InputArea';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import FormButton from './components/FormButton';
 import { doCredentialLogin } from '../actions/authActions';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 
 const SignInPage = () => {
   const router = useRouter();
@@ -20,21 +21,30 @@ const SignInPage = () => {
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData(e.currentTarget);
-      const response = await doCredentialLogin(formData);
-
-      if (!!response.error) {
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const formData = new FormData();
+      formData.append('email', userInfo.email);
+      formData.append('password', userInfo.password);
+      return doCredentialLogin(formData);
+    },
+    onSuccess: (response) => {
+      if (response.error) {
         toast.error(response.error.message);
       } else {
+        toast.success('Login successful!');
         router.push('/dashboard');
       }
-    } catch (err) {
+    },
+    onError: (err) => {
       console.error(err);
       toast.error('Invalid user details. Try again.');
-    }
+    },
+  });
+
+  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    loginMutation.mutate();
   };
 
   return (
@@ -67,7 +77,8 @@ const SignInPage = () => {
           <FormButton
             type='submit'
             text='Continue'
-            disabled={!userInfo.email || !userInfo.password}
+            isLoading={loginMutation.isPending}
+            disabled={!userInfo.email || !userInfo.password || loginMutation.isPending}
           />
         </form>
       </FormContainer>

@@ -8,7 +8,9 @@ const FormButton = ({
   text,
   linkTo,
   className,
+  isLoading,
 }: {
+  isLoading?: boolean;
   disabled?: boolean;
   type: 'submit' | 'reset' | 'button' | 'link' | undefined;
   text: string;
@@ -36,7 +38,11 @@ const FormButton = ({
       }`}
       type={type !== 'link' ? type : 'button'}
     >
-      <p>{text}</p>
+      {isLoading ? (
+        <div className='size-8 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
+      ) : (
+        <p>{text}</p>
+      )}
     </button>
   );
 };
