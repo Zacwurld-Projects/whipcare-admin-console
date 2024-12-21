@@ -5,7 +5,7 @@ import FlagIcon from '../assets/FlagIcon.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
-import { FormEvent, useRef } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import useMenu from '@/app/hooks/useMenu';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
@@ -15,6 +15,7 @@ import { doLogout } from '@/app/actions/authActions';
 import { useGlobalContext } from '@/app/context/AppContext';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { User } from 'next-auth';
 
 const mockNotifications = [
   {
@@ -50,6 +51,15 @@ const Navbar = () => {
       window.location.href = '/auth/login';
     },
   });
+
+  const [userDetails, setUserDetails] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (session) {
+      setUserDetails(session.user);
+    }
+  }, [session, setUserDetails]);
+
   const { setIsSidebarOpen, isSidebarOpen } = useGlobalContext();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const userMenuBtnRef = useRef<HTMLButtonElement>(null);
@@ -70,7 +80,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm ${isSidebarOpen ? 'brightness-50' : ''}`}
+      className={`sticky top-0 z-50 flex h-[83px] w-full items-center justify-between bg-white px-[15px] shadow-sm`}
     >
       <div className='flex items-center gap-4'>
         <button
@@ -174,10 +184,10 @@ const Navbar = () => {
               className='fixed right-[20px] top-[74px] rounded bg-white py-[10px] shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)]'
             >
               <div className='mb-2 flex items-center gap-1 px-2'>
-                {session?.user.image ? (
+                {userDetails?.image ? (
                   <Image
-                    src={session.user.image}
-                    alt={session.user.name + 'image'}
+                    src={userDetails.image}
+                    alt={userDetails.name + 'image'}
                     height={40}
                     width={40}
                     className='rounded-full'
@@ -185,13 +195,13 @@ const Navbar = () => {
                 ) : (
                   <div className='center-grid relative size-[40px] rounded-full bg-primary-50'>
                     <p className='text-small font-semibold text-[#f56630]'>
-                      {session?.user.name?.slice(0, 2).toUpperCase()}
+                      {userDetails?.name?.slice(0, 2).toUpperCase()}
                     </p>
                   </div>
                 )}
                 <div>
-                  <p className='text-small font-medium text-gray-800'>{session?.user?.name}</p>
-                  <p className='text-xsmall text-gray-500'>{session?.user?.email}</p>
+                  <p className='text-small font-medium text-gray-800'>{userDetails?.name}</p>
+                  <p className='text-xsmall text-gray-500'>{userDetails?.email}</p>
                 </div>
               </div>
               <Link
