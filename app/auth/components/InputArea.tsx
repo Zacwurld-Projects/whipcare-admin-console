@@ -6,11 +6,13 @@ import EyeSlash from '../assets/eyeSlash.svg';
 
 const InputArea = ({
   value,
+  defaultValue,
   type,
   name,
   title,
   handleChange,
 }: {
+  defaultValue?: string;
   value: string;
   type: 'email' | 'password' | 'text';
   name: string;
@@ -30,6 +32,7 @@ const InputArea = ({
           name={name}
           required
           id={name}
+          defaultValue={defaultValue}
           value={value}
           onChange={handleChange}
           className={`text-small peer flex-1 text-gray-700 focus:mt-3 focus:outline-none ${

@@ -101,12 +101,12 @@ const Sidebar = () => {
   return (
     <aside
       ref={sidebarRef}
-      className={`sticky right-0 top-0 z-[200] h-screen w-[268px] bg-white transition-transform scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-300 scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-w-1 max-[1100px]:fixed max-[1100px]:left-0 ${isSidebarOpen ? 'max-[1100px]:translate-x-[0]' : 'max-[1100px]:-translate-x-[120%]'}`}
+      className={`flex-column sticky inset-0 z-[200] h-screen w-[268px] gap-4 bg-white transition-transform max-[1100px]:fixed max-[1100px]:left-0 ${isSidebarOpen ? 'max-[1100px]:translate-x-[0]' : 'max-[1100px]:-translate-x-[120%]'}`}
     >
       <div className='center-grid h-[131px] w-full bg-primary-900'>
         <LogoIcon />
       </div>
-      <div className='mt-4 h-[calc(100vh-140px)] overflow-y-auto scrollbar'>
+      <div className='h-[calc(100vh-140px)] overflow-y-auto scrollbar'>
         <div className='flex-column ml-auto w-[248px] gap-[7px] pb-2'>
           {links.map((item, index) => (
             <Link

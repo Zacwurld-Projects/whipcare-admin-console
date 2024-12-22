@@ -33,7 +33,7 @@ const Overview = () => {
     <>
       <PageHeading page='overview' pageFilters />
       <NumbersOverview stats={overviewStats} className='mt-8' />
-      <div className='mt-6 grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2'>
+      <div className='mt-6 grid grid-cols-1 gap-6 min-[750px]:grid-cols-2'>
         <BarChart
           yLabel='Amount(Thousands)'
           xLabels={['Mech/Tech', 'Wash', 'Hauling', 'Detailing']}

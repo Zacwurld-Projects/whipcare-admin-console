@@ -35,11 +35,13 @@ const UserManagementPage = () => {
     <>
       <PageHeading page='User management' pageFilters />
       <NumbersOverview stats={userManagementStats} className='mt-8' />
-      <div className='mb-8 mt-6 grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2'>
-        <div className='grid grid-cols-2 [column-gap:16px] [row-gap:32px]'>
+      <div className='mb-8 mt-6 grid grid-cols-1 gap-6 min-[850px]:grid-cols-2'>
+        <div className='grid grid-flow-row grid-cols-2 gap-x-4 gap-y-8'>
           <LineChart filter className='col-span-2' />
-          <UserGrowthChart />
-          <ChurnRateChart />
+          <div className='col-span-2 flex w-full flex-wrap items-stretch justify-between gap-x-4 border *:flex-1 min-[1300px]:*:max-w-[271px]'>
+            <UserGrowthChart />
+            <ChurnRateChart />
+          </div>
         </div>
         <CustomerMapping />
       </div>

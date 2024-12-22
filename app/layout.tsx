@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${inter.variable} max-h-screen overflow-scroll font-inter antialiased scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-400 scrollbar-w-[6px] scrollbar-h-[6px]`}
+        className={`${inter.variable} max-h-screen font-inter antialiased scrollbar scrollbar-track-gray-100 scrollbar-thumb-gray-400 scrollbar-w-[6px] scrollbar-h-[6px]`}
       >
         <AuthProvider>
           <TanstackProvider>
