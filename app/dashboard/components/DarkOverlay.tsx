@@ -24,9 +24,11 @@ const DarkOverlay = ({
       onClick={(e) => {
         if (exitFunction) exitFunction(e);
       }}
-      className={`fixed inset-0 z-[1000] ${className}`}
+      className={`fixed inset-0 z-[1000]`}
     >
-      <div className='absolute inset-0 overflow-auto bg-[rgba(105,101,101,0.60)] backdrop-blur-[2px] scrollbar'>
+      <div
+        className={`absolute inset-0 overflow-auto bg-[rgba(105,101,101,0.60)] backdrop-blur-[2px] scrollbar ${className}`}
+      >
         {children}
       </div>
     </section>,

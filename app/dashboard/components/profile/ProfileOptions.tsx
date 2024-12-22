@@ -15,7 +15,7 @@ const ProfileOptions = ({
         <button
           key={item}
           onClick={() => setSelectedPageOption(item)}
-          className={`rounded-[56px] px-4 py-2 capitalize ${selectedPageOption === item ? 'bg-[#983504] text-white' : ''}`}
+          className={`min-w-[118px] rounded-[56px] px-4 py-2 capitalize ${selectedPageOption === item ? 'bg-[#983504] text-white' : ''}`}
         >
           {item}
         </button>

@@ -49,7 +49,7 @@ const PlainTable = ({
           </Link>
         )}
       </div>
-      <div className='w-full overflow-x-auto'>
+      <div className='w-full overflow-x-auto scrollbar'>
         <table className='w-full min-w-[1100px]'>
           <thead>
             <tr>

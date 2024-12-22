@@ -70,7 +70,7 @@ const InfoTable = ({
         <FilterForm />
         <ExportTable />
       </div>
-      <div className='w-full'>
+      <div className='w-full scrollbar'>
         <table className='w-full'>
           <thead>
             <tr>

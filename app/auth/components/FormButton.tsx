@@ -9,9 +9,11 @@ const FormButton = ({
   linkTo,
   className,
   isLoading,
+  onClick,
 }: {
   isLoading?: boolean;
   disabled?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   type: 'submit' | 'reset' | 'button' | 'link' | undefined;
   text: string;
   linkTo?: Url;
@@ -33,6 +35,11 @@ const FormButton = ({
   return (
     <button
       disabled={disabled}
+      onClick={(e) => {
+        if (onClick) {
+          onClick(e);
+        }
+      }}
       className={`center-grid h-[51px] w-full rounded-[2em] bg-primary-900 text-white transition-opacity disabled:opacity-50 ${
         className ? className : ''
       }`}
