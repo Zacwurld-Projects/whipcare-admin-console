@@ -2,7 +2,7 @@
 
 import OpenLinkIcon from '../../assets/openLinkIcon.svg';
 import ChevronDownIcon from '../../assets/chevronDown.svg';
-import { useEffect, useState } from 'react';
+import { ComponentType, useEffect, useState } from 'react';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
 import Link from 'next/link';
 import TablePagination from './components/TablePagination';
@@ -14,6 +14,7 @@ const InfoTable = ({
   heading,
   content,
   headings,
+  ContentStructure,
 }: {
   page: string;
   heading: string;
@@ -26,8 +27,10 @@ const InfoTable = ({
     signUp: number;
     lastLogin: number;
     status?: string;
+    ratings?: number;
   }[];
   headings: Array<string>;
+  ContentStructure?: ComponentType<{ item: (typeof content)[0] }>;
 }) => {
   const contentPerPage = 15;
   const totalPages = Math.ceil(content.length / contentPerPage);
@@ -85,39 +88,43 @@ const InfoTable = ({
             </tr>
           </thead>
           <tbody>
-            {displayedContent.map((item, index) => (
-              <tr
-                key={index}
-                className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
-              >
-                <td>{(currentPage - 1) * contentPerPage + index + 1}</td>
-                <td>
-                  <Link className='hover:underline' href={`/dashboard/${page}/${item.id}`}>
-                    {item.name}
-                  </Link>
-                </td>
-                <td>{item.email}</td>
-                <td>{item.phone}</td>
-                {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}
-                <td className='capitalize'>{timeAgo(item.signUp)}</td>
-                <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
-                {item.status ? (
+            {displayedContent.map((item, index) =>
+              ContentStructure ? (
+                <ContentStructure key={index} item={item} />
+              ) : (
+                <tr
+                  key={index}
+                  className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
+                >
+                  <td>{(currentPage - 1) * contentPerPage + index + 1}</td>
                   <td>
-                    <p
-                      className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
-                    >
-                      {item.status}
-                    </p>
-                  </td>
-                ) : (
-                  <td>
-                    <Link href={`/dashboard/user-management/${item.id}`}>
-                      <OpenLinkIcon />
+                    <Link className='hover:underline' href={`/dashboard/${page}/${item.id}`}>
+                      {item.name}
                     </Link>
                   </td>
-                )}
-              </tr>
-            ))}
+                  <td>{item.email}</td>
+                  <td>{item.phone}</td>
+                  {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}
+                  <td className='capitalize'>{timeAgo(item.signUp)}</td>
+                  <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
+                  {item.status ? (
+                    <td>
+                      <p
+                        className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
+                      >
+                        {item.status}
+                      </p>
+                    </td>
+                  ) : (
+                    <td>
+                      <Link href={`/dashboard/user-management/${item.id}`}>
+                        <OpenLinkIcon />
+                      </Link>
+                    </td>
+                  )}
+                </tr>
+              ),
+            )}
           </tbody>
         </table>
       </div>
