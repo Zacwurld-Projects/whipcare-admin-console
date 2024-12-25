@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, Suspense, useEffect, useState } from 'react';
 import FormContainer from '../components/FormContainer';
 import InputArea from '../components/InputArea';
 import FormButton from '../components/FormButton';
@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import SpinLoader from '@/app/dashboard/components/SpinLoader';
 import { toast } from 'sonner';
 
-const CreateUserPage = () => {
+const CreateUserPageContent = () => {
   const [isverified, setIsVerified] = useState(false);
   const steps = ['input-userInfo', 'input-otp', 'success'];
   const [currentStep, setCurrentStep] = useState(steps[0]);
@@ -178,4 +178,17 @@ const CreateUserPage = () => {
     </section>
   );
 };
+
+const CreateUserPage = () => (
+  <Suspense
+    fallback={
+      <section className='center-grid'>
+        <SpinLoader size={100} thickness={2} color='#711e00' />
+      </section>
+    }
+  >
+    <CreateUserPageContent />
+  </Suspense>
+);
+
 export default CreateUserPage;
