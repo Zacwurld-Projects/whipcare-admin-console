@@ -5,7 +5,7 @@ import FlagIcon from '../assets/FlagIcon.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import useMenu from '@/app/hooks/useMenu';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
@@ -51,23 +51,21 @@ const mockNotifications: {
 
 const Navbar = () => {
   const { data: session, status } = useSession();
+  const memoizedSession = useMemo(() => session, [session]);
 
   const [userDetails, setUserDetails] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchSession = async () => {
-      if (status === 'authenticated') {
-        setUserDetails(session?.user || null);
-      } else if (status === 'unauthenticated') {
-        const freshSession = await getSession(); // Force-fetch session on client
+    if (status === 'authenticated' && memoizedSession?.user) {
+      setUserDetails(memoizedSession.user);
+    } else if (status === 'unauthenticated' && !userDetails) {
+      getSession().then((freshSession) => {
         if (freshSession?.user) {
           setUserDetails(freshSession.user);
         }
-      }
-    };
-
-    fetchSession();
-  }, [session, status]);
+      });
+    }
+  }, [status, memoizedSession, userDetails]);
 
   const { setIsSidebarOpen, isSidebarOpen } = useGlobalContext();
   const userMenuRef = useRef<HTMLDivElement>(null);
