@@ -1,31 +1,29 @@
 import axios, { isAxiosError } from 'axios';
 import ApiRoutes from './apiRoutes';
-// import { getSession } from 'next-auth/react';
-
-// export const API = axios.create({
-//   baseURL: ApiRoutes.BASE_URL,
-// });
-
-// API.interceptors.request.use(
-//   async (config) => {
-//     const session = await getSession(); // Fetch the current session
-//     if (session?.user?.token) {
-//       config.headers.Authorization = `Bearer ${session.user.token}`;
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   },
-// );
+import { getSession } from 'next-auth/react';
 
 export const API = axios.create({
   baseURL: ApiRoutes.BASE_URL,
-  headers: {
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MTA1NjhlMjJlMTMxYzNhMDU3YWY4NCIsImVtYWlsIjoiZW5lcmUwMTE1QGdtYWlsLmNvbSIsIm5hbWUiOiJTbWFsbCBSZW5lIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM0NDY1MjE2LCJleHAiOjE3MzUzMjkyMTZ9.XUUibyqjPFu9GqO6T6P2kPK65EjI4Hw9UF7F5lwmAQY',
-  },
 });
+
+API.interceptors.request.use(
+  async (config) => {
+    // Skip setting the Authorization header for login endpoint
+    if (config.url?.startsWith(`${ApiRoutes.Auth}`)) {
+      return config;
+    }
+    if (config.url?.startsWith(`${ApiRoutes.Settings}/members/invite/verify-otp/`)) {
+      return config;
+    }
+
+    const session = await getSession(); // Fetch the current session
+    if (session?.user?.token) {
+      config.headers.Authorization = `Bearer ${session.user.token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 const catchError = (error: unknown) => {
   if (isAxiosError(error)) {
@@ -35,9 +33,14 @@ const catchError = (error: unknown) => {
   }
 };
 
+//#region  AUTH
 export const userService = {
   authenticate: async (email: string, password: string) => {
-    const response = await API.post(ApiRoutes.Login, { email, password });
+    const response = await API.post(
+      `${ApiRoutes.Auth}/login`,
+      { email, password },
+      { headers: { Authorization: '' } },
+    );
 
     const { data, success, token } = response.data;
     if (success)
@@ -52,6 +55,65 @@ export const userService = {
     return null;
   },
 };
+
+export const verifyCreateToken = async (token: string) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Settings}/members/verify/${token}`, {
+      headers: { Authorization: '' },
+    });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const sendForgotPasswordOTP = async (email: string) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Auth}/forgot-password`, { email });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const verifyForgotPasswordOtp = async (otp: string, email: string) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Auth}/verify-otp`, { email, otp });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const resetUserPassword = async (
+  token: string,
+  {
+    password,
+    confirmPassword,
+  }: {
+    password: string;
+    confirmPassword: string;
+  },
+) => {
+  try {
+    const response = await API.post(
+      `${ApiRoutes.Auth}/reset-password`,
+      {
+        password,
+        confirmPassword,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+//  #endregion
 
 // #region SERVICE PROVIDERS
 
@@ -142,6 +204,90 @@ export const inviteMember = async (memberData: { role: string; email: string }) 
 export const fetchAdminMembers = async () => {
   try {
     const response = await API.get(`${ApiRoutes.Settings}/members`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const setMemberCredentials = async (
+  userCredentials: { name: string; newPassword: string; confirmNewPassword: string },
+  token: string,
+) => {
+  try {
+    const response = await API.post(
+      `${ApiRoutes.Settings}/members/invite/set-credential`,
+      {
+        ...userCredentials,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const verifyMemberOtp = async (otp: string, token: string) => {
+  try {
+    const response = await API.post(
+      `${ApiRoutes.Settings}/members/invite/verify-otp/${otp}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+//#endregion
+
+//#region FEEDBACKS
+export const fetchFeedbackStats = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/stats`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchFeedbackSuggestions = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/suggestions`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const fetchFeedbackRatings = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/ratings`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const fetchFeedbackComplaints = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/complaints`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const fetchFeedbackReviews = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/reviews`);
     return response.data;
   } catch (error) {
     catchError(error);

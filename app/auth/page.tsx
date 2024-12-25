@@ -22,6 +22,7 @@ const SignInPage = () => {
   };
 
   const loginMutation = useMutation({
+    mutationKey: ['loginUser'],
     mutationFn: async () => {
       const formData = new FormData();
       formData.append('email', userInfo.email);

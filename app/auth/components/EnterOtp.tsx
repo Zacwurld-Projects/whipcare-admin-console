@@ -1,11 +1,22 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import FormButton from './FormButton';
 import FormContainer from './FormContainer';
-import { toast } from 'sonner';
 
-const EnterOtp = ({ action, sentOtp }: { action: () => void; sentOtp: string }) => {
-  const [otp, setOtp] = useState(Array(6).fill(''));
+const EnterOtp = ({
+  action,
+  otp,
+  setOtp,
+  isLoading,
+  resendAction,
+}: {
+  action: () => void;
+  isLoading: boolean;
+  otp: Array<string>;
+  resendAction: () => void;
+  setOtp: Dispatch<SetStateAction<string[]>>;
+}) => {
+  // const [otp, setOtp] = useState(Array(6).fill(''));
   const [countdown, setCountdown] = useState({
     mins: 2,
     secs: 0,
@@ -107,11 +118,7 @@ const EnterOtp = ({ action, sentOtp }: { action: () => void; sentOtp: string }) 
         className='flex-column w-full gap-8'
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(otp.join(''));
-          if (otp.join('') !== sentOtp) {
-            toast.error('Inavlid OTP. Try again.');
-            setOtp(Array(6).fill(''));
-          } else action();
+          action();
         }}
       >
         <div className='flex-column w-full gap-2'>
@@ -147,7 +154,8 @@ const EnterOtp = ({ action, sentOtp }: { action: () => void; sentOtp: string }) 
               <p className='text-gray-900'>Didn’t get a code?</p>
               <button
                 disabled={countdown.mins * 60 + countdown.secs > 0}
-                onClick={() => {
+                onClick={async () => {
+                  resendAction();
                   setOtp(Array(6).fill(''));
                   setCountdown({ mins: 2, secs: 0 });
                 }}
@@ -163,8 +171,9 @@ const EnterOtp = ({ action, sentOtp }: { action: () => void; sentOtp: string }) 
         </div>
         <FormButton
           type='submit'
+          isLoading={isLoading}
           text='Verify code'
-          disabled={typeof otp.find((item) => item === '') !== 'undefined'}
+          disabled={typeof otp.find((item) => item === '') !== 'undefined' || isLoading}
         />
       </form>
     </FormContainer>

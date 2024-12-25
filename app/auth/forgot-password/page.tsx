@@ -6,11 +6,18 @@ import FormButton from '../components/FormButton';
 import EnterOtp from '../components/EnterOtp';
 import SuccessCreate from '../components/SuccessCreate';
 import { toast } from 'sonner';
-import { defaultInfo, signUserIn } from '../mock';
+import { useMutation } from '@tanstack/react-query';
+import {
+  resetUserPassword,
+  sendForgotPasswordOTP,
+  verifyForgotPasswordOtp,
+} from '@/app/api/apiClient';
 
 const ForgotPassword = () => {
   const steps = ['input-email', 'input-otp', 'create-password', 'success'];
   const [currentStep, setCurrentStep] = useState(steps[0]);
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
+  const [otpToken, setOtpToken] = useState('');
 
   const [userInfo, setUserInfo] = useState({
     email: '',
@@ -22,6 +29,49 @@ const ForgotPassword = () => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
+
+  const useSendOtp = useMutation({
+    mutationKey: ['sendOtp'],
+    mutationFn: async () => sendForgotPasswordOTP(userInfo.email),
+    onSuccess: () => {
+      toast.success('OTP sent to registered email');
+      setCurrentStep(steps[1]);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const useVerifyOTP = useMutation({
+    mutationKey: ['verifySentOtp'],
+    mutationFn: async () => verifyForgotPasswordOtp(otp.join(''), userInfo.email),
+    onSuccess: (response) => {
+      setCurrentStep(steps[2]);
+      if (response.status) {
+        console.log(response.token);
+        setOtpToken(response.token);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const useResetPassword = useMutation({
+    mutationKey: ['resetPassword'],
+    mutationFn: async () =>
+      resetUserPassword(otpToken, {
+        password: userInfo.newPassword,
+        confirmPassword: userInfo.confirmPassword,
+      }),
+    onSuccess: () => {
+      setCurrentStep(steps[3]);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   return (
     <section className='center-grid'>
       {currentStep === 'input-email' && (
@@ -34,8 +84,7 @@ const ForgotPassword = () => {
             className='flex-column w-full items-center gap-8'
             onSubmit={(e) => {
               e.preventDefault();
-              toast.success('OTP sent to registered email');
-              setCurrentStep(steps[1]);
+              useSendOtp.mutate();
             }}
           >
             <InputArea
@@ -45,12 +94,23 @@ const ForgotPassword = () => {
               value={userInfo.email}
               handleChange={handleInputChange}
             />
-            <FormButton text='Continue' type='submit' disabled={!userInfo.email} />
+            <FormButton
+              isLoading={useSendOtp.isPending}
+              text='Continue'
+              type='submit'
+              disabled={!userInfo.email || useSendOtp.isPending}
+            />
           </form>
         </FormContainer>
       )}
       {currentStep === 'input-otp' && (
-        <EnterOtp action={() => setCurrentStep(steps[2])} sentOtp={defaultInfo.otp} />
+        <EnterOtp
+          isLoading={useVerifyOTP.isPending}
+          otp={otp}
+          resendAction={() => useSendOtp.mutate()}
+          setOtp={setOtp}
+          action={() => useVerifyOTP.mutate()}
+        />
       )}
       {currentStep === 'create-password' && (
         <FormContainer>
@@ -59,8 +119,7 @@ const ForgotPassword = () => {
             className='flex-column w-full items-center gap-8'
             onSubmit={(e) => {
               e.preventDefault();
-              signUserIn();
-              setCurrentStep(steps[3]);
+              useResetPassword.mutate();
             }}
           >
             <div className='flex-column w-full items-center gap-[18px]'>
@@ -94,17 +153,21 @@ const ForgotPassword = () => {
             <FormButton
               type='submit'
               text='Continue'
+              isLoading={useResetPassword.isPending}
               className='-mt-[4px]'
               disabled={
                 !userInfo.newPassword ||
                 !userInfo.confirmPassword ||
+                useResetPassword.isPending ||
                 userInfo.newPassword !== userInfo.confirmPassword
               }
             />
           </form>
         </FormContainer>
       )}
-      {currentStep === 'success' && <SuccessCreate />}
+      {currentStep === 'success' && (
+        <SuccessCreate credentials={{ email: userInfo.email, newPassword: userInfo.newPassword }} />
+      )}
     </section>
   );
 };

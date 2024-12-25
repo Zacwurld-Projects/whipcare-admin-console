@@ -13,7 +13,7 @@ import HamburgerIcon from '../assets/hamburgerMenuIcon.svg';
 import EmptyNotificationsIcon from '../assets/EmptyNotificationsIcon.svg';
 import { doLogout } from '@/app/actions/authActions';
 import { useGlobalContext } from '@/app/context/AppContext';
-import { useSession } from 'next-auth/react';
+import { useSession, getSession } from 'next-auth/react';
 import Image from 'next/image';
 import { User } from 'next-auth';
 
@@ -50,15 +50,24 @@ const mockNotifications: {
 ];
 
 const Navbar = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const [userDetails, setUserDetails] = useState<User | null>(null);
 
   useEffect(() => {
-    if (session) {
-      setUserDetails(session.user);
-    }
-  }, [session, setUserDetails]);
+    const fetchSession = async () => {
+      if (status === 'authenticated') {
+        setUserDetails(session?.user || null);
+      } else if (status === 'unauthenticated') {
+        const freshSession = await getSession(); // Force-fetch session on client
+        if (freshSession?.user) {
+          setUserDetails(freshSession.user);
+        }
+      }
+    };
+
+    fetchSession();
+  }, [session, status]);
 
   const { setIsSidebarOpen, isSidebarOpen } = useGlobalContext();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -182,7 +191,9 @@ const Navbar = () => {
             ) : (
               <div className='center-grid relative size-[40px] rounded-full bg-primary-50'>
                 <p className='text-small font-semibold text-[#f56630]'>
-                  {userDetails?.name?.slice(0, 2).toUpperCase()}
+                  {userDetails?.name
+                    ?.split(' ')
+                    .map((item) => <>{item.slice(0, 1).toUpperCase()}</>)}
                 </p>
               </div>
             )}
@@ -205,7 +216,9 @@ const Navbar = () => {
                 ) : (
                   <div className='center-grid relative size-[40px] rounded-full bg-primary-50'>
                     <p className='text-small font-semibold text-[#f56630]'>
-                      {userDetails?.name?.slice(0, 2).toUpperCase()}
+                      {userDetails?.name
+                        ?.split(' ')
+                        .map((item) => <>{item.slice(0, 1).toUpperCase()}</>)}
                     </p>
                   </div>
                 )}

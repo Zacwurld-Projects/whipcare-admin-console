@@ -10,9 +10,11 @@ const InputArea = ({
   type,
   name,
   title,
+  readOnly,
   handleChange,
 }: {
   defaultValue?: string;
+  readOnly?: boolean;
   value: string;
   type: 'email' | 'password' | 'text';
   name: string;
@@ -31,6 +33,7 @@ const InputArea = ({
           type={type === 'password' ? (isViewingPassword ? 'text' : 'password') : type}
           name={name}
           required
+          readOnly={readOnly || false}
           id={name}
           defaultValue={defaultValue}
           value={value}
