@@ -1,6 +1,9 @@
 import axios, { isAxiosError } from 'axios';
 import ApiRoutes from './apiRoutes';
 import { getSession } from 'next-auth/react';
+import { Session } from 'next-auth';
+
+let cachedSession: Session | null = null;
 
 export const API = axios.create({
   baseURL: ApiRoutes.BASE_URL,
@@ -8,7 +11,6 @@ export const API = axios.create({
 
 API.interceptors.request.use(
   async (config) => {
-    // Skip setting the Authorization header for login endpoint
     if (config.url?.startsWith(`${ApiRoutes.Auth}`)) {
       return config;
     }
@@ -16,13 +18,27 @@ API.interceptors.request.use(
       return config;
     }
 
-    const session = await getSession(); // Fetch the current session
-    if (session?.user?.token) {
-      config.headers.Authorization = `Bearer ${session.user.token}`;
+    if (!cachedSession) {
+      cachedSession = await getSession(); // Fetch session once and cache it
     }
+
+    if (cachedSession?.user?.token) {
+      config.headers.Authorization = `Bearer ${cachedSession.user.token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error),
+);
+
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      cachedSession = null; // Clear the cache on unauthorized error
+    }
+    return Promise.reject(error);
+  },
 );
 
 const catchError = (error: unknown) => {

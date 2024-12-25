@@ -78,9 +78,12 @@ const CreateUserPageContent = () => {
   });
 
   useEffect(() => {
-    if (!createToken) router.push('/auth');
-    else useVerifyToken.mutate(createToken);
-  }, [createToken, router, useVerifyToken]);
+    if (createToken) {
+      useVerifyToken.mutate(createToken);
+    } else {
+      router.push('/auth');
+    }
+  }, [createToken, router]);
 
   if (!isverified || useVerifyToken.isPending)
     return (
