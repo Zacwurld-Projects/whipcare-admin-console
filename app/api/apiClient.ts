@@ -52,11 +52,7 @@ const catchError = (error: unknown) => {
 //#region  AUTH
 export const userService = {
   authenticate: async (email: string, password: string) => {
-    const response = await API.post(
-      `${ApiRoutes.Auth}/login`,
-      { email, password },
-      { headers: { Authorization: '' } },
-    );
+    const response = await API.post(`${ApiRoutes.Auth}/login`, { email, password });
 
     const { data, success, token } = response.data;
     if (success)

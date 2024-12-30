@@ -1,45 +1,11 @@
 'use client';
 import { OrderDetails } from '@/app/lib/mockTypes';
-import DarkOverlay from '../DarkOverlay';
+import SidebarModalContainer from './SidebarModalContainer';
 import CheckMarkIcon from '../../assets/progressCheckmark.svg';
-import LeftArrowIcon from '../../assets/leftArrow.svg';
 import dayjs from 'dayjs';
-import { Dispatch, useRef } from 'react';
+import { Dispatch } from 'react';
 import SpinLoader from '../SpinLoader';
 import { convertBookingAndOrderStatus, reflectStatusStyle } from '@/app/lib/accessoryFunctions';
-
-const ModalContainer = ({
-  children,
-  setIsDisplayingBookingDetails,
-}: {
-  children: React.ReactNode;
-  setIsDisplayingBookingDetails: Dispatch<boolean>;
-}) => {
-  const DetailsAsideRef = useRef<HTMLDivElement>(null);
-
-  return (
-    <DarkOverlay
-      exitFunction={(e) => {
-        if (!DetailsAsideRef.current?.contains(e.target as Node)) {
-          setIsDisplayingBookingDetails(false);
-        }
-      }}
-    >
-      <aside
-        ref={DetailsAsideRef}
-        className='ml-auto min-h-full w-[calc(50%-132px)] min-w-[500px] bg-white p-6 opacity-100 max-[1100px]:w-[50%]'
-      >
-        <button
-          className='center-grid sticky top-6 mb-4 size-[36px] rounded-full border border-[#d1d5db]'
-          onClick={() => setIsDisplayingBookingDetails(false)}
-        >
-          <LeftArrowIcon />
-        </button>
-        {children}
-      </aside>
-    </DarkOverlay>
-  );
-};
 
 const BookingDetails = ({
   type,
@@ -54,11 +20,11 @@ const BookingDetails = ({
 }) => {
   if (isLoading || !booking) {
     return (
-      <ModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
+      <SidebarModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
         <div className='center-grid h-[80vh] w-full border-green-700'>
           <SpinLoader size={64} color='#27231F' thickness={2} />
         </div>
-      </ModalContainer>
+      </SidebarModalContainer>
     );
   }
 
@@ -121,7 +87,7 @@ const BookingDetails = ({
   ];
 
   return (
-    <ModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
+    <SidebarModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
       <>
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium'>
           <p>{type === 'orders' ? 'Order' : 'Booking'} history list</p>
@@ -180,7 +146,7 @@ const BookingDetails = ({
           </button>
         </div>
       </>
-    </ModalContainer>
+    </SidebarModalContainer>
   );
 };
 export default BookingDetails;

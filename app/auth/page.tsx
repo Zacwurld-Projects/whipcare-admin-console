@@ -8,8 +8,11 @@ import { doCredentialLogin } from '../actions/authActions';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
+import { useGlobalContext } from '../context/AppContext';
+import { fetchUserDetails } from '../lib/accessoryFunctions';
 
 const SignInPage = () => {
+  const { setUserDetails } = useGlobalContext();
   const router = useRouter();
   const [userInfo, setUserInfo] = useState({
     email: '',
@@ -29,18 +32,20 @@ const SignInPage = () => {
       formData.append('password', userInfo.password);
       return doCredentialLogin(formData);
     },
-    onSuccess: (response) => {
-      if (response.error) {
-        toast.error(response.error.message);
-      } else {
-        toast.success('Login successful!');
-        router.push('/dashboard');
+    onSuccess: async () => {
+      try {
+        const user = await fetchUserDetails();
+        if (user) {
+          setUserDetails(user);
+          toast.success('Login successful!');
+          router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('error fetching user details:', error);
+        toast.error('Failed to retrieve user details.');
       }
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error('Invalid user details. Try again.');
-    },
+    onError: () => toast.error('Invalid user details. Try again.'),
   });
 
   const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {

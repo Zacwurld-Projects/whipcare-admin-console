@@ -1,3 +1,5 @@
+import { getSession } from 'next-auth/react';
+
 export function timeAgo(timestamp: string | number) {
   const now = new Date();
 
@@ -50,4 +52,13 @@ export const reflectStatusStyle = (status: string) => {
     default:
       return '';
   }
+};
+
+export const fetchUserDetails = async () => {
+  const session = await getSession();
+  if (session) {
+    const { id, role, name, email, image } = session.user;
+    return { id, role, name, email, image };
+  }
+  throw new Error('Failed to retrieve user session.');
 };
