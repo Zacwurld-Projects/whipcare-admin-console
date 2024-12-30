@@ -45,18 +45,27 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     name: string | null | undefined;
     email: string | null | undefined;
     image: string | null | undefined;
-  }>(() => {
-    if (typeof window !== undefined) {
-      const user = localStorage.getItem('currentUser');
-      return user ? JSON.parse(user) : defaultUserDetails;
-    }
-    return defaultUserDetails;
-  });
+  }>(defaultUserDetails);
 
   useEffect(() => {
-    localStorage.setItem('currentUser', JSON.stringify(userDetails));
-  }, [userDetails]);
+    if (typeof window !== 'undefined') {
+      const user = localStorage.getItem('currentUser');
+      if (user) {
+        setUserDetails(JSON.parse(user));
+      }
+    }
+  }, []);
 
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      JSON.stringify(userDetails) !== JSON.stringify(defaultUserDetails)
+    ) {
+      localStorage.setItem('currentUser', JSON.stringify(userDetails));
+    } else if (JSON.stringify(userDetails) === JSON.stringify(defaultUserDetails)) {
+      localStorage.removeItem('currentUser');
+    }
+  }, [userDetails]);
   return (
     <AppContext.Provider
       value={{ isSidebarOpen, setIsSidebarOpen, userDetails, setUserDetails, defaultUserDetails }}
