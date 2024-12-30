@@ -6,6 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { doCredentialLogin } from '@/app/actions/authActions';
+import { fetchUserDetails } from '@/app/lib/accessoryFunctions';
+import { useGlobalContext } from '@/app/context/AppContext';
 
 const SuccessCreate = ({
   credentials,
@@ -15,6 +17,7 @@ const SuccessCreate = ({
     newPassword: string;
   };
 }) => {
+  const { setUserDetails } = useGlobalContext();
   const router = useRouter();
 
   const useSignUserIn = useMutation({
@@ -25,9 +28,18 @@ const SuccessCreate = ({
       formData.append('password', credentials.newPassword);
       return doCredentialLogin(formData);
     },
-    onSuccess: () => {
-      toast.success('Login successful!');
-      router.push('/dashboard');
+    onSuccess: async () => {
+      try {
+        const user = await fetchUserDetails();
+        if (user) {
+          setUserDetails(user);
+          toast.success('Login successful!');
+          router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('error fetching user details:', error);
+        toast.error('Failed to retrieve user details.');
+      }
     },
     onError: (err) => {
       console.error(err);

@@ -5,8 +5,9 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import Image from 'next/image';
 import TitleBox from './TitleBox';
 import { useMutation } from '@tanstack/react-query';
-import { changeUserPassword, updateUserProfile } from '@/app/api/apiClient';
+import { changeUserPassword, fetchSettingsProfile, updateUserProfile } from '@/app/api/apiClient';
 import { toast } from 'sonner';
+import { useGlobalContext } from '@/app/context/AppContext';
 
 type UserData = { email: string; name: string; role: string; image?: string };
 
@@ -31,6 +32,8 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
     confirmNewPassword: '',
   });
 
+  const { setUserDetails, userDetails } = useGlobalContext();
+
   const updateProfile = useMutation({
     mutationKey: ['updateProfileData'],
     mutationFn: async () => {
@@ -49,7 +52,9 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
       });
       return updateUserProfile(formData);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      const response = await fetchSettingsProfile();
+      if (response) setUserDetails({ id: userDetails.id, ...response.data });
       toast.success('Profile updated successfully');
     },
     onError: (error) => {
@@ -174,7 +179,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
                 type='submit'
                 text='Save'
                 isLoading={updateProfile.isPending}
-                disabled={!isUserDataEdited}
+                disabled={!isUserDataEdited || updateProfile.isPending}
               />
             </div>
           </div>

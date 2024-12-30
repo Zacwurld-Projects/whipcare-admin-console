@@ -30,6 +30,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (account?.type === 'credentials' && user) {
         token.userId = user.id; // associate userId with token
         token.accessToken = user.token;
+        token.role = user.role;
       }
       return token;
     },
@@ -38,6 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user = session.user || {};
       session.user.id = token.userId as string;
       session.user.token = token.accessToken as string;
+      session.user.role = token.role as string;
       return session;
     },
   },
