@@ -4,17 +4,9 @@ import PageHeading from '../components/PageHeading';
 import ProfileOptions from '../components/profile/ProfileOptions';
 import { useQuery } from '@tanstack/react-query';
 import { fetchAdminMembers, fetchSettingsProfile } from '@/app/api/apiClient';
-import SpinLoader from '../components/SpinLoader';
 import Profile from './Profile';
 import Accessibility from './Accessibility';
-
-const Loader = () => {
-  return (
-    <div className='center-grid h-[80vh] w-full'>
-      <SpinLoader size={72} color='#983504' thickness={2} />
-    </div>
-  );
-};
+import SectionLoader from '../components/Loaders/SectionLoader';
 
 const SettingsPage = () => {
   const pageOptions = ['profile', 'accessibility'];
@@ -42,7 +34,7 @@ const SettingsPage = () => {
       />
       <section className='mt-2 min-h-[80vh] bg-white p-6'>
         {isFetchingPageDetails ? (
-          <Loader />
+          <SectionLoader height='80vh' />
         ) : (
           <>
             {selectedPageOption === 'profile' && <Profile profileData={profile.data} />}

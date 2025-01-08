@@ -14,7 +14,7 @@ import {
 } from '@/app/api/apiClient';
 import { ComponentType, useEffect, useState } from 'react';
 import TopPerformers from '../components/service-provider/TopPerformers';
-import PageLoader from '../components/PageLoader';
+import PageLoader from '../components/Loaders/PageLoader';
 
 const ServiceProviderPage = () => {
   const [serviceProviderStats, setServiceProviderStats] = useState<

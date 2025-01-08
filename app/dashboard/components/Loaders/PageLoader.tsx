@@ -1,9 +1,9 @@
-import SpinLoader from './SpinLoader';
+import AnimatedLoader from './AnimatedLoader';
 
 const PageLoader = () => {
   return (
     <div className='center-grid h-[70vh] w-full'>
-      <SpinLoader size={108} color='#800501' thickness={2} />
+      <AnimatedLoader />
     </div>
   );
 };

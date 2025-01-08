@@ -8,8 +8,8 @@ import SuccessCreate from '../components/SuccessCreate';
 import { useMutation } from '@tanstack/react-query';
 import { setMemberCredentials, verifyCreateToken, verifyMemberOtp } from '@/app/api/apiClient';
 import { useRouter, useSearchParams } from 'next/navigation';
-import SpinLoader from '@/app/dashboard/components/SpinLoader';
 import { toast } from 'sonner';
+import SectionLoader from '@/app/dashboard/components/Loaders/SectionLoader';
 
 const CreateUserPageContent = () => {
   const [isverified, setIsVerified] = useState(false);
@@ -88,7 +88,7 @@ const CreateUserPageContent = () => {
   if (!isverified || useVerifyToken.isPending)
     return (
       <section className='center-grid'>
-        <SpinLoader size={100} thickness={2} color='#711e00' />
+        <SectionLoader height='fit-content' />
       </section>
     );
 
@@ -186,7 +186,7 @@ const CreateUserPage = () => (
   <Suspense
     fallback={
       <section className='center-grid'>
-        <SpinLoader size={100} thickness={2} color='#711e00' />
+        <SectionLoader height='fit-content' />
       </section>
     }
   >

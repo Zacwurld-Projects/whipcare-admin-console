@@ -4,7 +4,7 @@ import SidebarModalContainer from './SidebarModalContainer';
 import CheckMarkIcon from '../../assets/progressCheckmark.svg';
 import dayjs from 'dayjs';
 import { Dispatch } from 'react';
-import SpinLoader from '../SpinLoader';
+import SpinLoader from '../Loaders/SpinLoader';
 import { convertBookingAndOrderStatus, reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 
 const BookingDetails = ({
