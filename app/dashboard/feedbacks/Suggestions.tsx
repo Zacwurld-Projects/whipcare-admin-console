@@ -1,4 +1,4 @@
-import SpinLoader from '../components/SpinLoader';
+import SectionLoader from '../components/Loaders/SectionLoader';
 import FallBackUI from './FallbackUI';
 
 const Suggestions = ({
@@ -8,12 +8,7 @@ const Suggestions = ({
   suggestionsData: Array<object>;
   isLoading: boolean;
 }) => {
-  if (isLoading)
-    return (
-      <section className='center-grid h-[70vh] w-full'>
-        <SpinLoader size={80} color='#983504' thickness={2} />
-      </section>
-    );
+  if (isLoading) return <SectionLoader height='70vh' />;
 
   if (suggestionsData.length < 1) return <FallBackUI option='Suggestions' />;
 

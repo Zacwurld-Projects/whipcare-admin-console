@@ -15,8 +15,8 @@ import {
   fetchServiceProviderOrders,
   fetchServiceProviderProfile,
 } from '@/app/api/apiClient';
-import PageLoader from '../../components/PageLoader';
-import SpinLoader from '../../components/SpinLoader';
+import PageLoader from '../../components/Loaders/PageLoader';
+import SectionLoader from '../../components/Loaders/SectionLoader';
 
 const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
@@ -66,9 +66,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
           {selectedPageOption === 'profile' && <Profile profileInfo={profileData} />}
           {selectedPageOption === 'orders' &&
             (isOrdersDataLoading ? (
-              <div className='center-grid h-[300px] w-full'>
-                <SpinLoader size={80} color='#8f2802' thickness={2} />
-              </div>
+              <SectionLoader height='300px' />
             ) : (
               <HistoryTable
                 type='orders'

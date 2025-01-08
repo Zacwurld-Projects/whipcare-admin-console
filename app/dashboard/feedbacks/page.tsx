@@ -41,7 +41,7 @@ const FeedbacksPage = () => {
         }),
       );
     }
-  }, [useFetchFeedbackStats]);
+  }, [useFetchFeedbackStats.data, useFetchFeedbackStats.isLoading]);
 
   const useFetchSuggestions = useQuery({
     queryKey: ['fetchSuggestions'],
