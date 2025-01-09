@@ -16,8 +16,8 @@ const DatePickerComponent = ({
   customDateFilter,
   setCustomDateFilter,
 }: {
-  selectedFilter: string | Array<Date | null>;
-  setSelectedFilter: Dispatch<string | Array<Date | null>>;
+  selectedFilter: string;
+  setSelectedFilter: Dispatch<string>;
   customDateFilter: [Date | null, Date | null];
   setCustomDateFilter: Dispatch<[Date | null, Date | null]>;
 }) => {
@@ -29,18 +29,18 @@ const DatePickerComponent = ({
   );
 
   useEffect(() => {
-    if (customDateFilter[0]) setSelectedFilter(customDateFilter);
+    if (customDateFilter[0]) setSelectedFilter('custom');
     else setSelectedFilter('today');
-  }, [customDateFilter]);
+  }, [customDateFilter, setSelectedFilter]);
 
   return (
     <MantineProvider>
       <div className='relative'>
         <button
-          className={`flex items-center gap-1 border-gray-200 ${typeof selectedFilter !== 'string' ? '!border-[#ff915b] bg-[#fcb59a]' : ''}`}
+          className={`flex items-center gap-1 border-gray-200 ${selectedFilter === 'custom' ? '!border-[#ff915b] bg-[#fcb59a]' : ''}`}
           onClick={() => {
             setIsCalendarOpen(!isCalendarOpen);
-            if (customDateFilter[0]) setSelectedFilter(customDateFilter);
+            if (customDateFilter[0]) setSelectedFilter('custom');
           }}
           ref={calenderButtonRef}
         >
@@ -61,6 +61,7 @@ const DatePickerComponent = ({
             className='absolute right-0 top-[130%] z-20 rounded-lg bg-white p-2 px-1 shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)]'
           >
             <DatePicker
+              maxDate={new Date()}
               styles={{
                 month: {
                   borderCollapse: 'separate',

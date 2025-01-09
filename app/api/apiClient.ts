@@ -127,11 +127,34 @@ export const resetUserPassword = async (
 };
 //  #endregion
 
+// #regoin OVERVIEW
+export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = '') => {
+  try {
+    const params = new URLSearchParams();
+    if (maxDate) params.append('maxDate', maxDate);
+    if (minDate) params.append('minDate', minDate);
+
+    const response = await API.get(`${ApiRoutes.Overview}/kpis${params ? `?${params}` : ''}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+// #endregion
+
 // #region SERVICE PROVIDERS
 
-export const fetchServiceProvidersKpis = async () => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/kpis`);
-  return reponse.data;
+export const fetchServiceProvidersKpis = async (maxDate: string = '', minDate: string = '') => {
+  try {
+    const params = new URLSearchParams();
+    if (maxDate) params.append('maxDate', maxDate);
+    if (minDate) params.append('minDate', minDate);
+
+    const reponse = await API.get(`${ApiRoutes.ServiceProvider}/kpis${params ? `?${params}` : ''}`);
+    return reponse.data;
+  } catch (error) {
+    catchError(error);
+  }
 };
 
 export const fetchServiceProviderWaitList = async () => {

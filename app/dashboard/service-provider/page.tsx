@@ -12,33 +12,44 @@ import {
   fetchServiceProviderWaitList,
   fetchServiceProviders,
 } from '@/app/api/apiClient';
-import { ComponentType, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import TopPerformers from '../components/service-provider/TopPerformers';
 import PageLoader from '../components/Loaders/PageLoader';
+import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
 
 const ServiceProviderPage = () => {
-  const [serviceProviderStats, setServiceProviderStats] = useState<
-    Array<{ icon: ComponentType; title: string; currentNumber: number; previousNumber: number }>
-  >([
-    {
-      icon: BagIcon,
-      title: 'Number of Service Providers',
-      currentNumber: 0,
-      previousNumber: 0,
-    },
-    {
-      icon: AllMatchIcon,
-      title: 'Number of Active Service Providers',
-      currentNumber: 0,
-      previousNumber: 0,
-    },
-    {
-      icon: CheckCircleIcon,
-      title: 'Number of Inactive Service Providers',
-      currentNumber: 0,
-      previousNumber: 0,
-    },
-  ]);
+  const [selectedDates, setSelectedDates] = useState({
+    maxDate: '',
+    minDate: '',
+  });
+
+  const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(
+    [
+      {
+        icon: BagIcon,
+        title: 'Number of Service Providers',
+        id: 'serviceProvider',
+        count: 0,
+        growth: 0,
+      },
+      {
+        icon: AllMatchIcon,
+        title: 'Number of Active Service Providers',
+        id: 'activeServiceProvider',
+        count: 0,
+        growth: 0,
+      },
+      {
+        icon: CheckCircleIcon,
+        title: 'Number of Inactive Service Providers',
+        id: 'inActiveServiceProvider',
+        count: 0,
+        growth: 0,
+      },
+    ],
+    selectedDates,
+    fetchServiceProvidersKpis,
+  );
 
   const [waitlist, setWaitList] = useState(
     Array.from({ length: 7 }, () => {
@@ -66,10 +77,6 @@ const ServiceProviderPage = () => {
     }>
   >([]);
 
-  const { data: statsData, isLoading: isStatsLoading } = useQuery({
-    queryKey: ['serviceProviderKPIs'],
-    queryFn: fetchServiceProvidersKpis,
-  });
   const { data: waitlistData, isLoading: isWaitlistLoading } = useQuery({
     queryKey: ['waitlist'],
     queryFn: fetchServiceProviderWaitList,
@@ -78,41 +85,6 @@ const ServiceProviderPage = () => {
     queryKey: ['serviceProviders', 1, 15],
     queryFn: () => fetchServiceProviders(1, 15),
   });
-
-  useEffect(() => {
-    if (!isStatsLoading && statsData) {
-      const {
-        data: {
-          numberOfServiceProviders,
-          numberOfActiveServiceProviders,
-          numberOfInActiveServiceProviders,
-        },
-      } = statsData;
-      setServiceProviderStats((prev) =>
-        prev.map((item) => {
-          if (item.title === 'Number of Service Providers')
-            return {
-              ...item,
-              currentNumber: numberOfServiceProviders,
-              previousNumber: numberOfServiceProviders,
-            };
-          if (item.title === 'Number of Active Service Providers')
-            return {
-              ...item,
-              currentNumber: numberOfActiveServiceProviders,
-              previousNumber: numberOfActiveServiceProviders,
-            };
-          if (item.title === 'Number of Inactive Service Providers')
-            return {
-              ...item,
-              currentNumber: numberOfInActiveServiceProviders,
-              previousNumber: numberOfInActiveServiceProviders,
-            };
-          return item;
-        }),
-      );
-    }
-  }, [isStatsLoading, statsData]);
 
   useEffect(() => {
     if (!isWaitlistLoading && waitlistData) {
@@ -126,18 +98,18 @@ const ServiceProviderPage = () => {
     }
   }, [isServiceProviderLoadng, serviceProviderData]);
 
-  // if (isServiceProviderLoadng || isStatsLoading || isWaitlistLoading) {
-  //   return <PageLoader />;
-  // }
-
   return (
     <>
-      <PageHeading page='Service Provider' pageFilters />
-      {isServiceProviderLoadng || isStatsLoading || isWaitlistLoading ? (
+      <PageHeading page='Service Provider' setSelectedDates={setSelectedDates} pageFilters />
+      {isServiceProviderLoadng || isWaitlistLoading ? (
         <PageLoader />
       ) : (
         <>
-          <NumbersOverview stats={serviceProviderStats} className='mt-8' />
+          <NumbersOverview
+            stats={kpiData}
+            className='mt-8'
+            isLoading={useFetchOverviewKpis.isLoading}
+          />
           <RecentProviders recentServiceProviders={waitlist} />
           <TopPerformers />
           <PlainTable

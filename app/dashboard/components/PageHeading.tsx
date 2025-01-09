@@ -1,14 +1,37 @@
 'use client';
-import { useState } from 'react';
+import { Dispatch, useEffect, useState } from 'react';
 import DatePickerComponent from './DatePickerComponent';
+import dayjs from 'dayjs';
 
-const PageHeading = ({ page, pageFilters }: { page: string; pageFilters?: boolean }) => {
+const PageHeading = ({
+  page,
+  pageFilters,
+  setSelectedDates,
+}: {
+  page: string;
+  pageFilters?: boolean;
+  setSelectedDates?: Dispatch<{
+    maxDate: string;
+    minDate: string;
+  }>;
+}) => {
   const filters = ['today', '1 week', '2 months'];
-  const [selectedFilter, setSelectedFilter] = useState<string | Array<Date | null>>('today');
+  const [selectedFilter, setSelectedFilter] = useState<string>('today');
   const [customDateFilter, setCustomDateFilter] = useState<[Date | null, Date | null]>([
     null,
     null,
   ]);
+
+  useEffect(() => {
+    if (selectedFilter === 'custom' && setSelectedDates) {
+      setSelectedDates({
+        maxDate: customDateFilter[1]
+          ? dayjs(customDateFilter[1]).format('YYYY-MM-DD')
+          : dayjs(customDateFilter[0]).format('YYYY-MM-DD'),
+        minDate: customDateFilter[1] ? dayjs(customDateFilter[0]).format('YYYY-MM-DD') : '',
+      });
+    }
+  }, [selectedFilter, setSelectedDates, customDateFilter]);
 
   return (
     <div className='flex w-full items-center justify-between max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-3'>
@@ -22,6 +45,24 @@ const PageHeading = ({ page, pageFilters }: { page: string; pageFilters?: boolea
               key={filter}
               onClick={() => {
                 setSelectedFilter(filter);
+                if (setSelectedDates) {
+                  if (filter === 'today') {
+                    setSelectedDates({
+                      maxDate: '',
+                      minDate: '',
+                    });
+                  } else if (filter === '1 week') {
+                    setSelectedDates({
+                      maxDate: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
+                      minDate: '',
+                    });
+                  } else if (filter === '2 months') {
+                    setSelectedDates({
+                      maxDate: dayjs().subtract(2, 'month').format('YYYY-MM-DD'),
+                      minDate: '',
+                    });
+                  }
+                }
                 // setCustomDateFilter([null, null]);
               }}
               className={`capitalize ${selectedFilter === filter ? 'border-[#ff915b] bg-[#fcb59a]' : 'border-gray-200'}`}

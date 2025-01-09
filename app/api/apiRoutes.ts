@@ -3,6 +3,8 @@ export default class ApiRoutes {
 
   static Auth: string = '/auth';
 
+  static Overview: string = '/overview';
+
   static ServiceProvider: string = '/service-provider';
 
   static Settings: string = '/setting';

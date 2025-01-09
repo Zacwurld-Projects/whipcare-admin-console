@@ -13,20 +13,23 @@ const userManagementStats = [
   {
     icon: BagIcon,
     title: 'Number of Users',
-    currentNumber: 123000,
-    previousNumber: 110000,
+    id: 'users',
+    count: 0,
+    growth: 0,
   },
   {
     icon: AllMatchIcon,
     title: 'Number of Active Users',
-    currentNumber: 100000,
-    previousNumber: 90000,
+    id: 'activeUsers',
+    count: 0,
+    growth: 0,
   },
   {
     icon: CheckCircleIcon,
     title: 'Number of Inactive Users',
-    currentNumber: 23000,
-    previousNumber: 20000,
+    id: 'inactiveUsers',
+    count: 0,
+    growth: 0,
   },
 ];
 
