@@ -49,6 +49,19 @@ const catchError = (error: unknown) => {
   }
 };
 
+const fetchKpis = async (url: string, minDate: string = '', maxDate: string = '') => {
+  try {
+    const params = new URLSearchParams();
+    if (maxDate) params.append('maxDate', maxDate);
+    if (minDate) params.append('minDate', minDate);
+
+    const response = await API.get(`${url}/kpis${params ? `?${params}` : ''}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
 //#region  AUTH
 export const userService = {
   authenticate: async (email: string, password: string) => {
@@ -127,35 +140,68 @@ export const resetUserPassword = async (
 };
 //  #endregion
 
-// #regoin OVERVIEW
-export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = '') => {
+// #region OVERVIEW
+export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = '') =>
+  fetchKpis(ApiRoutes.Overview, minDate, maxDate);
+// #endregion
+
+// #region USER MANAGEMENT
+export const fetchUserManagementKpis = async (maxDate: string = '', minDate: string = '') =>
+  fetchKpis(ApiRoutes.Users, minDate, maxDate);
+
+export const fetchUsers = async (pageSize: number = 15, pageNumber: number = 1) => {
   try {
     const params = new URLSearchParams();
-    if (maxDate) params.append('maxDate', maxDate);
-    if (minDate) params.append('minDate', minDate);
+    if (pageSize) params.append('pageSize', pageSize.toString());
+    if (pageNumber) params.append('pageNumber', pageNumber.toString());
 
-    const response = await API.get(`${ApiRoutes.Overview}/kpis${params ? `?${params}` : ''}`);
+    const response = await API.get(`${ApiRoutes.Users}${params ? `?${params}` : ''}`);
     return response.data;
-  } catch (error) {
-    catchError(error);
+  } catch (err) {
+    catchError(err);
   }
 };
-// #endregion
+
+export const fetchUserKpis = async (id: string) => {
+  try {
+    const response = await API.get(`${ApiRoutes.Users}/${id}/kpis`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+
+export const fetchUserProfile = async (id: string) => {
+  try {
+    const response = await API.get(`${ApiRoutes.Users}/${id}/profile`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+
+export const fetchUserActivity = async (
+  id: string,
+  pageSize: number = 6,
+  pageNumber: number = 1,
+) => {
+  try {
+    const params = new URLSearchParams();
+    if (pageSize) params.append('pageSize', pageSize.toString());
+    if (pageNumber) params.append('pageNumber', pageNumber.toString());
+
+    const response = await API.get(`/activity/${id}${params ? `?${params}` : ''}`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+//  #endregion
 
 // #region SERVICE PROVIDERS
 
-export const fetchServiceProvidersKpis = async (maxDate: string = '', minDate: string = '') => {
-  try {
-    const params = new URLSearchParams();
-    if (maxDate) params.append('maxDate', maxDate);
-    if (minDate) params.append('minDate', minDate);
-
-    const reponse = await API.get(`${ApiRoutes.ServiceProvider}/kpis${params ? `?${params}` : ''}`);
-    return reponse.data;
-  } catch (error) {
-    catchError(error);
-  }
-};
+export const fetchServiceProvidersKpis = async (maxDate: string = '', minDate: string = '') =>
+  fetchKpis(ApiRoutes.ServiceProvider, minDate, maxDate);
 
 export const fetchServiceProviderWaitList = async () => {
   const reponse = await API.get(`${ApiRoutes.ServiceProvider}/waitlist`);

@@ -1,3 +1,4 @@
+'use client';
 import PageHeading from '../components/PageHeading';
 import NumbersOverview from '../components/NumbersOverview';
 import BagIcon from '../assets/bagIcon.svg';
@@ -8,36 +9,65 @@ import UserGrowthChart from '../components/charts/UserGrowthChart';
 import ChurnRateChart from '../components/charts/ChurnRateChart';
 import CustomerMapping from '../components/charts/CustomerMapping';
 import PlainTable from '../components/tables/PlainTable';
+import { useState } from 'react';
+import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
+import { fetchUserManagementKpis, fetchUsers } from '@/app/api/apiClient';
+import { useQuery } from '@tanstack/react-query';
+import PageLoader from '../components/Loaders/PageLoader';
 
 const userManagementStats = [
   {
     icon: BagIcon,
     title: 'Number of Users',
-    id: 'users',
+    id: 'user',
     count: 0,
     growth: 0,
   },
   {
     icon: AllMatchIcon,
     title: 'Number of Active Users',
-    id: 'activeUsers',
+    id: 'activeUser',
     count: 0,
     growth: 0,
   },
   {
     icon: CheckCircleIcon,
     title: 'Number of Inactive Users',
-    id: 'inactiveUsers',
+    id: 'inActiveUser',
     count: 0,
     growth: 0,
   },
 ];
 
 const UserManagementPage = () => {
+  const [selectedDates, setSelectedDates] = useState({
+    maxDate: '',
+    minDate: '',
+  });
+
+  const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(
+    userManagementStats,
+    selectedDates,
+    fetchUserManagementKpis,
+  );
+
+  const useFetchUser = useQuery({
+    queryKey: ['fetchUsers'],
+    queryFn: async () => fetchUsers(15, 1),
+  });
+
+  if (useFetchUser.isLoading) {
+    return <PageLoader />;
+  }
+
   return (
     <>
-      <PageHeading page='User management' pageFilters />
-      <NumbersOverview stats={userManagementStats} className='mt-8' />
+      <PageHeading page='User management' pageFilters setSelectedDates={setSelectedDates} />
+      <NumbersOverview
+        stats={kpiData}
+        className='mt-8'
+        isLoading={useFetchOverviewKpis.isLoading}
+      />
       <div className='mb-8 mt-6 grid grid-cols-1 gap-6 min-[850px]:grid-cols-2'>
         <div className='grid grid-flow-row grid-cols-2 gap-x-4 gap-y-8'>
           <LineChart filter className='col-span-2' />
@@ -60,14 +90,7 @@ const UserManagementPage = () => {
           'Last Login Date',
           'Action',
         ]}
-        content={Array(15).fill({
-          id: '1234567',
-          name: 'Isaac Zacwurld',
-          email: 'Isaaczac@gmail.com',
-          phone: '+1 453 6780 690',
-          signUp: Date.now() - 30 * 24 * 60 * 60 * 1000,
-          lastLogin: Date.now() - 24 * 60 * 60 * 1000,
-        })}
+        content={useFetchUser.data.data || {}}
       />
     </>
   );

@@ -10,4 +10,6 @@ export default class ApiRoutes {
   static Settings: string = '/setting';
 
   static Feedback: string = '/feedback';
+
+  static Users: string = '/user';
 }

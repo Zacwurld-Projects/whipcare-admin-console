@@ -1,25 +1,51 @@
-export type UserProfile = {
-  name: string;
-  email: string;
-  phone: string;
-  userInfo: {
-    'Sign up date': number;
-    'Last login date': number;
-    Nationality: string;
-    Language: string;
-  };
-  userAddress: {
-    home: string;
-    work: string;
-    other: string;
-  };
-  cars: string[];
+export type UserProfileData = {
+  signUpDate: string;
+  lastLoginDate: string;
+  kycDocument: string;
+  nationality: string;
+  language: string;
+  address: {
+    id: string;
+    address: string;
+    type: string;
+    landmark: string;
+    longitude: number;
+    latitude: number;
+  }[];
+  cars: {
+    _id: string;
+    ownerId: string;
+    brand: string;
+    carModel: string;
+    colour: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
   reviews: Array<{
     rating: number;
     content: string;
     timestamp: number;
   }>;
 };
+
+export type UserActivity = {
+  status: boolean;
+  data: Activity[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+};
+
+type Activity = {
+  _id: string;
+  activityType: string;
+  description: string;
+  email: string;
+  data: Array<object>;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type ServiceProviderProfile = {
   signUpDate: number;
   status?: string;

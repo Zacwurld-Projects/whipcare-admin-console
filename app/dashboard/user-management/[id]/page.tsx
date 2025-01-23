@@ -1,43 +1,55 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import Profile from './Profile';
 // import HistoryTable from '../../components/tables/HistoryTable';
 import ActivityTable from '../../components/tables/ActivityTable';
-// import BasicInfo from '../../components/profile/BasicInfo';
+import BasicInfo from '../../components/profile/BasicInfo';
 import ProfileOptions from '../../components/profile/ProfileOptions';
+import { useQuery } from '@tanstack/react-query';
+import { fetchUserActivity, fetchUserKpis, fetchUserProfile } from '@/app/api/apiClient';
+import PageLoader from '../../components/Loaders/PageLoader';
+import SectionLoader from '../../components/Loaders/SectionLoader';
 
-const userProfile = {
-  name: 'Isaac Zacwurld',
-  email: '',
-  phone: '',
-  userInfo: {
-    'Sign up date': Date.now() - 30 * 24 * 60 * 60 * 1000,
-    'Last login date': Date.now() - 24 * 60 * 60 * 1000,
-    Nationality: 'nigeria',
-    Language: 'english',
-  },
-  userAddress: {
-    home: '290 m near Grand Play Lekki Lagos',
-    work: '290 m near Grand Play Lekki Lagos',
-    other: '290 m near Grand Play Lekki Lagos',
-  },
-  cars: ['BMW M6 Coupe LCI 2014', 'Audi Convertible 2009', 'Lexus Rx 350 2023'],
-  reviews: Array(12).fill({
-    rating: 4,
-    content:
-      ' John was fantastic! He arrived on time, explained everything clearly, and did a great job changing my oil. I will definitely be using him again.',
-    timestamp: Date.now() - 2 * 24 * 60 * 60 * 1000,
-  }) as Array<{
-    rating: number;
-    content: string;
-    timestamp: number;
-  }>,
+const DisplayPageOption = ({
+  isLoading,
+  PageOption,
+}: {
+  isLoading: boolean;
+  PageOption: ReactNode;
+}) => {
+  if (isLoading) {
+    return <SectionLoader height='40vh' spin />;
+  }
+
+  return <>{PageOption}</>;
 };
 
-const UserProfilePage = () => {
-  const pageOptions = ['profile', 'bookings', 'activities'];
+const UserProfilePage = ({ params }: { params: { id: string } }) => {
+  const pageOptions = ['profile', 'activities']; //removed bookings
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
+  const [currentActivitypage, setCurrentActivityPage] = useState(1);
+
+  const useFetchUserKpis = useQuery({
+    queryKey: ['fetchUserKpis', params.id],
+    queryFn: () => fetchUserKpis(params.id),
+  });
+
+  const useFetchUserProfile = useQuery({
+    queryKey: ['fetchUserProfile', params.id],
+    queryFn: () => fetchUserProfile(params.id),
+    enabled: selectedPageOption === 'profile',
+  });
+
+  const useFetchUserActivity = useQuery({
+    queryKey: ['fetchUserActivity', params.id, currentActivitypage],
+    queryFn: () => fetchUserActivity(params.id, 6, currentActivitypage),
+    enabled: selectedPageOption === 'activities',
+  });
+
+  if (useFetchUserKpis.isLoading) {
+    return <PageLoader />;
+  }
 
   return (
     <>
@@ -50,15 +62,22 @@ const UserProfilePage = () => {
           Users Info
         </Link>
         <p className='text-medium font-medium text-[#27231f]'>{'>'}</p>
-        <p className='heading-h5 font-medium text-[#27231f]'>Isaac Zacwurld</p>
+        <p className='heading-h5 font-medium text-[#27231f]'>
+          {useFetchUserKpis.data.userContact.firstName} {useFetchUserKpis.data.userContact.lastName}
+        </p>
       </div>
-      {/* <BasicInfo /> */}
+      <BasicInfo data={useFetchUserKpis.data} />
       <ProfileOptions
         pageOptions={pageOptions}
         selectedPageOption={selectedPageOption}
         setSelectedPageOption={setSelectedPageOption}
       />
-      {selectedPageOption === 'profile' && <Profile userProfile={userProfile} />}
+      {selectedPageOption === 'profile' && (
+        <DisplayPageOption
+          isLoading={useFetchUserProfile.isLoading}
+          PageOption={<Profile userProfile={useFetchUserProfile.data} />}
+        />
+      )}
       {/* {selectedPageOption === 'bookings' && (
         <HistoryTable
           type='users'
@@ -90,15 +109,16 @@ const UserProfilePage = () => {
         />
       )} */}
       {selectedPageOption === 'activities' && (
-        <ActivityTable
-          tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
-          tableContent={Array.from({ length: 63 }, () => {
-            return {
-              type: 'Booking a Service',
-              description: 'Booked a mechanic for car repair',
-              timeStamp: Date.now() - 12 * 24 * 60 * 60 * 1000,
-            };
-          })}
+        <DisplayPageOption
+          isLoading={useFetchUserActivity.isLoading}
+          PageOption={
+            <ActivityTable
+              currentPage={currentActivitypage}
+              setCurrentPage={setCurrentActivityPage}
+              tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
+              tableContent={useFetchUserActivity.data}
+            />
+          }
         />
       )}
     </>

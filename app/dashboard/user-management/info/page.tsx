@@ -1,32 +1,45 @@
+'use client';
+import { fetchUsers } from '@/app/api/apiClient';
 import PageHeading from '../../components/PageHeading';
 import InfoTable from '../../components/tables/InfoTable';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import SectionLoader from '../../components/Loaders/SectionLoader';
 
 const UserManagementInfo = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const useFetchUser = useQuery({
+    queryKey: ['fetchFullUsers', currentPage],
+    queryFn: async () => fetchUsers(15, currentPage),
+  });
+
   return (
     <>
-      <PageHeading page='User management' pageFilters />
+      <PageHeading page='User management' />
       <div className='mt-6 w-full'>
-        <InfoTable
-          page='user-management'
-          heading='Users Info'
-          headings={[
-            'No',
-            'User name',
-            'Email address',
-            'Phone',
-            'Sign up Date',
-            'Last Login Date',
-            'Action',
-          ]}
-          content={Array(150).fill({
-            id: '1234567',
-            name: 'Isaac Zacwurld',
-            email: 'Isaaczac@gmail.com',
-            phone: '+1 453 6780 690',
-            signUp: Date.now() - 30 * 24 * 60 * 60 * 1000,
-            lastLogin: Date.now() - 24 * 60 * 60 * 1000,
-          })}
-        />
+        {useFetchUser.isLoading ? (
+          <SectionLoader height='70vh' />
+        ) : (
+          <>
+            <InfoTable
+              page='user-management'
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              heading='Users Info'
+              headings={[
+                'No',
+                'User name',
+                'Email address',
+                'Phone',
+                'Sign up Date',
+                'Last Login Date',
+                'Action',
+              ]}
+              data={useFetchUser.data}
+            />
+          </>
+        )}
       </div>
     </>
   );

@@ -5,7 +5,7 @@ import SpendingsIcon from '../../assets/spendingsIcon.svg';
 import Image from 'next/image';
 
 const BasicInfo = ({
-  data: { userContact, totalBookings, transactions },
+  data: { userContact, totalBookings, transactions, totalSpendings },
 }: {
   data: {
     status: boolean;
@@ -17,7 +17,8 @@ const BasicInfo = ({
       phone: null | string;
     };
     totalBookings: number;
-    transactions: { totalAmount: number; type: 'DEBIT' | 'CREDIT' }[];
+    transactions?: { totalAmount: number; type: 'DEBIT' | 'CREDIT' }[];
+    totalSpendings?: number;
   };
 }) => {
   return (
@@ -59,9 +60,14 @@ const BasicInfo = ({
         <div className='flex gap-3'>
           <SpendingsIcon />
           <div>
-            <p className='text-large text-gray-700'>Total Profit</p>
+            <p className='text-large text-gray-700'>
+              {transactions && !totalSpendings ? 'Total Profit' : 'Total Spendings'}
+            </p>
             <p className='heading-h4 font-semibold text-gray-700'>
-              ₦{transactions[0].totalAmount.toLocaleString('en-US')}
+              ₦
+              {transactions && !totalSpendings
+                ? transactions[0].totalAmount.toLocaleString('en-US')
+                : totalSpendings?.toLocaleString('en-US')}
             </p>
           </div>
         </div>

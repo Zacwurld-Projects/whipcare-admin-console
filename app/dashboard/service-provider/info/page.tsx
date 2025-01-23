@@ -1,12 +1,12 @@
 import PageHeading from '../../components/PageHeading';
-import InfoTable from '../../components/tables/InfoTable';
+// import InfoTable from '../../components/tables/InfoTable';
 
 const ServiceProviderInfo = () => {
   return (
     <>
       <PageHeading page='Service Provider' pageFilters />
       <div className='mt-6 w-full'>
-        <InfoTable
+        {/* <InfoTable
           page='service-provider'
           heading='Service Providers Info'
           headings={[
@@ -29,7 +29,7 @@ const ServiceProviderInfo = () => {
             lastLogin: Date.now() - 24 * 60 * 60 * 1000,
             status: 'verified',
           })}
-        />
+        /> */}
       </div>
     </>
   );

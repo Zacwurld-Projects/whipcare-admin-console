@@ -4,7 +4,7 @@ import PageHeading from '../../components/PageHeading';
 import BasicInfo from '../../components/profile/BasicInfo';
 import ProfileOptions from '../../components/profile/ProfileOptions';
 import { useState } from 'react';
-import ActivityTable from '../../components/tables/ActivityTable';
+// import ActivityTable from '../../components/tables/ActivityTable';
 import HistoryTable from '../../components/tables/HistoryTable';
 import Profile from './Profile';
 import Payment from './Payment';
@@ -100,7 +100,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
               }}
             />
           )}
-          {selectedPageOption === 'activities' && (
+          {/* {selectedPageOption === 'activities' && (
             <ActivityTable
               tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
               tableContent={Array.from({ length: 63 }, () => {
@@ -111,7 +111,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
                 };
               })}
             />
-          )}
+          )} */}
           {selectedPageOption === 'reviews' && (
             <Reviews
               reviewData={Array.from({ length: 8 }, () => {

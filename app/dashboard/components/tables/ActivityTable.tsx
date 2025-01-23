@@ -3,9 +3,10 @@ import ExportTable from './components/ExportTable';
 import FilterForm from './components/FilterForm';
 import DotsIcon from '../../assets/dotsIcon.svg';
 import TablePagination from './components/TablePagination';
-import { useState, useEffect } from 'react';
+import { Dispatch } from 'react';
+import { UserActivity } from '@/app/lib/mockTypes';
 
-function formatTimestampToCustomDate(timestamp: number) {
+function formatTimestampToCustomDate(timestamp: number | string) {
   const date = new Date(timestamp);
 
   // Format date components
@@ -32,24 +33,30 @@ function formatTimestampToCustomDate(timestamp: number) {
 const ActivityTable = ({
   tableHeadings,
   tableContent,
+  currentPage,
+  setCurrentPage,
 }: {
   tableHeadings: string[];
-  tableContent: {
-    type: string;
-    description: string;
-    timeStamp: number;
-  }[];
+  tableContent: UserActivity;
+  currentPage: number;
+  setCurrentPage: Dispatch<number>;
 }) => {
   const contentPerPage = 6;
-  const totalPages = Math.ceil(tableContent.length / contentPerPage);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [displayedContent, setDisplayedContent] = useState(tableContent.slice(0, 6));
+  const totalPages = Math.ceil(tableContent.totalCount / contentPerPage);
 
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * contentPerPage;
-    const endIndex = Math.min(currentPage * contentPerPage, tableContent.length);
-    setDisplayedContent(tableContent.slice(startIndex, endIndex));
-  }, [currentPage, contentPerPage]);
+  // useEffect(() => {
+  //   const startIndex = (currentPage - 1) * contentPerPage;
+  //   const endIndex = Math.min(currentPage * contentPerPage, tableContent.data.length);
+  //   setDisplayedContent(tableContent.data.slice(startIndex, endIndex));
+  // }, [currentPage, contentPerPage]);
+
+  if (tableContent.totalCount < 1) {
+    return (
+      <div>
+        <p className='text-xl'>No Activity Yet</p>
+      </div>
+    );
+  }
 
   return (
     <article className='rounded-lg border border-[#e0ddd9] bg-white'>
@@ -72,13 +79,13 @@ const ActivityTable = ({
             </tr>
           </thead>
           <tbody>
-            {displayedContent.map((item, index) => (
-              <tr key={index} className='[&_td]:text-small [&_td]:p-6 [&_td]:text-gray-700'>
+            {tableContent.data.map((item) => (
+              <tr key={item._id} className='[&_td]:text-small [&_td]:p-6 [&_td]:text-gray-700'>
                 <td className=' '>
-                  <p className='font-medium text-gray-900'>{item.type}</p>
+                  <p className='font-medium text-gray-900'>{item.activityType}</p>
                 </td>
-                <td className='font-medium'>{item.description}</td>
-                <td>{formatTimestampToCustomDate(item.timeStamp)}</td>
+                <td className='max-w-[200px] text-wrap font-medium'>{item.description}</td>
+                <td>{formatTimestampToCustomDate(item.createdAt)}</td>
                 <td>
                   <p className='text-small w-fit rounded-[12px] bg-primary-50 px-2 py-[2px] text-[#983504]'>
                     Label
@@ -100,7 +107,7 @@ const ActivityTable = ({
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
-          contentLength={tableContent.length}
+          contentLength={tableContent.totalCount}
         />
       </div>
     </article>

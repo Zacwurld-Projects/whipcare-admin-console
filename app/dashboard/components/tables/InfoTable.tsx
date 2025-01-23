@@ -2,7 +2,7 @@
 
 import OpenLinkIcon from '../../assets/openLinkIcon.svg';
 import ChevronDownIcon from '../../assets/chevronDown.svg';
-import { ComponentType, useEffect, useState } from 'react';
+import { ComponentType, Dispatch } from 'react';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
 import Link from 'next/link';
 import TablePagination from './components/TablePagination';
@@ -12,36 +12,36 @@ import ExportTable from './components/ExportTable';
 const InfoTable = ({
   page,
   heading,
-  content,
+  data,
   headings,
+  currentPage,
+  setCurrentPage,
   ContentStructure,
 }: {
   page: string;
   heading: string;
-  content: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    serviceType?: string;
-    signUp: number;
-    lastLogin: number;
-    status?: string;
-    ratings?: number;
-  }[];
+  currentPage: number;
+  setCurrentPage: Dispatch<number>;
+  data: {
+    data: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+      image?: null | string;
+      email: string;
+      phone: string | null;
+      services?: string[];
+      createdAt: string;
+      lastLogin: string;
+      status?: string;
+    }[];
+    totalCount: number;
+  };
   headings: Array<string>;
-  ContentStructure?: ComponentType<{ item: (typeof content)[0] }>;
+  ContentStructure?: ComponentType<{ item: (typeof data.data)[0] }>;
 }) => {
   const contentPerPage = 15;
-  const totalPages = Math.ceil(content.length / contentPerPage);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [displayedContent, setDisplayedContent] = useState(content.slice(0, 15));
-
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * contentPerPage;
-    const endIndex = Math.min(currentPage * contentPerPage, content.length);
-    setDisplayedContent(content.slice(startIndex, endIndex));
-  }, [currentPage, content, contentPerPage]);
+  const totalPages = Math.ceil(data.totalCount / contentPerPage);
 
   const reflectStatusStyle = (status: string) => {
     switch (true) {
@@ -88,7 +88,7 @@ const InfoTable = ({
             </tr>
           </thead>
           <tbody>
-            {displayedContent.map((item, index) =>
+            {data.data.map((item, index) =>
               ContentStructure ? (
                 <ContentStructure key={index} item={item} />
               ) : (
@@ -96,28 +96,34 @@ const InfoTable = ({
                   key={index}
                   className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
                 >
-                  <td>{(currentPage - 1) * contentPerPage + index + 1}</td>
+                  <td>{index + 1}</td>
                   <td>
-                    <Link className='hover:underline' href={`/dashboard/${page}/${item.id}`}>
-                      {item.name}
+                    <Link className='hover:underline' href={`/dashboard/${page}/${item._id}`}>
+                      {item.firstName} {item.lastName}
                     </Link>
                   </td>
                   <td>{item.email}</td>
                   <td>{item.phone}</td>
-                  {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}
-                  <td className='capitalize'>{timeAgo(item.signUp)}</td>
+                  {item.services && <td className='capitalize'>{item.services[0]}</td>}
+                  <td className='capitalize'>{timeAgo(item.createdAt)}</td>
                   <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
-                  {item.status ? (
-                    <td>
-                      <p
-                        className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
-                      >
-                        {item.status}
-                      </p>
-                    </td>
+                  {page === 'service-provider' ? (
+                    item.status ? (
+                      <td>
+                        <Link href={`/dashboard/${page}/${item._id}`}>
+                          <p
+                            className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
+                          >
+                            {item.status}
+                          </p>
+                        </Link>
+                      </td>
+                    ) : (
+                      <td></td>
+                    )
                   ) : (
                     <td>
-                      <Link href={`/dashboard/user-management/${item.id}`}>
+                      <Link href={`/dashboard/user-management/${item._id}`}>
                         <OpenLinkIcon />
                       </Link>
                     </td>
@@ -130,7 +136,7 @@ const InfoTable = ({
       </div>
       <TablePagination
         contentPerPage={contentPerPage}
-        contentLength={content.length}
+        contentLength={data.totalCount}
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
