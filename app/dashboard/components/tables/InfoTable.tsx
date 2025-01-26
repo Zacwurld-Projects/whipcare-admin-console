@@ -8,10 +8,12 @@ import Link from 'next/link';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
+import SpinLoader from '../Loaders/SpinLoader';
 
 const InfoTable = ({
   page,
   heading,
+  isLoading,
   data,
   headings,
   currentPage,
@@ -20,6 +22,7 @@ const InfoTable = ({
 }: {
   page: string;
   heading: string;
+  isLoading?: boolean;
   currentPage: number;
   setCurrentPage: Dispatch<number>;
   data: {
@@ -74,65 +77,71 @@ const InfoTable = ({
         <ExportTable />
       </div>
       <div className='w-full scrollbar'>
-        <table className='w-full'>
-          <thead>
-            <tr>
-              {headings.map((item) => (
-                <th
-                  key={item}
-                  className='text-xsmall px-[14px] py-3 text-left font-medium text-gray-500'
-                >
-                  {item}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.data.map((item, index) =>
-              ContentStructure ? (
-                <ContentStructure key={index} item={item} />
-              ) : (
-                <tr
-                  key={index}
-                  className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
-                >
-                  <td>{index + 1}</td>
-                  <td>
-                    <Link className='hover:underline' href={`/dashboard/${page}/${item._id}`}>
-                      {item.firstName} {item.lastName}
-                    </Link>
-                  </td>
-                  <td>{item.email}</td>
-                  <td>{item.phone}</td>
-                  {item.services && <td className='capitalize'>{item.services[0]}</td>}
-                  <td className='capitalize'>{timeAgo(item.createdAt)}</td>
-                  <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
-                  {page === 'service-provider' ? (
-                    item.status ? (
-                      <td>
-                        <Link href={`/dashboard/${page}/${item._id}`}>
-                          <p
-                            className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
-                          >
-                            {item.status}
-                          </p>
-                        </Link>
-                      </td>
-                    ) : (
-                      <td></td>
-                    )
-                  ) : (
+        {isLoading ? (
+          <div className='center-grid h-[60vh] w-full'>
+            <SpinLoader thickness={2} size={80} color='#983504' />
+          </div>
+        ) : (
+          <table className='w-full'>
+            <thead>
+              <tr>
+                {headings.map((item) => (
+                  <th
+                    key={item}
+                    className='text-xsmall px-[14px] py-3 text-left font-medium text-gray-500'
+                  >
+                    {item}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.data.map((item, index) =>
+                ContentStructure ? (
+                  <ContentStructure key={index} item={item} />
+                ) : (
+                  <tr
+                    key={index}
+                    className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
+                  >
+                    <td>{index + 1}</td>
                     <td>
-                      <Link href={`/dashboard/user-management/${item._id}`}>
-                        <OpenLinkIcon />
+                      <Link className='hover:underline' href={`/dashboard/${page}/${item._id}`}>
+                        {item.firstName} {item.lastName}
                       </Link>
                     </td>
-                  )}
-                </tr>
-              ),
-            )}
-          </tbody>
-        </table>
+                    <td>{item.email}</td>
+                    <td>{item.phone}</td>
+                    {item.services && <td className='capitalize'>{item.services[0]}</td>}
+                    <td className='capitalize'>{timeAgo(item.createdAt)}</td>
+                    <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
+                    {page === 'service-provider' ? (
+                      item.status ? (
+                        <td>
+                          <Link href={`/dashboard/${page}/${item._id}`}>
+                            <p
+                              className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
+                            >
+                              {item.status}
+                            </p>
+                          </Link>
+                        </td>
+                      ) : (
+                        <td></td>
+                      )
+                    ) : (
+                      <td>
+                        <Link href={`/dashboard/user-management/${item._id}`}>
+                          <OpenLinkIcon />
+                        </Link>
+                      </td>
+                    )}
+                  </tr>
+                ),
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
       <TablePagination
         contentPerPage={contentPerPage}

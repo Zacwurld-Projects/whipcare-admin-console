@@ -36,12 +36,20 @@ export type UserActivity = {
   totalCount: number;
 };
 
-type Activity = {
+export type Activity = {
   _id: string;
   activityType: string;
   description: string;
   email: string;
-  data: Array<object>;
+  data: {
+    user: {
+      _id: string;
+      firstName: string;
+      lastName: string;
+      image: string | null;
+      type: string;
+    };
+  };
   createdAt: string;
   updatedAt: string;
 };

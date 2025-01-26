@@ -62,6 +62,19 @@ const fetchKpis = async (url: string, minDate: string = '', maxDate: string = ''
   }
 };
 
+const fetchTableResponse = async (url: string, pageSize: number, pageNumber: number) => {
+  try {
+    const params = new URLSearchParams();
+    if (pageSize) params.append('pageSize', pageSize.toString());
+    if (pageNumber) params.append('pageNumber', pageNumber.toString());
+
+    const response = await API.get(`${url}${params ? `?${params}` : ''}`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+
 //#region  AUTH
 export const userService = {
   authenticate: async (email: string, password: string) => {
@@ -149,18 +162,8 @@ export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = 
 export const fetchUserManagementKpis = async (maxDate: string = '', minDate: string = '') =>
   fetchKpis(ApiRoutes.Users, minDate, maxDate);
 
-export const fetchUsers = async (pageSize: number = 15, pageNumber: number = 1) => {
-  try {
-    const params = new URLSearchParams();
-    if (pageSize) params.append('pageSize', pageSize.toString());
-    if (pageNumber) params.append('pageNumber', pageNumber.toString());
-
-    const response = await API.get(`${ApiRoutes.Users}${params ? `?${params}` : ''}`);
-    return response.data;
-  } catch (err) {
-    catchError(err);
-  }
-};
+export const fetchUsers = async (pageSize: number = 15, pageNumber: number = 1) =>
+  fetchTableResponse(`${ApiRoutes.Users}`, pageSize, pageNumber);
 
 export const fetchUserKpis = async (id: string) => {
   try {
@@ -180,26 +183,11 @@ export const fetchUserProfile = async (id: string) => {
   }
 };
 
-export const fetchUserActivity = async (
-  id: string,
-  pageSize: number = 6,
-  pageNumber: number = 1,
-) => {
-  try {
-    const params = new URLSearchParams();
-    if (pageSize) params.append('pageSize', pageSize.toString());
-    if (pageNumber) params.append('pageNumber', pageNumber.toString());
-
-    const response = await API.get(`/activity/${id}${params ? `?${params}` : ''}`);
-    return response.data;
-  } catch (err) {
-    catchError(err);
-  }
-};
+export const fetchUserActivity = (id: string, pageSize: number = 6, pageNumber: number = 1) =>
+  fetchTableResponse(`/activity/${id}`, pageSize, pageNumber);
 //  #endregion
 
 // #region SERVICE PROVIDERS
-
 export const fetchServiceProvidersKpis = async (maxDate: string = '', minDate: string = '') =>
   fetchKpis(ApiRoutes.ServiceProvider, minDate, maxDate);
 
@@ -239,6 +227,22 @@ export const fetchServiceProviderPayments = async (id: string) => {
   const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/payments`);
   return reponse.data;
 };
+
+// #endregion
+
+// #region CAR MANGEMENT
+export const fetchCarMangemntKpis = (minDate = '', maxDate = '') =>
+  fetchKpis(`${ApiRoutes.Car}`, minDate, maxDate);
+
+export const fetchCars = (pageSize = 12, pageNumber = 1) =>
+  fetchTableResponse(`${ApiRoutes.Car}`, pageSize, pageNumber);
+// #endregion
+
+// #region ACTIVITIES
+export const fetchActivityKpis = () => fetchKpis(ApiRoutes.Activity, '', '');
+
+export const fetchActivities = (pageSize: number = 6, pageNumber: number = 1) =>
+  fetchTableResponse(`${ApiRoutes.Activity}`, pageSize, pageNumber);
 
 // #endregion
 
