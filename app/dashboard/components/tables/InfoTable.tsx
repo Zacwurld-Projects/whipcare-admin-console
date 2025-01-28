@@ -1,63 +1,115 @@
 'use client';
-
-import OpenLinkIcon from '../../assets/openLinkIcon.svg';
+// import OpenLinkIcon from '../../assets/openLinkIcon.svg';
 import ChevronDownIcon from '../../assets/chevronDown.svg';
 import { ComponentType, Dispatch } from 'react';
-import { timeAgo } from '@/app/lib/accessoryFunctions';
-import Link from 'next/link';
+// import { timeAgo } from '@/app/lib/accessoryFunctions';
+// import Link from 'next/link';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 import SpinLoader from '../Loaders/SpinLoader';
 
-const InfoTable = ({
-  page,
+interface BaseData {
+  _id: string;
+  createdAt: string;
+  lastLogin: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  carModel: string;
+  carBrand: string;
+  colour: string;
+  lastService: string | null;
+  lastServiceDate: string | null;
+}
+
+interface InfoTableProps<T extends BaseData> {
+  heading: string;
+  isLoading?: boolean;
+  currentPage: number;
+  setCurrentPage: Dispatch<number>;
+  data: {
+    data: T[];
+    totalCount: number;
+    pageNumber: number;
+    pageSize: number;
+  };
+  headings: Array<string>;
+  ContentStructure?: ComponentType<{ item: T; index: number }>;
+}
+
+const DefaultContentStructure = <T extends BaseData>({ item }: { item: T }) => {
+  return (
+    // <tr
+    //   key={index}
+    //   className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
+    // >
+    //   <td>{index + 1}</td>
+    //   <td>
+    //     <Link className='hover:underline' href={`/dashboard/${page}/${item._id}`}>
+    //       {item.firstName} {item.lastName}
+    //     </Link>
+    //   </td>
+    //   <td>{item.email}</td>
+    //   <td>{item.phone}</td>
+    //   {item.services && <td className='capitalize'>{item.services[0]}</td>}
+    //   <td className='capitalize'>{timeAgo(item.createdAt)}</td>
+    //   <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
+    //   {page === 'service-provider' ? (
+    //     item.status ? (
+    //       <td>
+    //         <Link href={`/dashboard/${page}/${item._id}`}>
+    //           <p
+    //             className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
+    //           >
+    //             {item.status}
+    //           </p>
+    //         </Link>
+    //       </td>
+    //     ) : (
+    //       <td></td>
+    //     )
+    //   ) : (
+    //     <td>
+    //       <Link href={`/dashboard/user-management/${item._id}`}>
+    //         <OpenLinkIcon />
+    //       </Link>
+    //     </td>
+    //   )}
+    // </tr>
+    <tr className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'>
+      <td>{item._id}</td>
+      <td>{item.createdAt}</td>
+      <td>{item.lastLogin}</td>
+    </tr>
+  );
+};
+
+// const reflectStatusStyle = (status: string) => {
+//   switch (status) {
+//     case 'deactivated':
+//       return `bg-[#fbeae9] text-[#dd524d]`;
+//     case 'not verified':
+//       return `bg-primary-50 text-[#ff915b]`;
+//     case 'verified':
+//       return `bg-[#e7f6ec] text-[#40b869]`;
+//     default:
+//       return '';
+//   }
+// };
+
+const InfoTable = <T extends BaseData>({
   heading,
   isLoading,
   data,
   headings,
   currentPage,
   setCurrentPage,
-  ContentStructure,
-}: {
-  page: string;
-  heading: string;
-  isLoading?: boolean;
-  currentPage: number;
-  setCurrentPage: Dispatch<number>;
-  data: {
-    data: {
-      _id: string;
-      firstName: string;
-      lastName: string;
-      image?: null | string;
-      email: string;
-      phone: string | null;
-      services?: string[];
-      createdAt: string;
-      lastLogin: string;
-      status?: string;
-    }[];
-    totalCount: number;
-  };
-  headings: Array<string>;
-  ContentStructure?: ComponentType<{ item: (typeof data.data)[0] }>;
-}) => {
-  const contentPerPage = 15;
-  const totalPages = Math.ceil(data.totalCount / contentPerPage);
-
-  const reflectStatusStyle = (status: string) => {
-    switch (true) {
-      case status === 'deactivated':
-        return `bg-[#fbeae9] text-[#dd524d]`;
-      case status === 'not verified':
-        return `bg-primary-50 text-[#ff915b]`;
-      case status === 'verified':
-        return `bg-[#e7f6ec] text-[#40b869]`;
-      default:
-        return '';
-    }
-  };
+  ContentStructure = DefaultContentStructure,
+}: InfoTableProps<T>) => {
+  // const contentPerPage = data.pageSize;
+  // const totalPages = Math.ceil(data.totalCount / contentPerPage);
 
   return (
     <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4'>
@@ -96,60 +148,22 @@ const InfoTable = ({
               </tr>
             </thead>
             <tbody>
-              {data.data.map((item, index) =>
-                ContentStructure ? (
-                  <ContentStructure key={index} item={item} />
-                ) : (
-                  <tr
-                    key={index}
-                    className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
-                  >
-                    <td>{index + 1}</td>
-                    <td>
-                      <Link className='hover:underline' href={`/dashboard/${page}/${item._id}`}>
-                        {item.firstName} {item.lastName}
-                      </Link>
-                    </td>
-                    <td>{item.email}</td>
-                    <td>{item.phone}</td>
-                    {item.services && <td className='capitalize'>{item.services[0]}</td>}
-                    <td className='capitalize'>{timeAgo(item.createdAt)}</td>
-                    <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
-                    {page === 'service-provider' ? (
-                      item.status ? (
-                        <td>
-                          <Link href={`/dashboard/${page}/${item._id}`}>
-                            <p
-                              className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
-                            >
-                              {item.status}
-                            </p>
-                          </Link>
-                        </td>
-                      ) : (
-                        <td></td>
-                      )
-                    ) : (
-                      <td>
-                        <Link href={`/dashboard/user-management/${item._id}`}>
-                          <OpenLinkIcon />
-                        </Link>
-                      </td>
-                    )}
-                  </tr>
-                ),
-              )}
+              {data.data.map((item, index) => (
+                <ContentStructure index={index} key={index} item={item} />
+              ))}
             </tbody>
           </table>
         )}
       </div>
-      <TablePagination
-        contentPerPage={contentPerPage}
-        contentLength={data.totalCount}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={setCurrentPage}
-      />
+      {data && (
+        <TablePagination
+          contentPerPage={data.pageSize}
+          contentLength={data.totalCount}
+          currentPage={currentPage}
+          totalPages={Math.ceil(data.totalCount / data.pageSize)}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
     </article>
   );
 };

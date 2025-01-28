@@ -9,6 +9,11 @@ import { useEffect, useState } from 'react';
 import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
 import { fetchCarMangemntKpis, fetchCars } from '@/app/api/apiClient';
 import PageLoader from '../components/Loaders/PageLoader';
+import InfoTable from '../components/tables/InfoTable';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+
+dayjs.extend(advancedFormat);
 
 const carManagementStats = [
   {
@@ -38,7 +43,7 @@ const CarManagementPage = () => {
     maxDate: '',
     minDate: '',
   });
-  const [currentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(
     carManagementStats,
@@ -66,6 +71,37 @@ const CarManagementPage = () => {
         stats={kpiData}
         isLoading={useFetchOverviewKpis.isLoading}
         className='my-8'
+      />
+      <InfoTable
+        heading='Registered Car List'
+        isLoading={useFetchCarList.isLoading}
+        data={useFetchCarList.data}
+        headings={[
+          'No',
+          'Car Brand',
+          'Car Model/Year',
+          'Color',
+          'User Name',
+          'Last Service',
+          'Date Booked',
+        ]}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        ContentStructure={({ item, index }) => (
+          <tr className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'>
+            <td>{index + 1}</td>
+            <td>{item.carBrand}</td>
+            <td>{item.carModel}</td>
+            <td>{item.colour}</td>
+            <td>
+              {item.firstName} {item.lastName}
+            </td>
+            <td>{item.lastService}</td>
+            <td>
+              {item.lastServiceDate ? dayjs(item.lastServiceDate).format('MMM Do, YYYY') : ''}
+            </td>
+          </tr>
+        )}
       />
     </>
   );
