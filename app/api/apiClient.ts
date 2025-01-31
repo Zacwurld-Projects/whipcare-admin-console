@@ -230,6 +230,14 @@ export const fetchServiceProviderPayments = async (id: string) => {
 
 // #endregion
 
+// #region SERVICE BOOKINGS
+export const fetchServiceBookingsKpis = async (maxDate: string = '', minDate: string = '') =>
+  fetchKpis(ApiRoutes.ServiceBooking, minDate, maxDate);
+
+export const fetchServiceBookings = (pageSize = 15, pageNumber = 1) =>
+  fetchTableResponse(`${ApiRoutes.ServiceBooking}`, pageSize, pageNumber);
+// #endregion
+
 // #region CAR MANGEMENT
 export const fetchCarMangemntKpis = (minDate = '', maxDate = '') =>
   fetchKpis(`${ApiRoutes.Car}`, minDate, maxDate);

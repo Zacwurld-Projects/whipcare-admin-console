@@ -1,28 +1,11 @@
 'use client';
-// import OpenLinkIcon from '../../assets/openLinkIcon.svg';
 import ChevronDownIcon from '../../assets/chevronDown.svg';
 import { ComponentType, Dispatch } from 'react';
-// import { timeAgo } from '@/app/lib/accessoryFunctions';
-// import Link from 'next/link';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 import SpinLoader from '../Loaders/SpinLoader';
-
-interface BaseData {
-  _id: string;
-  createdAt: string;
-  lastLogin: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  carModel: string;
-  carBrand: string;
-  colour: string;
-  lastService: string | null;
-  lastServiceDate: string | null;
-}
+import { BaseData } from '@/app/lib/mockTypes';
 
 interface InfoTableProps<T extends BaseData> {
   heading: string;
@@ -41,43 +24,6 @@ interface InfoTableProps<T extends BaseData> {
 
 const DefaultContentStructure = <T extends BaseData>({ item }: { item: T }) => {
   return (
-    // <tr
-    //   key={index}
-    //   className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
-    // >
-    //   <td>{index + 1}</td>
-    //   <td>
-    //     <Link className='hover:underline' href={`/dashboard/${page}/${item._id}`}>
-    //       {item.firstName} {item.lastName}
-    //     </Link>
-    //   </td>
-    //   <td>{item.email}</td>
-    //   <td>{item.phone}</td>
-    //   {item.services && <td className='capitalize'>{item.services[0]}</td>}
-    //   <td className='capitalize'>{timeAgo(item.createdAt)}</td>
-    //   <td className='capitalize'>{timeAgo(item.lastLogin)}</td>
-    //   {page === 'service-provider' ? (
-    //     item.status ? (
-    //       <td>
-    //         <Link href={`/dashboard/${page}/${item._id}`}>
-    //           <p
-    //             className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
-    //           >
-    //             {item.status}
-    //           </p>
-    //         </Link>
-    //       </td>
-    //     ) : (
-    //       <td></td>
-    //     )
-    //   ) : (
-    //     <td>
-    //       <Link href={`/dashboard/user-management/${item._id}`}>
-    //         <OpenLinkIcon />
-    //       </Link>
-    //     </td>
-    //   )}
-    // </tr>
     <tr className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'>
       <td>{item._id}</td>
       <td>{item.createdAt}</td>
@@ -85,19 +31,6 @@ const DefaultContentStructure = <T extends BaseData>({ item }: { item: T }) => {
     </tr>
   );
 };
-
-// const reflectStatusStyle = (status: string) => {
-//   switch (status) {
-//     case 'deactivated':
-//       return `bg-[#fbeae9] text-[#dd524d]`;
-//     case 'not verified':
-//       return `bg-primary-50 text-[#ff915b]`;
-//     case 'verified':
-//       return `bg-[#e7f6ec] text-[#40b869]`;
-//     default:
-//       return '';
-//   }
-// };
 
 const InfoTable = <T extends BaseData>({
   heading,

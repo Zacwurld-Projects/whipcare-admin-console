@@ -28,6 +28,30 @@ export type UserProfileData = {
   }>;
 };
 
+export interface BaseData {
+  _id: string;
+  createdAt: string;
+  lastLogin: string;
+  firstName: string;
+  lastName: string;
+  userName?: string;
+  serviceProvider?: string;
+  carOwnerPhone?: string;
+  orderId?: string;
+  serviceProviderPhone?: string;
+  serviceType?: string;
+  date?: string;
+  email: string;
+  status?: string;
+  services?: string[];
+  phone: string | null;
+  carModel?: string;
+  carBrand?: string;
+  colour?: string;
+  lastService?: string | null;
+  lastServiceDate?: string | null;
+}
+
 export type UserActivity = {
   status: boolean;
   data: Activity[];

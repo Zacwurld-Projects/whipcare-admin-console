@@ -11,6 +11,8 @@ export default class ApiRoutes {
 
   static ServiceProvider: string = '/service-provider';
 
+  static ServiceBooking: string = '/service-booking';
+
   static Settings: string = '/setting';
 
   static Feedback: string = '/feedback';

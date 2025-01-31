@@ -16,6 +16,12 @@ import { useEffect, useState } from 'react';
 import TopPerformers from '../components/service-provider/TopPerformers';
 import PageLoader from '../components/Loaders/PageLoader';
 import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
+import Link from 'next/link';
+import dayjs from 'dayjs';
+import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+
+dayjs.extend(advancedFormat);
 
 const ServiceProviderPage = () => {
   const [selectedDates, setSelectedDates] = useState({
@@ -74,6 +80,7 @@ const ServiceProviderPage = () => {
       lastLogin: string;
       createdAt: string;
       services: string[];
+      status?: string;
     }>
   >([]);
 
@@ -126,6 +133,40 @@ const ServiceProviderPage = () => {
               'Status',
             ]}
             content={serviceProviders}
+            ContentStructure={({ item, index }) => (
+              <tr
+                key={index}
+                className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
+              >
+                <td>{index + 1}</td>
+                <td>
+                  <Link
+                    className='hover:underline'
+                    href={`/dashboard/service-provider/${item._id}`}
+                  >
+                    {item.firstName} {item.lastName}
+                  </Link>
+                </td>
+                <td>{item.email}</td>
+                <td>{item.phone}</td>
+                {item.services && <td className='capitalize'>{item.services[0]}</td>}
+                <td className='capitalize'>{dayjs(item.createdAt).format('MMM Do, YYYY')}</td>
+                <td className='capitalize'>{dayjs(item.lastLogin).format('MMM Do, YYYY')}</td>
+                {item.status ? (
+                  <td>
+                    <Link href={`/dashboard/service-provider/${item._id}`}>
+                      <p
+                        className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status)}`}
+                      >
+                        {item.status}
+                      </p>
+                    </Link>
+                  </td>
+                ) : (
+                  <td></td>
+                )}
+              </tr>
+            )}
           />
         </>
       )}
