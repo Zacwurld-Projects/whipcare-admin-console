@@ -1,5 +1,6 @@
 'use client';
 import React, { Dispatch, useContext, useEffect, useState } from 'react';
+import { BookingResponse } from '../lib/mockTypes';
 
 type AppContextType = {
   isSidebarOpen: boolean;
@@ -25,6 +26,13 @@ type AppContextType = {
     email: string;
     image: string;
   };
+  bookingDetails: {
+    display: boolean;
+    data: BookingResponse | null;
+    isLoading: boolean;
+    heading: string;
+  };
+  setBookingDetails: Dispatch<AppContextType['bookingDetails']>;
 };
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -47,6 +55,18 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     image: string | null | undefined;
   }>(defaultUserDetails);
 
+  const [bookingDetails, setBookingDetails] = useState<{
+    display: boolean;
+    data: BookingResponse | null;
+    isLoading: boolean;
+    heading: string;
+  }>({
+    display: false,
+    data: null,
+    isLoading: false,
+    heading: '',
+  });
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const user = localStorage.getItem('currentUser');
@@ -68,7 +88,15 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userDetails]);
   return (
     <AppContext.Provider
-      value={{ isSidebarOpen, setIsSidebarOpen, userDetails, setUserDetails, defaultUserDetails }}
+      value={{
+        isSidebarOpen,
+        setIsSidebarOpen,
+        userDetails,
+        setUserDetails,
+        defaultUserDetails,
+        bookingDetails,
+        setBookingDetails,
+      }}
     >
       {children}
     </AppContext.Provider>

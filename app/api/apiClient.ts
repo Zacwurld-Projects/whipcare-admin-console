@@ -231,11 +231,20 @@ export const fetchServiceProviderPayments = async (id: string) => {
 // #endregion
 
 // #region SERVICE BOOKINGS
-export const fetchServiceBookingsKpis = async (maxDate: string = '', minDate: string = '') =>
+export const fetchServiceBookingsKpis = (maxDate: string = '', minDate: string = '') =>
   fetchKpis(ApiRoutes.ServiceBooking, minDate, maxDate);
 
 export const fetchServiceBookings = (pageSize = 15, pageNumber = 1) =>
   fetchTableResponse(`${ApiRoutes.ServiceBooking}`, pageSize, pageNumber);
+
+export const fetchServiceBookingDetails = async (bookingId: string) => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceBooking}/${bookingId}`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
 // #endregion
 
 // #region CAR MANGEMENT

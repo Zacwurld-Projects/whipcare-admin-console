@@ -1,119 +1,145 @@
 'use client';
-import { OrderDetails } from '@/app/lib/mockTypes';
 import SidebarModalContainer from './SidebarModalContainer';
 import CheckMarkIcon from '../../assets/progressCheckmark.svg';
 import dayjs from 'dayjs';
-import { Dispatch } from 'react';
 import SpinLoader from '../Loaders/SpinLoader';
-import { convertBookingAndOrderStatus, reflectStatusStyle } from '@/app/lib/accessoryFunctions';
+import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
+import { useGlobalContext } from '@/app/context/AppContext';
 
-const BookingDetails = ({
-  type,
-  booking,
-  isLoading,
-  setIsDisplayingBookingDetails,
-}: {
-  type: string;
-  isLoading: boolean;
-  booking: OrderDetails;
-  setIsDisplayingBookingDetails: Dispatch<boolean>;
-}) => {
-  if (isLoading || !booking) {
+const BookingDetails = (
+  {
+    //   type,
+    //   booking,
+    //   isLoading,
+    //   setIsDisplayingBookingDetails,
+    // }: {
+    //   type: string;
+    //   isLoading: boolean;
+    //   booking: OrderDetails;
+    //   setIsDisplayingBookingDetails: Dispatch<boolean>;
+  },
+) => {
+  const {
+    bookingDetails: { data, isLoading, heading },
+    setBookingDetails,
+  } = useGlobalContext();
+
+  const closeModal = () =>
+    setBookingDetails({ display: false, data: null, heading: '', isLoading: false });
+
+  if (!data) {
     return (
-      <SidebarModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
+      <SidebarModalContainer setIsDisplayingBookingDetails={closeModal}>
         <div className='center-grid h-[80vh] w-full border-green-700'>
-          <SpinLoader size={64} color='#27231F' thickness={2} />
+          {isLoading ? (
+            <SpinLoader size={64} color='#27231F' thickness={2} />
+          ) : (
+            <p>No Details for this booking.</p>
+          )}
         </div>
       </SidebarModalContainer>
     );
   }
 
   const info = [
-    { title: 'booking Date', value: dayjs(booking?.createdAt).format('MM/DD/YYYY / hh:mm A') },
-    { title: 'car', value: `${booking?.carBrand} ${booking?.carModel}` },
-    { title: 'service', value: booking?.serviceTitle },
-    { title: 'service type', value: booking?.serviceType },
-    { title: 'service provider', value: `${booking?.firstName} ${booking?.lastName}` },
+    { title: 'booking Date', value: dayjs(data?.bookingDate).format('MM/DD/YYYY / hh:mm A') },
+    { title: 'car', value: `${data?.carBrand} ${data?.carModel}` },
+    { title: 'service', value: data?.serviceType },
+    { title: 'service type', value: data?.serviceMode },
+    {
+      title: 'service provider',
+      value: `${data?.serviceProviderFirstName} ${data?.serviceProviderLastName}`,
+    },
+    {
+      title: 'price range',
+      value: `₦${data?.minPrice} - ₦${data?.maxPrice}`,
+    },
   ];
 
-  const trackBooking = (checkpoint: string) => {
-    const bookingStatus = [
-      'accepted',
-      'received',
-      'in progress',
-      'ready for delivery',
-      'delivered',
-      'completed',
-    ];
-    const currentCheckpoint = bookingStatus.findIndex((item) => item === booking?.status);
-    if (currentCheckpoint >= 0) {
-      return bookingStatus.findIndex((item) => item === checkpoint) <= currentCheckpoint
-        ? true
-        : false;
-    } else false;
+  // const trackBooking = (checkpoint: string) => {
+  //   const bookingStatus = [
+  //     'accepted',
+  //     'received',
+  //     'in progress',
+  //     'ready for delivery',
+  //     'delivered',
+  //     'completed',
+  //   ];
+  //   const currentCheckpoint = bookingStatus.findIndex((item) => item === booking?.status);
+  //   if (currentCheckpoint >= 0) {
+  //     return bookingStatus.findIndex((item) => item === checkpoint) <= currentCheckpoint
+  //       ? true
+  //       : false;
+  //   } else false;
+  // };
+
+  const convertToCheckpointDate = (date: string | null) =>
+    date ? dayjs(date).format('DD-MMM-YYYY / hh:mm A') : '';
+
+  const getCurrentStatus = () => {
+    if (data.statusTimestamps.Cancelled !== null) return 'cancelled';
+    if (data.statusTimestamps.Payment !== null) return 'completed';
+    return 'pending';
   };
 
   const bookingCheckpoints = [
     {
       title: 'Order Accepted',
-      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
-      checked: trackBooking('accepted'),
+      date: convertToCheckpointDate(data.statusTimestamps.Accepted),
+      checked: !!data.statusTimestamps.Accepted,
     },
     {
       title: 'Car Received at Mechanic Shop',
-      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
-      checked: trackBooking('received'),
+      date: convertToCheckpointDate(data.statusTimestamps.Accepted),
+      checked: !!data.statusTimestamps.Accepted,
     },
     {
       title: 'Order Service In Progress',
-      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
-      checked: trackBooking('in progress'),
+      date: convertToCheckpointDate(data.statusTimestamps['In Progress']),
+      checked: !!data.statusTimestamps['In Progress'],
     },
     {
       title: 'Ready For Pickup/Delivery',
-      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
-      checked: trackBooking('ready for delivery'),
+      date: convertToCheckpointDate(data.statusTimestamps['Ready for Delivery/Pickup']),
+      checked: !!data.statusTimestamps['Ready for Delivery/Pickup'],
     },
     {
       title: 'Delivered',
-      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
-      checked: trackBooking('delivered'),
+      date: convertToCheckpointDate(data.statusTimestamps.Delivered),
+      checked: !!data.statusTimestamps.Delivered,
     },
     {
       title: 'Payment',
-      date: dayjs(booking?.createdAt).format('DD-MMM-YYYY / hh:mm A'),
-      checked: trackBooking('completed'),
+      date: convertToCheckpointDate(data.statusTimestamps.Payment),
+      checked: !!data.statusTimestamps.Payment,
     },
   ];
 
   return (
-    <SidebarModalContainer setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}>
+    <SidebarModalContainer setIsDisplayingBookingDetails={closeModal}>
       <>
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium'>
-          <p>{type === 'orders' ? 'Order' : 'Booking'} history list</p>
+          <p>{heading}</p>
           <p>{'>'}</p>
-          <h5 className='heading-h5 max-w-[189px] truncate'>#{booking._id}</h5>
+          <h5 className='heading-h5 max-w-[189px] truncate'>{data._id}</h5>
           <p
-            className={`text-small rounded-[6px] px-[6px] py-[2px] capitalize ${reflectStatusStyle(convertBookingAndOrderStatus(booking.status))}`}
+            className={`text-small rounded-[6px] px-[6px] py-[2px] capitalize ${reflectStatusStyle(getCurrentStatus())}`}
           >
-            {convertBookingAndOrderStatus(booking.status)}
+            {getCurrentStatus()}
           </p>
         </div>
         <div className='flex-column mx-3 gap-6 p-5'>
           <p className='text-[20px] font-semibold text-gray-800'>Booking Info</p>
           <ul className='flex-column gap-[15.4px]'>
             {info.map((item) => (
-              <li className='flex items-center justify-between text-[13px]' key={item.title}>
+              <li
+                className={`flex items-center justify-between ${item.title === 'price range' ? 'text-[14px]' : 'text-[13px]'}`}
+                key={item.title}
+              >
                 <p className='capitalize text-gray-500'>{item.title}</p>
                 <p className='font-medium capitalize text-gray-900'>{item.value}</p>
               </li>
             ))}
-            {/* {pricing.map((item) => (
-                    <li className='flex items-center justify-between text-[14px]' key={item.title}>
-                      <p className='capitalize text-gray-500'>{item.title}</p>
-                      <p className='font-medium capitalize text-gray-900'>${item.value}</p>
-                    </li>
-                  ))} */}
           </ul>
           <ul>
             <p className='mb-5 text-[18px] font-medium text-gray-900'>Track Booking</p>
@@ -140,7 +166,7 @@ const BookingDetails = ({
         <div className='center-grid w-full'>
           <button
             className='mx-auto mt-6 w-[64%] self-center rounded-[32px] bg-primary-900 px-10 py-[14px] font-medium text-white disabled:opacity-50'
-            disabled={booking.status === 'cancelled' || booking.status === 'completed'}
+            disabled={!data.statusTimestamps.Cancelled || !data.statusTimestamps.Payment}
           >
             Track Location
           </button>

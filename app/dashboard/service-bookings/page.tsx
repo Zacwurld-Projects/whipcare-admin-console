@@ -13,6 +13,7 @@ import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import { useQuery } from '@tanstack/react-query';
 import PageLoader from '../components/Loaders/PageLoader';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import useGetBookingDetails from './useGetBookingDetails';
 
 dayjs.extend(advancedFormat);
 
@@ -57,6 +58,8 @@ const ServiceBookingsPage = () => {
     fetchServiceBookingsKpis,
   );
 
+  const { openBookingDetailsModal } = useGetBookingDetails();
+
   if (useFetchBookings.isLoading) return <PageLoader />;
 
   return (
@@ -91,12 +94,14 @@ const ServiceBookingsPage = () => {
             <td>{item.serviceProvider}</td>
             <td>{item.carOwnerPhone}</td>
             <td>
-              <button className='hover:underline'>{item.orderId}</button>
+              <button onClick={() => openBookingDetailsModal(item._id)} className='hover:underline'>
+                {item.orderId}
+              </button>
             </td>
             <td>{item.serviceType}</td>
             <td className='capitalize'>{dayjs(item.date).format('MMM Do, YYYY')}</td>
             <td>
-              <button>
+              <button onClick={() => openBookingDetailsModal(item._id)}>
                 <p
                   className={`text-xsmall w-fit rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status ? item.status.toLowerCase() : '')}`}
                 >

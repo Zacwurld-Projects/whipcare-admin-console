@@ -62,6 +62,11 @@ export default {
           800: '#514A4A',
           900: '#3E3838',
         },
+        dark: {
+          bg: '#1e1e2c',
+          secondary: '#272733',
+          accent: '#ff6e4a',
+        },
       },
       fontFamily: {
         inter: 'var(--font-inter)',

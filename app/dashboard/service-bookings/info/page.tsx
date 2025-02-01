@@ -8,6 +8,7 @@ import { fetchServiceBookings } from '@/app/api/apiClient';
 import InfoTable from '../../components/tables/InfoTable';
 import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import SectionLoader from '../../components/Loaders/SectionLoader';
+import useGetBookingDetails from '../useGetBookingDetails';
 
 dayjs.extend(advancedFormat);
 
@@ -18,6 +19,8 @@ const ServiceBookingInfo = () => {
     queryKey: ['fetchServiceBookings', currentPage],
     queryFn: async () => fetchServiceBookings(15, currentPage),
   });
+
+  const { openBookingDetailsModal } = useGetBookingDetails();
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -36,7 +39,7 @@ const ServiceBookingInfo = () => {
             isLoading={useFetchBookings.isLoading}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            heading='Service Booking summary'
+            heading='Service Bookings List'
             data={useFetchBookings.data}
             headings={[
               'No',
@@ -58,12 +61,17 @@ const ServiceBookingInfo = () => {
                 <td>{item.serviceProvider}</td>
                 <td>{item.carOwnerPhone}</td>
                 <td>
-                  <button className='hover:underline'>{item.orderId}</button>
+                  <button
+                    onClick={() => openBookingDetailsModal(item._id)}
+                    className='hover:underline'
+                  >
+                    {item.orderId}
+                  </button>
                 </td>
                 <td>{item.serviceType}</td>
                 <td className='capitalize'>{dayjs(item.date).format('MMM Do, YYYY')}</td>
                 <td>
-                  <button>
+                  <button onClick={() => openBookingDetailsModal(item._id)}>
                     <p
                       className={`text-xsmall w-fit rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status ? item.status.toLowerCase() : '')}`}
                     >

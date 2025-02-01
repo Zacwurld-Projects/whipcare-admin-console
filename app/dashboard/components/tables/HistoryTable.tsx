@@ -1,16 +1,16 @@
 'use client';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import FilterForm from './components/FilterForm';
 import { convertBookingAndOrderStatus, reflectStatusStyle } from '@/app/lib/accessoryFunctions';
-import BookingDetails from '../modals/BookingDetails';
+// import BookingDetails from '../modals/BookingDetails';
 import { Orders } from '@/app/lib/mockTypes';
 import dayjs from 'dayjs';
-import { useQuery } from '@tanstack/react-query';
-import { fetchServiceProviderOrderById } from '@/app/api/apiClient';
+// import { useQuery } from '@tanstack/react-query';
+// import { fetchServiceProviderOrderById } from '@/app/api/apiClient';
 
 const HistoryTable = ({
-  type,
-  userId,
+  // type,
+  // userId,
   tableHeadings,
   heading,
   tableContent,
@@ -21,26 +21,26 @@ const HistoryTable = ({
   heading: string;
   tableContent: Orders[];
 }) => {
-  const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState<boolean>(false);
+  // const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState<boolean>(false);
 
-  const [orderId, setOrderId] = useState<string | null>(null);
+  // const [orderId, setOrderId] = useState<string | null>(null);
 
-  const { data: orderDetails, isLoading: isOrderDetailsLoading } = useQuery({
-    queryKey: [type + 'Details', orderId, userId],
-    queryFn: () => fetchServiceProviderOrderById(userId, orderId ? orderId : ''),
-    enabled: !!orderId,
-  });
+  // const { data: orderDetails, isLoading: isOrderDetailsLoading } = useQuery({
+  //   queryKey: [type + 'Details', orderId, userId],
+  //   queryFn: () => fetchServiceProviderOrderById(userId, orderId ? orderId : ''),
+  //   enabled: !!orderId,
+  // });
 
-  useEffect(() => {
-    if (!isDisplayingBookingDetails) {
-      setTimeout(() => setOrderId(null), 200); // delay clearing orderId
-    }
-  }, [isDisplayingBookingDetails]);
+  // useEffect(() => {
+  //   if (!isDisplayingBookingDetails) {
+  //     setTimeout(() => setOrderId(null), 200); // delay clearing orderId
+  //   }
+  // }, [isDisplayingBookingDetails]);
 
-  const handleOpenOrderDetails = (id: string) => {
-    setOrderId(id);
-    setIsDisplayingBookingDetails(true);
-  };
+  // const handleOpenOrderDetails = (id: string) => {
+  //   setOrderId(id);
+  //   setIsDisplayingBookingDetails(true);
+  // };
 
   return (
     <>
@@ -72,7 +72,7 @@ const HistoryTable = ({
                   <td className='pl-12'>
                     <button
                       className='hover:underline'
-                      onClick={() => handleOpenOrderDetails(item._id)}
+                      // onClick={() => handleOpenOrderDetails(item._id)}
                     >
                       {item._id}
                     </button>
@@ -91,7 +91,7 @@ const HistoryTable = ({
                   <td>
                     <button
                       className={`text-medium w-[124px] rounded-[9.37px] text-center font-medium capitalize ${reflectStatusStyle(convertBookingAndOrderStatus(item.status))}`}
-                      onClick={() => handleOpenOrderDetails(item._id)}
+                      // onClick={() => handleOpenOrderDetails(item._id)}
                     >
                       {convertBookingAndOrderStatus(item.status)}
                     </button>
@@ -102,14 +102,14 @@ const HistoryTable = ({
           </table>
         </div>
       </article>
-      {isDisplayingBookingDetails && (
+      {/* {isDisplayingBookingDetails && (
         <BookingDetails
           type={type}
           booking={orderDetails?.data || null}
           isLoading={isOrderDetailsLoading}
           setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}
         />
-      )}
+      )} */}
     </>
   );
 };

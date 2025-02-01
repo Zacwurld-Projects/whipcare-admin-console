@@ -99,10 +99,32 @@ export type ServiceProviderProfile = {
   }>;
 };
 
+export type BookingResponse = {
+  _id: string;
+  statusTimestamps: {
+    Accepted: string | null;
+    Pending: string | null;
+    'Mechanic arrived': string | null;
+    'In Progress': string | null;
+    'Ready for Delivery/Pickup': string | null;
+    Delivered: string | null;
+    Payment: string | null;
+    Cancelled: string | null;
+  };
+  bookingDate: string;
+  carBrand: string;
+  carModel: string;
+  serviceMode: string;
+  serviceType: string;
+  serviceProviderFirstName: string;
+  serviceProviderLastName: string;
+  minPrice: number;
+  maxPrice: number;
+};
+
 export type Booking = {
   id: string;
   bookingDate: number;
-
   phoneNo: string;
   location: string;
   status: 'pending' | 'on going' | 'completed' | 'cancelled';
