@@ -97,7 +97,7 @@ const UserManagementPage = () => {
           'Action',
         ]}
         ContentStructure={({ item, index }) => (
-          <tr className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'>
+          <>
             <td>{index + 1}</td>
             <td>
               <Link className='hover:underline' href={`/dashboard/user-management/${item._id}`}>
@@ -114,7 +114,7 @@ const UserManagementPage = () => {
                 <OpenLinkIcon />
               </Link>
             </td>
-          </tr>
+          </>
         )}
         content={useFetchUser.data.data || {}}
       />

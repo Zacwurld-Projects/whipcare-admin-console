@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 import tailwindScrollbar from 'tailwind-scrollbar';
 
 export default {
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -66,6 +67,8 @@ export default {
           bg: '#1e1e2c',
           secondary: '#272733',
           accent: '#ff6e4a',
+          primary: '#2c2c3c',
+          tertiary: '#a0a0b2',
         },
       },
       fontFamily: {

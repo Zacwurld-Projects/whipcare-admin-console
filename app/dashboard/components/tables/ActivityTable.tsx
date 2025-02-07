@@ -58,12 +58,12 @@ const ActivityTable = ({
   }
 
   return (
-    <article className='rounded-lg border border-[#e0ddd9] bg-white'>
+    <article className='rounded-lg border border-[#e0ddd9] bg-white dark:border-transparent dark:bg-dark-secondary'>
       <div className='flex w-full justify-between px-6 py-4'>
-        <FilterForm />
+        <FilterForm className='w-[50%]' />
         <ExportTable />
       </div>
-      <div className='border-y border-gray-200 px-6'>
+      <div className='border-y border-gray-200 px-6 dark:border-[#2c2c3c]'>
         {isLoading ? (
           <div className='center-grid h-[60vh] w-full'>
             <SpinLoader size={100} thickness={2} color='#983504' />
@@ -71,11 +71,11 @@ const ActivityTable = ({
         ) : (
           <table className='w-full'>
             <thead>
-              <tr className='border-b border-gray-200 bg-gray-50'>
+              <tr className='border-b border-gray-200 bg-gray-50 dark:border-[#2c2c3c] dark:bg-dark-secondary'>
                 {tableHeadings.map((item) => (
                   <th
                     key={item}
-                    className={`text-xsmall px-6 py-3 text-left font-medium text-gray-700`}
+                    className={`text-xsmall px-6 py-3 text-left font-medium text-gray-700 dark:text-white`}
                   >
                     {item}
                   </th>
@@ -87,9 +87,14 @@ const ActivityTable = ({
                 return ContentStructure ? (
                   <ContentStructure item={item} key={item._id} />
                 ) : (
-                  <tr key={item._id} className='[&_td]:text-small [&_td]:p-6 [&_td]:text-gray-700'>
+                  <tr
+                    key={item._id}
+                    className='[&_td]:text-small [&_td]:p-6 [&_td]:text-gray-700 dark:[&_td]:text-white'
+                  >
                     <td className=' '>
-                      <p className='font-medium text-gray-900'>{item.activityType}</p>
+                      <p className='font-medium text-gray-900 dark:text-white'>
+                        {item.activityType}
+                      </p>
                     </td>
                     <td className='max-w-[200px] text-wrap break-words font-medium'>
                       {item.description}
@@ -101,8 +106,8 @@ const ActivityTable = ({
                       </p>
                     </td>
                     <td>
-                      <button className='center-grid size-8 rounded-lg border border-gray-200'>
-                        <DotsIcon />
+                      <button className='center-grid size-8 rounded-lg border border-gray-200 dark:border-dark-primary'>
+                        <DotsIcon className='dark:*:fill-white' />
                       </button>
                     </td>
                   </tr>

@@ -53,16 +53,16 @@ const UserProfilePage = ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      <h3 className='heading-h3 font-medium text-gray-800'>User Profile</h3>
+      <h3 className='heading-h3 font-medium text-gray-800 dark:text-white'>User Profile</h3>
       <div className='mt-4 flex items-center gap-[10px]'>
         <Link
           href={'/dashboard/user-management/info'}
-          className='text-medium font-medium text-[#27231f]'
+          className='text-medium font-medium text-[#27231f] dark:text-dark-tertiary'
         >
           Users Info
         </Link>
-        <p className='text-medium font-medium text-[#27231f]'>{'>'}</p>
-        <p className='heading-h5 font-medium text-[#27231f]'>
+        <p className='text-medium font-medium text-[#27231f] dark:text-dark-tertiary'>{'>'}</p>
+        <p className='heading-h5 font-medium text-[#27231f] dark:text-dark-tertiary'>
           {useFetchUserKpis.data.userContact.firstName} {useFetchUserKpis.data.userContact.lastName}
         </p>
       </div>

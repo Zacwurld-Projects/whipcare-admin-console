@@ -52,10 +52,7 @@ const ServiceBookingInfo = () => {
               'Status',
             ]}
             ContentStructure={({ item, index }) => (
-              <tr
-                key={index}
-                className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
-              >
+              <>
                 <td>{index + 1}</td>
                 <td>{item.userName}</td>
                 <td>{item.serviceProvider}</td>
@@ -79,7 +76,7 @@ const ServiceBookingInfo = () => {
                     </p>
                   </button>
                 </td>
-              </tr>
+              </>
             )}
           />
         )}

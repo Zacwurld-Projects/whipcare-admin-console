@@ -46,7 +46,7 @@ const InviteMembersForm = ({
     >
       <div className='flex-column w-full gap-3'>
         <label htmlFor='role' className='flex-column relative gap-1'>
-          <p className='text-xsmall font-medium text-gray-800'>Role</p>
+          <p className='text-xsmall font-medium text-gray-800 dark:text-white'>Role</p>
           <div className='flex items-center gap-1 rounded-[5px] border border-gray-200 p-4'>
             <input
               type='text'
@@ -54,23 +54,23 @@ const InviteMembersForm = ({
               placeholder='Select role'
               readOnly
               required
-              className='text-xsmall flex-1 cursor-pointer capitalize focus:outline-none'
+              className='text-xsmall flex-1 cursor-pointer bg-transparent capitalize focus:outline-none dark:text-white dark:placeholder:text-white/50'
               id='role'
               name='role'
               ref={roleInputRef}
               onClick={handleToggleMenu}
             />
-            <ChevronDownIcon className='*:stroke-gray-500' />
+            <ChevronDownIcon className='*:stroke-gray-500 dark:*:stroke-white' />
           </div>
           {isMenuOpen && (
             <div
               ref={roleMenuRef}
-              className='flex-column absolute right-0 top-[110%] z-20 w-[200px] overflow-hidden rounded border bg-white shadow-md'
+              className='flex-column absolute right-0 top-[110%] z-20 w-[200px] overflow-hidden rounded border bg-white shadow-md dark:border-transparent dark:bg-[#2c2c3c]'
             >
               {roleOptions.map((item) => (
                 <button
                   type='button'
-                  className='text-xsmall w-full bg-white p-2 text-start font-medium capitalize text-gray-800 hover:bg-gray-200'
+                  className='text-xsmall w-full bg-white p-2 text-start font-medium capitalize text-gray-800 hover:bg-gray-200 dark:bg-transparent dark:text-white dark:hover:bg-[#2f3144]'
                   key={item}
                   onClick={() => handleRoleSelect(item)}
                 >
@@ -81,10 +81,10 @@ const InviteMembersForm = ({
           )}
         </label>
         <label className='flex-column gap-1'>
-          <p className='text-xsmall font-medium text-gray-800'>Email address</p>
+          <p className='text-xsmall font-medium text-gray-800 dark:text-white'>Email address</p>
           <div className='rounded-[5px] border border-gray-200 p-4'>
             <input
-              className='text-xsmall w-full text-gray-800 focus:outline-none'
+              className='text-xsmall w-full bg-transparent text-gray-800 focus:outline-none dark:text-white dark:placeholder:text-white/50'
               type='email'
               placeholder='Enter email address'
               name='email'
@@ -99,6 +99,7 @@ const InviteMembersForm = ({
       <FormButton
         disabled={isLoading || !memberDetails.email || !memberDetails.role}
         isLoading={isLoading}
+        className='dark:bg-dark-accent'
         type='submit'
         text='Send Invite Link'
       />

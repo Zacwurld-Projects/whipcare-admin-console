@@ -79,14 +79,13 @@ body {
 
 .calendarDay {
   border: 2px solid #f0f2f5;
+  @apply dark:!border-transparent;
 }
 .calendarDay[data-in-range='true'] {
-  background: #ffece5 !important;
-  border-color: #ffece5 !important;
+  @apply dark:!bg-dark-accent !border-primary-50 !bg-primary-50 dark:!border-[#f56630];
 }
 .calendarDay[data-selected='true'] {
-  background: #ffece5 !important;
-  border-color: #ffece5 !important;
+  @apply dark:!bg-dark-accent !border-primary-50 !bg-primary-50 dark:!border-[#f56630];
 }
 .calendarDay[data-first-in-range='true'] {
   border-color: #f56630 !important;
@@ -99,6 +98,7 @@ body {
   background: #f7f9fc;
   border-color: #f7f9fc;
   color: #d0d5dd !important;
+  @apply border-[#f7f9fc] bg-[#f7f9fc] !text-[#d0d5dd] dark:border-gray-50 dark:bg-gray-500 dark:!text-white;
 }
 .calendarDay[data-last-in-range='true'] {
   border-color: #f56630 !important;

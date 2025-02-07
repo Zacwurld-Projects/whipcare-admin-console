@@ -11,10 +11,12 @@ const InputArea = ({
   name,
   title,
   readOnly,
+  className,
   handleChange,
 }: {
   defaultValue?: string;
   readOnly?: boolean;
+  className?: string;
   value: string;
   type: 'email' | 'password' | 'text';
   name: string;
@@ -26,7 +28,7 @@ const InputArea = ({
   return (
     <label
       htmlFor={name}
-      className='grid h-[54px] w-full items-center rounded-[5px] border border-gray-200'
+      className={`${className} grid h-[54px] w-full items-center rounded-[5px] border border-gray-200`}
     >
       <div className='relative flex w-[92%] items-center gap-2 justify-self-center'>
         <input
@@ -38,12 +40,12 @@ const InputArea = ({
           defaultValue={defaultValue}
           value={value}
           onChange={handleChange}
-          className={`text-small peer flex-1 text-gray-700 focus:mt-3 focus:outline-none ${
+          className={`text-small peer flex-1 bg-transparent text-gray-700 focus:mt-3 focus:outline-none ${
             value ? 'mt-3' : ''
           }`}
         />
         <p
-          className={`peer-focus:text-xsmall pointer-events-none absolute top-1/2 -translate-y-1/2 justify-self-start text-gray-800 opacity-50 transition-all peer-focus:translate-y-[-110%] peer-focus:font-medium ${
+          className={`peer-focus:text-xsmall title pointer-events-none absolute top-1/2 -translate-y-1/2 justify-self-start text-gray-800 opacity-50 transition-all peer-focus:translate-y-[-110%] peer-focus:font-medium ${
             value ? 'text-xsmall translate-y-[-110%] font-medium' : 'text-small'
           }`}
         >

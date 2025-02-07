@@ -118,7 +118,7 @@ const BookingDetails = (
   return (
     <SidebarModalContainer setIsDisplayingBookingDetails={closeModal}>
       <>
-        <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium'>
+        <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium dark:text-white'>
           <p>{heading}</p>
           <p>{'>'}</p>
           <h5 className='heading-h5 max-w-[189px] truncate'>{data._id}</h5>
@@ -129,34 +129,36 @@ const BookingDetails = (
           </p>
         </div>
         <div className='flex-column mx-3 gap-6 p-5'>
-          <p className='text-[20px] font-semibold text-gray-800'>Booking Info</p>
+          <p className='text-[20px] font-semibold text-gray-800 dark:text-white'>Booking Info</p>
           <ul className='flex-column gap-[15.4px]'>
             {info.map((item) => (
               <li
                 className={`flex items-center justify-between ${item.title === 'price range' ? 'text-[14px]' : 'text-[13px]'}`}
                 key={item.title}
               >
-                <p className='capitalize text-gray-500'>{item.title}</p>
-                <p className='font-medium capitalize text-gray-900'>{item.value}</p>
+                <p className='capitalize text-gray-500 dark:text-dark-tertiary'>{item.title}</p>
+                <p className='font-medium capitalize text-gray-900 dark:text-white'>{item.value}</p>
               </li>
             ))}
           </ul>
           <ul>
-            <p className='mb-5 text-[18px] font-medium text-gray-900'>Track Booking</p>
+            <p className='mb-5 text-[18px] font-medium text-gray-900 dark:text-white'>
+              Track Booking
+            </p>
             {bookingCheckpoints.map((item, index) => (
               <li key={item.title} className='flex gap-[5.5px]'>
                 <div className='flex-column items-center'>
                   <CheckMarkIcon
-                    className={`m-[3px] ${item.checked ? '*:fill-primary-900' : ''}`}
+                    className={`m-[3px] ${item.checked ? '*:fill-primary-900 dark:*:fill-dark-accent' : ''}`}
                   />
                   {index < bookingCheckpoints.length - 1 && (
                     <span
-                      className={`w-1 flex-1 ${item.checked ? 'bg-primary-900' : 'bg-gray-400'}`}
+                      className={`w-1 flex-1 ${item.checked ? 'bg-primary-900 dark:bg-dark-accent' : 'bg-gray-400'}`}
                     ></span>
                   )}
                 </div>
                 <div className={`${index < bookingCheckpoints.length - 1 ? 'mb-[20px]' : ''}`}>
-                  <p className='text-[13px] text-gray-900'>{item.title}</p>
+                  <p className='text-[13px] text-gray-900 dark:text-white'>{item.title}</p>
                   <p className='mt-[2px] text-[13px] font-medium text-gray-400'>{item.date}</p>
                 </div>
               </li>
@@ -165,7 +167,7 @@ const BookingDetails = (
         </div>
         <div className='center-grid w-full'>
           <button
-            className='mx-auto mt-6 w-[64%] self-center rounded-[32px] bg-primary-900 px-10 py-[14px] font-medium text-white disabled:opacity-50'
+            className='mx-auto mt-6 w-[64%] self-center rounded-[32px] bg-primary-900 px-10 py-[14px] font-medium text-white disabled:opacity-50 dark:bg-dark-accent'
             disabled={!data.statusTimestamps.Cancelled || !data.statusTimestamps.Payment}
           >
             Track Location

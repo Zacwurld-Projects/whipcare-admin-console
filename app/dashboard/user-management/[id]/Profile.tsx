@@ -68,9 +68,9 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
   return (
     <>
       <article className='flex w-full gap-10'>
-        <div className='flex-column w-[53%] gap-4 rounded-lg bg-gray-50 px-5 py-4'>
+        <div className='flex-column w-[53%] gap-4 rounded-lg bg-gray-50 px-5 py-4 dark:bg-dark-primary'>
           <div className='flex-column gap-3'>
-            <p className='text-large mb-1 font-semibold text-gray-800'>User Info</p>
+            <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>User Info</p>
             <DisplayInfo
               title='Sign up date'
               value={dayjs(userProfile.signUpDate).format('DD/MM/YY')}
@@ -84,7 +84,9 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
           </div>
           {userProfile.address.length > 0 && (
             <div className='flex-column gap-3'>
-              <p className='text-large mb-1 font-semibold text-gray-800'>User Address</p>
+              <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>
+                User Address
+              </p>
               {userProfile.address.map((value) => (
                 <DisplayAddress
                   key={value.id}
@@ -97,17 +99,19 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
         </div>
         <div className='flex-column flex-1 gap-6'>
           {(userProfile.cars || userProfile.reviews) && (
-            <div className='flex-column gap-5 rounded-lg bg-gray-50 px-4 py-5'>
+            <div className='flex-column gap-5 rounded-lg bg-gray-50 px-4 py-5 dark:bg-dark-primary'>
               {userProfile.cars.length > 0 && (
                 <div className='flex-column gap-4'>
-                  <p className='text-large mb-1 font-semibold text-gray-800'>User&apos;s Car</p>
+                  <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>
+                    User&apos;s Car
+                  </p>
                   {userProfile.cars.map((item) => (
                     <div
                       key={item._id}
-                      className='flex w-full items-center gap-1 rounded-2xl bg-white px-5 py-4'
+                      className='flex w-full items-center gap-1 rounded-2xl bg-white px-5 py-4 dark:bg-dark-secondary'
                     >
-                      <CarIcon />
-                      <p className='text-small font-medium text-[#101928]'>
+                      <CarIcon className='dark:*:*:fill-dark-accent' />
+                      <p className='text-small font-medium text-[#101928] dark:text-white'>
                         {item.brand} {item.carModel}
                       </p>
                     </div>
@@ -118,10 +122,10 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
                 {userProfile.reviews && userProfile.reviews.length > 0 && (
                   <>
                     <div className='mb-5 flex items-end justify-between'>
-                      <p className='text-large font-semibold text-gray-800'>
+                      <p className='text-large font-semibold text-gray-800 dark:text-white'>
                         Reviews({userProfile.reviews.length})
                       </p>
-                      <div className='flex items-center'>
+                      <div className='flex items-center rounded-[1em] px-[5px] py-0.5 dark:bg-primary-50'>
                         <StarIcon />
                         <p className='text-small text-gray-500'>
                           {(
@@ -143,13 +147,15 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
                         {userProfile.reviews.map((item, index) => (
                           <div
                             key={index}
-                            className='flex-column snap-start gap-3 rounded-2xl border border-primary-100 px-4 py-2'
+                            className='flex-column snap-start gap-3 rounded-2xl border border-primary-100 px-4 py-2 dark:border-gray-200 dark:bg-dark-secondary'
                           >
                             <div className='flex items-center justify-between'>
                               {renderRatingStars(item.rating)}
-                              <p className='text-gray-500'>{timeAgo(item.timestamp)}</p>
+                              <p className='text-gray-500 dark:text-white'>
+                                {timeAgo(item.timestamp)}
+                              </p>
                             </div>
-                            <p className='text-[18px] leading-[28px] text-[#413b35]'>
+                            <p className='text-[18px] leading-[28px] text-[#413b35] dark:text-white'>
                               {item.content}
                             </p>
                             <button
@@ -175,8 +181,10 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
                               }
                               className='flex items-center gap-2 self-end'
                             >
-                              <p className='text-small text-[#983504]'>Track Booking</p>
-                              <ChevronRight className='*:fill-[#983504]' />
+                              <p className='text-small text-[#983504] dark:text-dark-accent'>
+                                Track Booking
+                              </p>
+                              <ChevronRight className='*:fill-[#983504] dark:*:fill-dark-accent' />
                             </button>
                           </div>
                         ))}
@@ -187,7 +195,7 @@ const Profile = ({ userProfile }: { userProfile: UserProfileData; isLoading?: bo
               </div>
             </div>
           )}
-          <button className='text-small w-fit self-end rounded-[32px] bg-[#983504] px-8 py-[10px] font-medium text-[#f9f8f7]'>
+          <button className='text-small w-fit self-end rounded-[32px] bg-[#983504] px-8 py-[10px] font-medium text-[#f9f8f7] dark:bg-dark-accent'>
             Disable account
           </button>
         </div>

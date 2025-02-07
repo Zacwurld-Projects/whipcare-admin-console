@@ -32,8 +32,8 @@ const TablePagination = ({
         onClick={() => setCurrentPage(page)}
         className={`text-small rounded-[2em] border px-6 py-2 font-medium ${
           page === currentPage
-            ? 'border-[#ff915b] bg-[#ff915b] text-white'
-            : 'border-gray-200 text-gray-800'
+            ? 'border-[#ff915b] bg-[#ff915b] text-white dark:border-dark-accent dark:bg-dark-accent'
+            : 'border-gray-200 text-gray-800 dark:text-white'
         } `}
       >
         {page}
@@ -43,13 +43,19 @@ const TablePagination = ({
     return range.map((page, index) => (
       <>
         {page === totalPages && totalPages - currentPage > 2 && (
-          <p key={'before_ellipse'} className='text-small px-3 pb-1 pt-2 font-medium text-gray-800'>
+          <p
+            key={'before_ellipse'}
+            className='text-small px-3 pb-1 pt-2 font-medium text-gray-800 dark:text-white'
+          >
             ...
           </p>
         )}
         {renderButton(page, index)}
         {page === 1 && currentPage > 3 && (
-          <p key={'after_ellipse'} className='text-small px-3 pb-1 pt-2 font-medium text-gray-800'>
+          <p
+            key={'after_ellipse'}
+            className='text-small px-3 pb-1 pt-2 font-medium text-gray-800 dark:text-white'
+          >
             ...
           </p>
         )}
@@ -59,7 +65,7 @@ const TablePagination = ({
 
   return (
     <div className='flex h-[74px] items-center justify-between px-2'>
-      <p className='font-medium text-[#98a2b3]'>
+      <p className='font-medium text-[#98a2b3] dark:text-white'>
         Showing data {(currentPage - 1) * contentPerPage + 1} to{' '}
         {currentPage * contentPerPage < contentLength
           ? currentPage * contentPerPage
@@ -73,7 +79,7 @@ const TablePagination = ({
             if (currentPage > 1) setCurrentPage(currentPage - 1);
           }}
         >
-          <ChevronLeftIcon />
+          <ChevronLeftIcon className='dark:*:fill-dark-secondary' />
         </button>
         <div className='flex items-center gap-2'>{renderPageNumbers()}</div>
         <button
@@ -82,7 +88,7 @@ const TablePagination = ({
             if (currentPage < totalPages) setCurrentPage(currentPage + 1);
           }}
         >
-          <ChevronRightIcon />
+          <ChevronRightIcon className='dark:*:fill-dark-secondary' />
         </button>
       </div>
     </div>

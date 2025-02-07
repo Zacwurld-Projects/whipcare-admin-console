@@ -32,7 +32,7 @@ const SettingsPage = () => {
         setSelectedPageOption={setSelectedPageOption}
         pageOptions={pageOptions}
       />
-      <section className='mt-2 min-h-[80vh] bg-white p-6'>
+      <section className='mt-2 min-h-[80vh] bg-white p-6 dark:bg-[#2c2c3c]'>
         {isFetchingPageDetails ? (
           <SectionLoader height='80vh' />
         ) : (

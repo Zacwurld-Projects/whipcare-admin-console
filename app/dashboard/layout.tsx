@@ -12,10 +12,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <main className='flex min-h-screen'>
         <Sidebar />
         <section
-          className={`min-w-[500px] flex-1 self-stretch bg-primary-50 ${isSidebarOpen ? 'cursor-pointer brightness-50' : 'brightness-100'}`}
+          className={`min-w-[500px] flex-1 self-stretch bg-primary-50 dark:bg-dark-bg ${isSidebarOpen ? 'cursor-pointer brightness-50' : 'brightness-100'}`}
         >
           <Navbar />
-          <div className={`bg-primary-50 px-5 py-8`}>{children}</div>
+          <div className={`bg-primary-50 px-5 py-8 dark:bg-dark-bg`}>{children}</div>
         </section>
       </main>
       {bookingDetails.display && <BookingDetails />}

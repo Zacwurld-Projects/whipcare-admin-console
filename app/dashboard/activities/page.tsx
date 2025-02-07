@@ -90,7 +90,10 @@ const ActivitiesPage = () => {
         setCurrentPage={setCurrentPage}
         ContentStructure={({ item }: { item: Activity }) => {
           return (
-            <tr key={item._id} className='[&_td]:text-small [&_td]:p-6 [&_td]:text-gray-700'>
+            <tr
+              key={item._id}
+              className='[&_td]:text-small [&_td]:p-6 [&_td]:text-gray-700 dark:[&_td]:!text-white'
+            >
               <td className='flex items-center gap-3'>
                 {item.data?.user?.image ? (
                   <Image
@@ -102,24 +105,24 @@ const ActivitiesPage = () => {
                   />
                 ) : (
                   <div className='center-grid size-10 rounded-full bg-primary-50'>
-                    <p className='text-xs font-semibold text-[#f56630]'>
+                    <p className='text-xs font-semibold text-[#f56630] dark:text-dark-accent'>
                       {item.data?.user?.firstName.slice(0, 1)}
                       {item.data?.user?.lastName.slice(0, 1)}
                     </p>
                   </div>
                 )}
                 <div>
-                  <p className='text-sm font-medium text-gray-900'>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white'>
                     {item.data?.user?.firstName} {item.data?.user?.lastName}
                   </p>
-                  <p className='text-sm text-gray-500'>{item.email}</p>
+                  <p className='text-sm text-gray-500 dark:text-white'>{item.email}</p>
                 </div>
               </td>
               <td>
-                <p className='font-medium text-gray-900'>{item.data?.user?.type}</p>
+                <p className='font-medium text-gray-900 dark:text-white'>{item.data?.user?.type}</p>
               </td>
               <td className=' '>
-                <p className='font-medium text-gray-900'>{item.activityType}</p>
+                <p className='font-medium text-gray-900 dark:text-white'>{item.activityType}</p>
               </td>
               <td className='max-w-[200px] break-words text-xs font-medium'>{item.description}</td>
               <td>{dayjs(item.createdAt).format('MMM DD YYYY | hh:mm A')}</td>

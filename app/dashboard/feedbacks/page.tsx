@@ -70,13 +70,13 @@ const FeedbacksPage = () => {
       <nav className='mt-5 flex items-center gap-3'>
         {stats.map((item) => (
           <button
-            className={`flex items-center gap-2 rounded-md border p-3 font-medium ${selectedPageOption === item.title ? 'border-primary-75 bg-[#983504] text-white' : 'border-gray-300 bg-gray-100 text-gray-700'}`}
+            className={`flex items-center gap-2 rounded-md border p-3 font-medium ${selectedPageOption === item.title ? 'border-primary-75 bg-[#983504] text-white dark:border-[#2c2c3c] dark:bg-dark-accent' : 'border-gray-300 bg-gray-100 text-gray-700 dark:border-[#2c2c3c] dark:bg-dark-primary dark:text-white'}`}
             key={item.title}
             onClick={() => setSelectedPageOption(item.title)}
           >
             <p className='text-small capitalize'>{item.title}</p>
             <p
-              className={`text-xsmall rounded-xl px-2 ${selectedPageOption === item.title ? 'bg-[#f56630]' : 'bg-gray-200'}`}
+              className={`text-xsmall rounded-xl px-2 dark:text-dark-secondary ${selectedPageOption === item.title ? 'bg-[#f56630] dark:bg-white' : 'bg-gray-200 dark:bg-white'}`}
             >
               {item.count}
             </p>

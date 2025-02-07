@@ -130,7 +130,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
                 className='size-[130px] rounded-full object-cover'
               />
             ) : (
-              <p className='center-grid size-[130px] rounded-full bg-primary-50 text-[39px] font-semibold text-[#f56630]'>
+              <p className='center-grid size-[130px] rounded-full bg-primary-50 text-[39px] font-semibold text-[#f56630] dark:text-dark-accent'>
                 {profileData.name.split(' ').map((t) => (
                   <>{t.slice(0, 1).toUpperCase()}</>
                 ))}
@@ -138,10 +138,10 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
             )}
             <label
               htmlFor='editPhoto'
-              className='flex w-[157px] items-center justify-center gap-1 rounded border border-gray-300 py-[6px]'
+              className='flex w-[157px] items-center justify-center gap-1 rounded border border-gray-300 py-[6px] dark:border-white'
             >
-              <StylusIcon />
-              <p className='text-small text-gray-500'>Edit Photo</p>
+              <StylusIcon className='dark:*:fill-dark-tertiary' />
+              <p className='text-small text-gray-500 dark:text-dark-tertiary'>Edit Photo</p>
               <input
                 type='file'
                 onChange={handleImageChnage}
@@ -159,6 +159,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
                 value={userData.name}
                 type='text'
                 title='Full name'
+                className='dark:border-dark-tertiary dark:[&_.title]:text-dark-tertiary dark:[&_input]:text-white'
                 handleChange={handleChange}
               />
               <InputArea
@@ -166,6 +167,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
                 value={userData.email}
                 type='email'
                 title='Email address'
+                className='dark:border-dark-tertiary dark:[&_.title]:text-dark-tertiary dark:[&_input]:text-white'
                 handleChange={handleChange}
               />
               <InputArea
@@ -173,11 +175,13 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
                 value={userData.role}
                 type='text'
                 title='Role'
+                className='dark:border-dark-tertiary dark:[&_.title]:text-dark-tertiary dark:[&_input]:text-white'
                 handleChange={handleChange}
               />
               <FormButton
                 type='submit'
                 text='Save'
+                className='dark:bg-dark-accent'
                 isLoading={updateProfile.isPending}
                 disabled={!isUserDataEdited || updateProfile.isPending}
               />
@@ -198,6 +202,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
             type='password'
             name='currentPassword'
             title='Current password'
+            className='dark:border-dark-tertiary dark:[&_.title]:text-dark-tertiary dark:[&_input]:text-white'
             value={passwordData.currentPassword}
             handleChange={handlePasswordChnage}
           />
@@ -205,6 +210,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
             type='password'
             name='newPassword'
             title='New password'
+            className='dark:border-dark-tertiary dark:[&_.title]:text-dark-tertiary dark:[&_input]:text-white'
             value={passwordData.newPassword}
             handleChange={handlePasswordChnage}
           />
@@ -213,6 +219,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
               type='password'
               name='confirmNewPassword'
               title='Confirm password'
+              className='dark:border-dark-tertiary dark:[&_.title]:text-dark-tertiary dark:[&_input]:text-white'
               value={passwordData.confirmNewPassword}
               handleChange={handlePasswordChnage}
             />
@@ -230,6 +237,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
           <FormButton
             text='Change Password'
             type='submit'
+            className='dark:bg-dark-accent'
             isLoading={changePassword.isPending}
             disabled={
               !passwordData.currentPassword ||

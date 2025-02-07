@@ -101,9 +101,9 @@ const Sidebar = () => {
   return (
     <aside
       ref={sidebarRef}
-      className={`flex-column sticky inset-0 z-[200] h-screen w-[268px] gap-4 bg-white transition-transform max-[1100px]:fixed max-[1100px]:left-0 ${isSidebarOpen ? 'max-[1100px]:translate-x-[0]' : 'max-[1100px]:-translate-x-[120%]'}`}
+      className={`flex-column sticky inset-0 z-[200] h-screen w-[268px] gap-4 bg-white transition-transform dark:bg-dark-secondary max-[1100px]:fixed max-[1100px]:left-0 ${isSidebarOpen ? 'max-[1100px]:translate-x-[0]' : 'max-[1100px]:-translate-x-[120%]'}`}
     >
-      <div className='center-grid h-[131px] w-full bg-primary-900'>
+      <div className='center-grid h-[131px] w-full bg-primary-900 dark:bg-dark-secondary'>
         <LogoIcon />
       </div>
       <div className='h-[calc(100vh-140px)] overflow-y-auto scrollbar'>
@@ -112,7 +112,7 @@ const Sidebar = () => {
             <Link
               href={`/dashboard${item.link}`}
               key={index}
-              className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50' : 'hover:bg-gray-200'}`}
+              className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50 dark:bg-dark-accent dark:text-white' : 'hover:bg-gray-200 dark:hover:bg-[#3d3d4a]'}`}
             >
               {item.alternateIcon ? (
                 checkCurrentPage(item.link) ? (
@@ -122,7 +122,7 @@ const Sidebar = () => {
                 )
               ) : (
                 <item.icon
-                  className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50' : ''}`}
+                  className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50 dark:fill-white dark:*:fill-white' : ''}`}
                 />
               )}
               <p className='text-medium'>{item.title}</p>

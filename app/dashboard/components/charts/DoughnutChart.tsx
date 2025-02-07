@@ -21,10 +21,12 @@ const DoughnutChart = ({
   yLabel: string;
 }) => {
   return (
-    <div className='rounded-lg bg-white p-4'>
-      <div className='mb-3 flex w-full items-center justify-between border-b border-gray-800 pb-3'>
-        <p className='text-medium font-semibold text-gray-800'>{heading}</p>
-        <p className='text-xsmall text-gray-600'>Last updated: {timeAgo(timestamp)}</p>
+    <div className='rounded-lg bg-white p-4 dark:bg-dark-primary'>
+      <div className='mb-3 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-white'>
+        <p className='text-medium font-semibold text-gray-800 dark:text-white'>{heading}</p>
+        <p className='text-xsmall text-gray-600 dark:text-white'>
+          Last updated: {timeAgo(timestamp)}
+        </p>
       </div>
       <div className='relative h-[300px]'>
         <Doughnut

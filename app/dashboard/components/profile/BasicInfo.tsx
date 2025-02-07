@@ -22,7 +22,7 @@ const BasicInfo = ({
   };
 }) => {
   return (
-    <div className='mt-6 flex w-full items-stretch gap-[18px] *:rounded-[5px] *:bg-white'>
+    <div className='mt-6 flex w-full items-stretch gap-[18px] *:rounded-[5px] *:bg-white dark:*:bg-dark-primary'>
       <div className='flex w-[43%] flex-wrap items-center px-[47.5px] py-8 [column-gap:32px] [row-gap:4px]'>
         {userContact.image ? (
           <Image
@@ -34,40 +34,46 @@ const BasicInfo = ({
           />
         ) : (
           <div className='center-grid size-[79px] rounded-full bg-primary-50'>
-            <p className='w-fit text-2xl font-semibold text-[#f56630]'>
+            <p className='w-fit text-2xl font-semibold text-[#f56630] dark:text-dark-accent'>
               {userContact.firstName.slice(0, 1)}
               {userContact.lastName.slice(0, 1)}
             </p>
           </div>
         )}
         <div>
-          <p className='heading-h5 font-semibold text-gray-800'>
+          <p className='heading-h5 font-semibold text-gray-800 dark:text-white'>
             {userContact.firstName} {userContact.lastName}
           </p>
-          <p className='font-medium text-[#413b35]'>{userContact.email}</p>
-          {userContact.phone && <p className='font-medium text-[#5a524a]'>{userContact.phone}</p>}
+          <p className='font-medium text-[#413b35] dark:text-dark-tertiary'>{userContact.email}</p>
+          {userContact.phone && (
+            <p className='font-medium text-[#5a524a] dark:text-dark-tertiary'>
+              {userContact.phone}
+            </p>
+          )}
         </div>
       </div>
       <div className='flex flex-1 flex-col justify-between gap-2 px-6 py-[50px] pr-[66px] lg:flex-row'>
         <div className='flex gap-3'>
           <BookingsIcon />
           <div>
-            <p className='text-large text-[#342f2a]'>Total Bookings</p>
-            <p className='heading-h4 font-semibold text-[#342f2a]'>{totalBookings}</p>
+            <p className='text-large text-[#342f2a] dark:text-white'>Total Bookings</p>
+            <p className='heading-h4 font-semibold text-[#342f2a] dark:text-dark-tertiary'>
+              {totalBookings}
+            </p>
           </div>
         </div>
-        <div className='hidden h-full border-r border-[#eceae8] lg:block'></div>
+        <div className='hidden h-full border-r border-[#eceae8] dark:border-gray-200 lg:block'></div>
         <div className='flex gap-3'>
           <SpendingsIcon />
           <div>
-            <p className='text-large text-gray-700'>
+            <p className='text-large text-gray-700 dark:text-white'>
               {transactions && !totalSpendings ? 'Total Profit' : 'Total Spendings'}
             </p>
-            <p className='heading-h4 font-semibold text-gray-700'>
+            <p className='heading-h4 font-semibold text-gray-700 dark:text-dark-tertiary'>
               ₦
               {transactions && !totalSpendings
-                ? transactions[0].totalAmount.toLocaleString('en-US')
-                : totalSpendings?.toLocaleString('en-US')}
+                ? transactions[0]?.totalAmount?.toLocaleString('en-US') || 0
+                : totalSpendings?.toLocaleString('en-US') || 0}
             </p>
           </div>
         </div>

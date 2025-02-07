@@ -25,9 +25,11 @@ const Profile = ({ profileInfo }: { profileInfo: ServiceProviderProfile }) => {
   return (
     <article className=''>
       <div className='flex w-full gap-10'>
-        <div className='flex-column w-[53%] gap-4 rounded-lg bg-gray-50 px-5 py-4'>
+        <div className='flex-column w-[53%] gap-4 rounded-lg bg-gray-50 px-5 py-4 dark:bg-dark-primary'>
           <div className='mb-1 flex items-center justify-between'>
-            <p className='text-large font-semibold text-gray-800'>Service Provider Info</p>
+            <p className='text-large font-semibold text-gray-800 dark:text-white'>
+              Service Provider Info
+            </p>
             {profileInfo.status && (
               <p
                 className={`text-xsmall rounded-[6px] px-[6px] py-[2px] capitalize ${reflectStatusStyle(profileInfo.status)}`}
@@ -54,9 +56,11 @@ const Profile = ({ profileInfo }: { profileInfo: ServiceProviderProfile }) => {
             ))}
           </div> */}
         </div>
-        <div className='flex-column flex-1 gap-5 rounded-lg bg-gray-50 px-4 py-5'>
+        <div className='flex-column flex-1 gap-5 rounded-lg bg-gray-50 px-4 py-5 dark:bg-dark-primary'>
           <div className='flex-column gap-4'>
-            <p className='text-large mb-1 font-semibold text-gray-800'>Service Provided</p>
+            <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>
+              Service Provided
+            </p>
             <DisplayInfo
               title='Type of Service'
               value={profileInfo.servicesProvided
@@ -81,9 +85,9 @@ const Profile = ({ profileInfo }: { profileInfo: ServiceProviderProfile }) => {
             />
           </div>
           <div>
-            <p className='text-large mb-3 flex gap-1 font-semibold text-gray-800'>
+            <p className='text-large mb-3 flex gap-1 font-semibold text-gray-800 dark:text-white'>
               <span>List of Services </span>
-              <span className='text-xsmall mt-1 font-medium text-primary-900'>
+              <span className='text-xsmall mt-1 font-medium text-primary-900 dark:text-dark-accent'>
                 ({profileInfo.servicesProvided.length})
               </span>
             </p>
@@ -98,26 +102,32 @@ const Profile = ({ profileInfo }: { profileInfo: ServiceProviderProfile }) => {
                       height={77}
                     />
                     <div className='flex-column gap-2'>
-                      <p className='text-xsmall font-medium capitalize text-primary-900'>
+                      <p className='text-xsmall font-medium capitalize text-primary-900 dark:text-dark-accent'>
                         {item.serviceType}
                       </p>
-                      <p className='font-medium text-gray-800'>{item.serviceTitle}</p>
+                      <p className='font-medium text-gray-800 dark:text-white'>
+                        {item.serviceTitle}
+                      </p>
                       <ul className='flex flex-wrap gap-2 [&_li]:flex [&_li]:items-center [&_li]:gap-[1px]'>
                         {item.distance && (
                           <li>
                             <LocationIcon />
-                            <p className='text-xsmall font-medium text-gray-400'>{item.distance}</p>
+                            <p className='text-xsmall font-medium text-gray-400 dark:text-dark-tertiary'>
+                              {item.distance}
+                            </p>
                           </li>
                         )}
                         {item.time && (
                           <li>
                             <ClockIcon />
-                            <p className='text-xsmall font-medium text-gray-400'>{item.time}</p>
+                            <p className='text-xsmall font-medium text-gray-400 dark:text-dark-tertiary'>
+                              {item.time}
+                            </p>
                           </li>
                         )}
-                        <li>
-                          <NairaIcon />
-                          <p className='text-xsmall font-medium text-primary-900'>
+                        <li className='rounded-lg px-2 py-1 dark:bg-primary-50'>
+                          <NairaIcon className='dark:*:fill-dark-accent' />
+                          <p className='text-xsmall font-medium text-primary-900 dark:text-dark-accent'>
                             {item.minPrice.toLocaleString('en-US')}
                           </p>
                         </li>
@@ -131,10 +141,10 @@ const Profile = ({ profileInfo }: { profileInfo: ServiceProviderProfile }) => {
         </div>
       </div>
       <div className='ml-auto mt-6 flex w-fit gap-4'>
-        <button className='text-small w-fit self-end rounded-[32px] border border-[#cdc8c2] px-8 py-[10px] font-medium text-[#983504]'>
+        <button className='text-small w-fit self-end rounded-[32px] border border-[#cdc8c2] px-8 py-[10px] font-medium text-[#983504] dark:border-dark-accent dark:text-dark-accent'>
           Delete account
         </button>
-        <button className='text-small w-fit self-end rounded-[32px] bg-[#983504] px-8 py-[10px] font-medium text-[#f9f8f7]'>
+        <button className='text-small w-fit self-end rounded-[32px] bg-[#983504] px-8 py-[10px] font-medium text-[#f9f8f7] dark:bg-dark-accent'>
           Deactivate
         </button>
       </div>

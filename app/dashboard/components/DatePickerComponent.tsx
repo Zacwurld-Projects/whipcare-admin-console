@@ -9,6 +9,7 @@ import ChevronRightIcon from '../assets/chevronRight.svg';
 import ChevronLeftIcon from '../assets/chevronLeft.svg';
 import { MantineProvider } from '@mantine/core';
 import { formatDateToDDMMYY } from '@/app/lib/accessoryFunctions';
+import { useGlobalContext } from '@/app/context/AppContext';
 
 const DatePickerComponent = ({
   setSelectedFilter,
@@ -22,6 +23,7 @@ const DatePickerComponent = ({
   setCustomDateFilter: Dispatch<[Date | null, Date | null]>;
 }) => {
   const calendarRef = useRef<HTMLDivElement>(null);
+  const { isDark } = useGlobalContext();
   const calenderButtonRef = useRef<HTMLButtonElement>(null);
   const { isMenuOpen: isCalendarOpen, setIsMenuOpen: setIsCalendarOpen } = useMenu(
     calenderButtonRef,
@@ -37,14 +39,14 @@ const DatePickerComponent = ({
     <MantineProvider>
       <div className='relative'>
         <button
-          className={`flex items-center gap-1 border-gray-200 ${selectedFilter === 'custom' ? '!border-[#ff915b] bg-[#fcb59a]' : ''}`}
+          className={`flex items-center gap-1 border-gray-200 ${selectedFilter === 'custom' ? '!border-[#ff915b] bg-[#fcb59a] dark:bg-dark-accent' : ''}`}
           onClick={() => {
             setIsCalendarOpen(!isCalendarOpen);
             if (customDateFilter[0]) setSelectedFilter('custom');
           }}
           ref={calenderButtonRef}
         >
-          <CalendarIcon />
+          <CalendarIcon className='dark:*:fill-white' />
           {customDateFilter[0] ? (
             <p>
               {customDateFilter[0] && formatDateToDDMMYY(customDateFilter[0])}
@@ -53,12 +55,12 @@ const DatePickerComponent = ({
           ) : (
             <p>Select dates</p>
           )}
-          <ChevronDownIcon />
+          <ChevronDownIcon className='dark:*:stroke-white' />
         </button>
         {isCalendarOpen && (
           <div
             ref={calendarRef}
-            className='absolute right-0 top-[130%] z-20 rounded-lg bg-white p-2 px-1 shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)]'
+            className='absolute right-0 top-[130%] z-20 rounded-lg bg-white p-2 px-1 shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)] dark:bg-dark-secondary'
           >
             <DatePicker
               maxDate={new Date()}
@@ -67,7 +69,7 @@ const DatePickerComponent = ({
                   borderCollapse: 'separate',
                 },
                 weekday: {
-                  color: 'black',
+                  color: `${isDark ? 'white' : 'black'}`,
                   fontWeight: 600,
                   fontSize: '12px',
                 },
@@ -88,7 +90,7 @@ const DatePickerComponent = ({
                   border: 'none',
                 },
                 yearsListControl: {
-                  border: '2px solid #d0d5dd',
+                  border: `2px solid ${isDark ? '#d0d5dd' : '#d0d5dd'}`,
                   borderRadius: '8px',
                   background: '#f3f5f8',
                   fontSize: '12px',
@@ -96,7 +98,7 @@ const DatePickerComponent = ({
                   margin: '2px',
                 },
                 monthsListControl: {
-                  border: '2px solid #d0d5dd',
+                  border: `2px solid ${isDark ? '#d0d5dd' : '#d0d5dd'}`,
                   borderRadius: '8px',
                   background: '#f3f5f8',
                   fontSize: '12px',
@@ -104,7 +106,7 @@ const DatePickerComponent = ({
                   margin: '2px',
                 },
                 calendarHeaderControlIcon: {
-                  color: '#f56630',
+                  color: `${isDark ? 'blue' : '#f56630'}`,
                   width: '20px',
                   height: '20px',
                   display: 'block',
@@ -126,13 +128,13 @@ const DatePickerComponent = ({
               value={customDateFilter}
               onChange={setCustomDateFilter}
               classNames={{
-                day: 'calendarDay hover:bg-gray-100',
+                day: 'calendarDay hover:bg-gray-100 dark:hover:bg-gray-600',
                 yearsListControl:
                   'hover:!bg-[#fbf1f1] hover:!border-[#d35d24] hover:!text-[#475367]',
                 monthsListControl:
                   'hover:!bg-[#fbf1f1] hover:!border-[#d35d24] hover:!text-[#475367]',
-                calendarHeaderLevel: 'hover:!bg-[#f3f5f8]',
-                calendarHeaderControl: 'hover:!bg-[#f3f5f8]',
+                calendarHeaderLevel: 'hover:!bg-[#f3f5f8] dark:!text-white dark:hover:!bg-gray-700',
+                calendarHeaderControl: 'hover:!bg-[#f3f5f8] dark:hover:!bg-gray-700',
               }}
               nextIcon={<ChevronRightIcon />}
               previousIcon={<ChevronLeftIcon />}

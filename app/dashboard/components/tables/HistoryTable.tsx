@@ -44,9 +44,9 @@ const HistoryTable = ({
 
   return (
     <>
-      <article className='bg-white'>
+      <article className='bg-white dark:bg-dark-secondary'>
         <div className='mb-6 flex items-center justify-between px-6 py-3'>
-          <h2 className='text-[30px] font-medium text-gray-800'>{heading}</h2>
+          <h2 className='text-[30px] font-medium text-gray-800 dark:text-white'>{heading}</h2>
           <FilterForm />
         </div>
         <div className='w-full overflow-auto scrollbar'>
@@ -56,7 +56,7 @@ const HistoryTable = ({
                 {tableHeadings.map((item, index) => (
                   <th
                     key={item}
-                    className={`py-6 text-left font-normal text-gray-500 ${index == 0 ? 'pl-12' : ''}`}
+                    className={`py-6 text-left font-normal text-gray-500 dark:text-white ${index == 0 ? 'pl-12' : ''}`}
                   >
                     {item}
                   </th>
@@ -67,7 +67,7 @@ const HistoryTable = ({
               {tableContent.map((item, index) => (
                 <tr
                   key={index}
-                  className='border-t border-gray-200 [&_td]:py-6 [&_td]:font-medium [&_td]:text-gray-800'
+                  className='border-t border-gray-200 dark:border-dark-primary [&_td]:py-6 [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white'
                 >
                   <td className='pl-12'>
                     <button

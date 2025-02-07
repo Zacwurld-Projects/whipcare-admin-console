@@ -32,6 +32,8 @@ type AppContextType = {
     isLoading: boolean;
     heading: string;
   };
+  isDark: boolean;
+  toggleTheme: () => void;
   setBookingDetails: Dispatch<AppContextType['bookingDetails']>;
 };
 
@@ -67,6 +69,22 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     heading: '',
   });
 
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', saved ? saved === 'dark' : systemDark);
+    setIsDark(saved ? saved === 'dark' : systemDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDark ? 'dark' : 'light';
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    localStorage.setItem('theme', newTheme);
+    setIsDark(!isDark);
+  };
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const user = localStorage.getItem('currentUser');
@@ -89,6 +107,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <AppContext.Provider
       value={{
+        isDark,
+        toggleTheme,
         isSidebarOpen,
         setIsSidebarOpen,
         userDetails,

@@ -2,7 +2,7 @@ import SectionLoader from '../components/Loaders/SectionLoader';
 import FallBackUI from './FallbackUI';
 
 const Reviews = ({
-  reviewsData,
+  // reviewsData,
   isLoading,
 }: {
   reviewsData: Array<object>;
@@ -10,8 +10,10 @@ const Reviews = ({
 }) => {
   if (isLoading) return <SectionLoader height='70vh' />;
 
-  if (reviewsData.length < 1) return <FallBackUI option='reviews' />;
+  // if (reviewsData.length < 1)
 
-  return <div>Ratings</div>;
+  return <FallBackUI option='reviews' />;
+
+  // return <div>Ratings</div>;
 };
 export default Reviews;

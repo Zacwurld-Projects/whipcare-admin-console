@@ -1,7 +1,7 @@
 'use client';
-import { timeAgo } from '@/app/lib/accessoryFunctions';
 import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps';
 import countryLatLong from '../../data/country-lat-long.json';
+import dayjs from 'dayjs';
 
 const data = [
   {
@@ -42,11 +42,11 @@ const CustomerMapping = () => {
   );
 
   return (
-    <div className='relative h-[calc(100%-10px)] rounded-lg bg-white p-4 pb-0'>
-      <div className='mb-0 flex w-full items-center justify-between border-b border-gray-800 pb-3'>
-        <p className='text-medium font-semibold text-gray-800'>Customer Mapping</p>
-        <p className='text-xsmall text-gray-600'>
-          Last updated: {timeAgo(Date.now() - 30 * 24 * 60 * 60 * 1000)}
+    <div className='relative h-[calc(100%-10px)] rounded-lg bg-white p-4 pb-0 dark:bg-dark-primary'>
+      <div className='mb-0 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-gray-500'>
+        <p className='text-medium font-semibold text-gray-800 dark:text-white'>Customer Mapping</p>
+        <p className='text-xsmall text-gray-600 dark:text-[#a0a0b2]'>
+          Last updated: {dayjs(Date.now() - 30 * 24 * 60 * 60 * 1000).format('MMMM DD, YYYY')}
         </p>
       </div>
       <div>
@@ -92,9 +92,11 @@ const CustomerMapping = () => {
                   }}
                   className={`h-[12px] w-[20px] rounded`}
                 ></div>
-                <p className='text-xsmall text-gray-800'>{item.location}</p>
+                <p className='text-xsmall text-gray-800 dark:text-white'>{item.location}</p>
               </div>
-              <p className='text-xsmall text-gray-800 text-opacity-80'>{item.users} users</p>
+              <p className='text-xsmall text-gray-800 text-opacity-80 dark:text-white'>
+                {item.users} users
+              </p>
             </div>
           ))}
       </div>

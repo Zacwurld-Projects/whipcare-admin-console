@@ -88,7 +88,7 @@ const CarManagementPage = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         ContentStructure={({ item, index }) => (
-          <tr className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'>
+          <>
             <td>{index + 1}</td>
             <td>{item.carBrand}</td>
             <td>{item.carModel}</td>
@@ -100,7 +100,7 @@ const CarManagementPage = () => {
             <td>
               {item.lastServiceDate ? dayjs(item.lastServiceDate).format('MMM Do, YYYY') : ''}
             </td>
-          </tr>
+          </>
         )}
       />
     </>

@@ -24,12 +24,15 @@ const NoMembersPlaceholder = ({
       <div className='flex-column w-[321px] items-center gap-3'>
         <NoMemberPlaceholderIcon />
         <div className='w-full text-center'>
-          <p className='font-medium text-gray-800'>No member</p>
-          <p className='text-small text-[#98a2b3]'>All admin members would be shown here</p>
+          <p className='font-medium text-gray-800 dark:text-white'>No member</p>
+          <p className='text-small text-[#98a2b3] dark:text-dark-tertiary'>
+            All admin members would be shown here
+          </p>
         </div>
         <FormButton
           type='button'
           text='Add member'
+          className='dark:bg-dark-accent'
           onClick={() => setIsDisplayingInviteModal(!isDisplayingInviteModal)}
         />
       </div>
@@ -76,7 +79,7 @@ const Accessibility = ({
 
   return (
     <>
-      {membersData.length > 0 ? (
+      {membersData.length < 0 ? (
         <article>
           <div className='flex flex-wrap gap-x-[190px] gap-y-8'>
             <TitleBox

@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import PageLoader from '../components/Loaders/PageLoader';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import useGetBookingDetails from './useGetBookingDetails';
+import LineChart from '../components/charts/LineChart';
 
 dayjs.extend(advancedFormat);
 
@@ -70,6 +71,10 @@ const ServiceBookingsPage = () => {
         className='my-8'
         isLoading={useFetchOverviewKpis.isLoading}
       />
+      <div className='mb-12 flex w-full flex-col items-center gap-[18px] *:flex-1 min-[850px]:flex-row'>
+        <LineChart heading='Revenue' className='w-full min-[850px]:w-1/2' />
+        <LineChart className='w-full min-[850px]:w-1/2' filter heading='Booking Summary' />
+      </div>
       <PlainTable
         page='service-bookings'
         heading='Service Booking summary'
@@ -85,10 +90,7 @@ const ServiceBookingsPage = () => {
           'Status',
         ]}
         ContentStructure={({ item, index }) => (
-          <tr
-            key={index}
-            className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'
-          >
+          <>
             <td>{index + 1}</td>
             <td>{item.userName}</td>
             <td>{item.serviceProvider}</td>
@@ -109,7 +111,7 @@ const ServiceBookingsPage = () => {
                 </p>
               </button>
             </td>
-          </tr>
+          </>
         )}
       />
     </>

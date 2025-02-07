@@ -22,13 +22,13 @@ const SidebarModalContainer = ({
     >
       <aside
         ref={DetailsAsideRef}
-        className='ml-auto min-h-full w-[calc(50%-132px)] min-w-[500px] bg-white p-6 opacity-100 max-[1100px]:w-[50%]'
+        className='ml-auto min-h-full w-[calc(50%-132px)] min-w-[500px] bg-white p-6 opacity-100 dark:bg-dark-secondary max-[1100px]:w-[50%]'
       >
         <button
-          className='center-grid sticky top-6 mb-4 size-[36px] rounded-full border border-[#d1d5db]'
+          className='center-grid sticky top-6 mb-4 size-[36px] rounded-full border border-[#d1d5db] dark:border-white'
           onClick={() => setIsDisplayingBookingDetails(false)}
         >
-          <LeftArrowIcon />
+          <LeftArrowIcon className='dark:*:fill-white' />
         </button>
         {children}
       </aside>

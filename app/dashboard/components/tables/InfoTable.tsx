@@ -1,5 +1,5 @@
 'use client';
-import ChevronDownIcon from '../../assets/chevronDown.svg';
+// import ChevronDownIcon from '../../assets/chevronDown.svg';
 import { ComponentType, Dispatch } from 'react';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
@@ -22,16 +22,13 @@ interface InfoTableProps<T extends BaseData> {
   ContentStructure?: ComponentType<{ item: T; index: number }>;
 }
 
-const DefaultContentStructure = <T extends BaseData>({ item }: { item: T }) => {
-  return (
-    <tr className='[&_td]:text-xsmall border-y border-y-gray-75 [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800'>
-      <td>{item._id}</td>
-      <td>{item.createdAt}</td>
-      <td>{item.lastLogin}</td>
-    </tr>
-  );
-};
-
+const DefaultContentStructure = <T extends BaseData>({ item }: { item: T }) => (
+  <>
+    <td>{item._id}</td>
+    <td>{item.createdAt}</td>
+    <td>{item.lastLogin}</td>
+  </>
+);
 const InfoTable = <T extends BaseData>({
   heading,
   isLoading,
@@ -41,25 +38,14 @@ const InfoTable = <T extends BaseData>({
   setCurrentPage,
   ContentStructure = DefaultContentStructure,
 }: InfoTableProps<T>) => {
-  // const contentPerPage = data.pageSize;
-  // const totalPages = Math.ceil(data.totalCount / contentPerPage);
-
   return (
-    <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4'>
+    <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4 dark:border-transparent dark:bg-dark-secondary'>
       <div className='mb-[36px] flex items-center justify-between'>
-        <h6 className='heading-h6 font-semibold'>{heading}</h6>
-        <div className='[&_button]:text-small flex items-center gap-2 [&_button]:rounded-[2em] [&_button]:border [&_button]:border-gray-200 [&_button]:px-6 [&_button]:py-2 [&_button]:font-medium [&_button]:text-gray-800'>
-          <button>All</button>
-          <button>New</button>
-          <button className='flex items-center gap-2'>
-            <p>Sort by</p>
-            <ChevronDownIcon />
-          </button>
+        <h6 className='heading-h6 font-semibold dark:text-white'>{heading}</h6>
+        <div className='flex w-[60%] justify-end gap-6'>
+          <FilterForm className='flex-1' />
+          <ExportTable />
         </div>
-      </div>
-      <div className='mb-5 flex items-center justify-between'>
-        <FilterForm />
-        <ExportTable />
       </div>
       <div className='w-full scrollbar'>
         {isLoading ? (
@@ -73,7 +59,7 @@ const InfoTable = <T extends BaseData>({
                 {headings.map((item) => (
                   <th
                     key={item}
-                    className='text-xsmall px-[14px] py-3 text-left font-medium text-gray-500'
+                    className='text-xsmall px-[14px] py-3 text-left font-medium text-gray-500 dark:text-white'
                   >
                     {item}
                   </th>
@@ -82,7 +68,12 @@ const InfoTable = <T extends BaseData>({
             </thead>
             <tbody>
               {data.data.map((item, index) => (
-                <ContentStructure index={index} key={index} item={item} />
+                <tr
+                  className='[&_td]:text-xsmall border-y border-y-gray-75 dark:border-dark-primary [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white'
+                  key={index}
+                >
+                  <ContentStructure index={index} item={item} />
+                </tr>
               ))}
             </tbody>
           </table>
