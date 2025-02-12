@@ -25,10 +25,7 @@ export async function middleware(request: NextRequest) {
   });
 
   // Redirect unauthenticated or expired sessions to sign-in
-  if (
-    (!isAuthenticated || isSessionExpired) &&
-    protectedRoutes.some((route) => pathname.startsWith(route))
-  ) {
+  if (!isAuthenticated && protectedRoutes.some((route) => pathname.startsWith(route))) {
     return NextResponse.redirect(new URL(signInPath, request.url));
   }
 
