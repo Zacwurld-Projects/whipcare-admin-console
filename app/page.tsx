@@ -6,10 +6,8 @@ export default async function Home() {
 
   const isAuthenticated = !!session?.user;
   if (isAuthenticated) {
-    console.log(session.user, session.expiresAt);
     redirect('/dashboard');
   } else {
-    console.log('logged out');
     redirect('/auth');
   }
 

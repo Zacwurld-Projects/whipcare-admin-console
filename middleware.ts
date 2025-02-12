@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authConfig } from './auth.config';
+// import { authConfig } from './auth.config';
 import { getToken } from 'next-auth/jwt';
 
 const protectedRoutes = ['/dashboard'];
@@ -8,12 +8,12 @@ const phoneRedirectPath = '/phone-only';
 
 export async function middleware(request: NextRequest) {
   // const session = await auth();
-  const secret = authConfig.secret;
+  // const secret = authConfig.secret;
   const userAgent = request.headers.get('user-agent') || '';
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
   const { pathname } = request.nextUrl;
 
-  const token = await getToken({ req: request, secret });
+  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
   const expiresAt = token?.expires_at ?? 0; // use nullish coalescing
   const isSessionExpired = !expiresAt || Date.now() > expiresAt; // handle missing value
   const isAuthenticated = !!token?.userId;
