@@ -14,15 +14,15 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const token = await getToken({ req: request, secret });
-  const expiresAt = token?.expires_at || 0;
-  const isSessionExpired = Date.now() > expiresAt;
+  const expiresAt = token?.expires_at ?? 0; // use nullish coalescing
+  const isSessionExpired = !expiresAt || Date.now() > expiresAt; // handle missing value
   const isAuthenticated = !!token?.userId;
 
-  // console.log('Middleware Session:', {
-  //   expiresAt: token?.expires_at,
-  //   isExpired: isSessionExpired,
-  //   userId: !!token?.userId,
-  // });
+  console.log('Middleware Session:', {
+    expiresAt: token?.expires_at,
+    isExpired: isSessionExpired,
+    userId: !!token?.userId,
+  });
 
   // Redirect unauthenticated or expired sessions to sign-in
   if (
