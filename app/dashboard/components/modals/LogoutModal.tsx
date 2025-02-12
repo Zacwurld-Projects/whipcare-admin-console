@@ -13,10 +13,13 @@ const LogoutModal = ({
   return (
     <CenterModalContainer onClick={exitFunction} title='Logging Out'>
       <div className='flex-column w-full items-center gap-8 text-center'>
-        <p className='w-[65%] font-medium text-[#413b35]'>Are you sure you want to log out?</p>
+        <p className='w-[65%] font-medium text-[#413b35] dark:text-white'>
+          Are you sure you want to log out?
+        </p>
         <FormButton
           text='Confirm'
           type='button'
+          className='dark:bg-dark-accent'
           disabled={useLogUserOut.isPending}
           isLoading={useLogUserOut.isPending}
           onClick={() => useLogUserOut.mutate()}

@@ -18,4 +18,6 @@ export default class ApiRoutes {
   static Feedback: string = '/feedback';
 
   static Users: string = '/user';
+
+  static Cron: string = '/cron';
 }

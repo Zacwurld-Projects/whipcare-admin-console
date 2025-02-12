@@ -234,7 +234,7 @@ const Navbar = () => {
                     type='submit'
                   >
                     <LogoutIcon className='dark:*:stroke-[#cb1a14]' />
-                    <p>Log Out</p>
+                    <p className='dark:text-white'>Log Out</p>
                   </button>
                 </form>
               </div>

@@ -14,18 +14,23 @@ export async function middleware(request: NextRequest) {
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
   const { pathname } = request.nextUrl;
 
-  // authentication: redirect unauthenticated users to sign-in
-  if (!isAuthenticated && protectedRoutes.some((route) => pathname.startsWith(route))) {
+  // Check if the session is expired
+  const isSessionExpired = session?.expiresAt && Date.now() > session.expiresAt;
+
+  // Redirect unauthenticated or expired sessions to sign-in
+  if (
+    (!isAuthenticated || isSessionExpired) &&
+    protectedRoutes.some((route) => pathname.startsWith(route))
+  ) {
     return NextResponse.redirect(new URL(signInPath, request.url));
   }
 
-  // redirect authenticated users away from the sign-in page
-  if (isAuthenticated && pathname === signInPath) {
+  // Redirect authenticated users away from the sign-in page
+  if (isAuthenticated && !isSessionExpired && pathname === signInPath) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // user-agent checks: redirect mobile users to phone-only and non-mobile away
-
+  // User-agent checks: redirect mobile users to phone-only and non-mobile away
   if (isPhone && !pathname.startsWith(phoneRedirectPath)) {
     return NextResponse.redirect(new URL(phoneRedirectPath, request.url));
   }

@@ -397,3 +397,50 @@ export const fetchFeedbackReviews = async () => {
 };
 
 //#endregion
+
+// #region CRON
+export const fetchPushNotifications = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Cron}/push-notification`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchCronRewards = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Cron}/reward`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchServiceProviderActivities = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Cron}/service-provider`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchMaintenace = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Cron}/maintenance`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchCampaigns = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Cron}/campaign`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+// #endregion
