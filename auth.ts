@@ -1,4 +1,4 @@
-import NextAuth, { Session } from 'next-auth';
+import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
 import { userService } from './app/api/apiClient';
@@ -32,33 +32,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   callbacks: {
     async jwt({ token, account, user }): Promise<JWT | null> {
+      // 1. Handle initial login or token updates
       if (account?.type === 'credentials' && user) {
-        token.userId = user.id; // associate userId with token
-        token.accessToken = user.token;
-        token.expires_at = Date.now() + 60 * 60 * 24 * 7; // 7 days
-        token.role = user.role;
-        token.expired = false;
+        // Initial login: set expires_at
+        return {
+          ...token,
+          userId: user.id,
+          accessToken: user.token,
+          expires_at: Date.now() + 60 * 60 * 24 * 10 * 1000, // 10 days
+          role: user.role,
+          expired: false,
+        };
       }
 
-      if (Date.now() > (token.expires_at || 0)) {
-        token.expired = true;
+      // 2. For subsequent requests, ensure expires_at exists
+      if (!token.expires_at) {
+        token.expires_at = Date.now() + 60 * 60 * 24 * 10 * 1000; // Default 10 days
       }
+
+      // 3. Update expired flag
+      token.expired = Date.now() > token.expires_at;
 
       return token;
     },
     async session({ session, token }) {
-      if (token.expired || Date.now() > (token.expires_at || 0)) {
-        return { user: {}, expiresAt: 0 } as Session;
-      }
-
+      // 4. Explicitly pass expiresAt to the session
+      session.expiresAt = token.expires_at as number;
       session.user = {
         ...session.user,
         id: token.userId as string,
         token: token.accessToken as string,
         role: token.role as string,
       };
-
-      session.expiresAt = token.expires_at as number; // pass expiration to session
       return session;
     },
   },

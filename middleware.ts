@@ -1,21 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authConfig } from './auth.config';
-import NextAuth from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 
-const { auth } = NextAuth(authConfig);
 const protectedRoutes = ['/dashboard'];
 const signInPath = '/auth';
 const phoneRedirectPath = '/phone-only';
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
-  const isAuthenticated = !!session?.user;
+  // const session = await auth();
+  const secret = authConfig.secret;
   const userAgent = request.headers.get('user-agent') || '';
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
   const { pathname } = request.nextUrl;
 
-  // Check if the session is expired
-  const isSessionExpired = session?.expiresAt && Date.now() > session.expiresAt;
+  const token = await getToken({ req: request, secret });
+  const expiresAt = token?.expires_at || 0;
+  const isSessionExpired = Date.now() > expiresAt;
+  const isAuthenticated = !!token?.userId;
+
+  // console.log('Middleware Session:', {
+  //   expiresAt: token?.expires_at,
+  //   isExpired: isSessionExpired,
+  //   userId: !!token?.userId,
+  // });
 
   // Redirect unauthenticated or expired sessions to sign-in
   if (
