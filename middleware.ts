@@ -13,7 +13,14 @@ export async function middleware(request: NextRequest) {
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
   const { pathname } = request.nextUrl;
 
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+    cookieName:
+      process.env.NODE_ENV === 'production'
+        ? '__Secure-authjs.session-token'
+        : 'authjs.session-token',
+  });
   const expiresAt = token?.expires_at ?? 0; // use nullish coalescing
   const isSessionExpired = !expiresAt || Date.now() > expiresAt; // handle missing value
   const isAuthenticated = !!token?.userId;
@@ -22,10 +29,16 @@ export async function middleware(request: NextRequest) {
     expiresAt: token?.expires_at,
     isExpired: isSessionExpired,
     userId: !!token?.userId,
+    token,
   });
 
+  // console.log('[Middleware] Cookies:', request.cookies.getAll());
+
   // Redirect unauthenticated or expired sessions to sign-in
-  if (!isAuthenticated && protectedRoutes.some((route) => pathname.startsWith(route))) {
+  if (
+    (!isAuthenticated || isSessionExpired) &&
+    protectedRoutes.some((route) => pathname.startsWith(route))
+  ) {
     return NextResponse.redirect(new URL(signInPath, request.url));
   }
 
