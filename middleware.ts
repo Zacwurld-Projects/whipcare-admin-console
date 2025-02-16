@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { authConfig } from './auth.config';
 import { getToken } from 'next-auth/jwt';
 
 const protectedRoutes = ['/dashboard'];
@@ -7,8 +6,6 @@ const signInPath = '/auth';
 const phoneRedirectPath = '/phone-only';
 
 export async function middleware(request: NextRequest) {
-  // const session = await auth();
-  // const secret = authConfig.secret;
   const userAgent = request.headers.get('user-agent') || '';
   const isPhone = /mobile|android|iphone|ipad|phone/i.test(userAgent);
   const { pathname } = request.nextUrl;
@@ -21,18 +18,9 @@ export async function middleware(request: NextRequest) {
         ? '__Secure-authjs.session-token'
         : 'authjs.session-token',
   });
-  const expiresAt = token?.expires_at ?? 0; // use nullish coalescing
+  const expiresAt = token?.expires_at ?? 0;
   const isSessionExpired = !expiresAt || Date.now() > expiresAt; // handle missing value
   const isAuthenticated = !!token?.userId;
-
-  console.log('Middleware Session:', {
-    expiresAt: token?.expires_at,
-    isExpired: isSessionExpired,
-    userId: !!token?.userId,
-    token,
-  });
-
-  // console.log('[Middleware] Cookies:', request.cookies.getAll());
 
   // Redirect unauthenticated or expired sessions to sign-in
   if (

@@ -4,7 +4,7 @@ export const authConfig: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60,
+    maxAge: 7 * 24 * 60 * 60,
   },
   pages: {
     signIn: '/auth', // custom sign-in page

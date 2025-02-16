@@ -165,3 +165,38 @@ export type OrderDetails = {
   firstName: string[];
   lastName: string[];
 };
+
+export type CronResponse<T> = {
+  status: boolean;
+  data: T[];
+  totalCount: number;
+  pageSize: number;
+  pageNumber: number;
+};
+
+export type CronNotification = {
+  _id: string;
+  subject: string;
+  message: string;
+  audience: string;
+  frequency: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
+export type CronReward = {
+  _id: string;
+  rewardName: string;
+  rewardType: string;
+  audience: string;
+  message: string;
+  frequency: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};

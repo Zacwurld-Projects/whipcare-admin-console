@@ -52,7 +52,7 @@ const ActivityTable = ({
   if (tableContent.totalCount < 1) {
     return (
       <div>
-        <p className='text-xl'>No Activity Yet</p>
+        <p className='text-xl dark:text-white'>No Activity Yet</p>
       </div>
     );
   }
