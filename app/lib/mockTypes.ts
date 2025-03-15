@@ -200,3 +200,42 @@ export type CronReward = {
   updatedAt: string;
   __v: number;
 };
+
+export type CronServiceActivities = {
+  _id: string;
+  notificationType: string;
+  deliveryChannel: string | string[];
+  message: string;
+  targetGroup: string;
+  frequency: string;
+  status: string;
+  onNewBookingCreation: boolean;
+  onBookingUnrespondedOneHour: boolean;
+  onPerformanceMetricDrop: boolean;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+};
+
+export type CronCampaign = {
+  _id: string;
+  campaignName: string;
+  inactivityDuration: string;
+  message: string;
+  deliveryChannel: string | string[];
+  status: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+};
+
+export type CronMaintenance = {
+  _id: string;
+  maintenanceDate: string; // ISO date string
+  purpose: string;
+  postUpdateMessage: string;
+  status: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+};

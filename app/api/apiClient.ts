@@ -405,12 +405,12 @@ export const fetchPushNotifications = async (pageNumber = 1, pageSize = 8) =>
 export const fetchCronRewards = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/reward`, pageSize, pageNumber);
 
-export const fetchServiceProviderActivities = async (pageNumber = 1, pageSize = 8) =>
+export const fetchCronServiceProviderActivities = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/service-provider`, pageSize, pageNumber);
 
-export const fetchMaintenace = async (pageNumber = 1, pageSize = 8) =>
+export const fetchCronMaintenance = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/maintenance`, pageSize, pageNumber);
 
-export const fetchCampaigns = async (pageNumber = 1, pageSize = 8) =>
+export const fetchCronCampaigns = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/campaign`, pageSize, pageNumber);
 // #endregion
