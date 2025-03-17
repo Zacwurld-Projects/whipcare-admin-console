@@ -3,17 +3,20 @@ import Link from 'next/link';
 import PlusIcon from '../assets/plusIcon.svg';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { useCronContext } from './CronContext';
+import TemplateModal from './templates/TemplateModal';
 
 const pages = [
   { page: '', title: 'Push Notifications' },
   { page: 'rewards', title: 'Reward Center' },
-  { page: 'service-provider', title: 'Service Provider Activities' },
+  { page: 'service-providers', title: 'Service Provider Activities' },
   { page: 'campaign', title: 'Customer Retargeting' },
   { page: 'maintenance', title: 'App Maintenance' },
 ];
 
 const CronTemplate = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
+  const { templateDetails, setTemplateDetails } = useCronContext();
 
   const checkActive = (page: string | undefined) => {
     const currentPage = pathname.split('/')[3];
@@ -24,7 +27,19 @@ const CronTemplate = ({ children }: { children: React.ReactNode }) => {
     <>
       <div className='flex items-center justify-between'>
         <h2 className='text-2xl font-semibold text-black dark:text-white'>CRON Panel</h2>
-        <button className='flex items-center gap-[10px] rounded-[6px] bg-[#eb5017] px-3 py-2'>
+        <button
+          className='flex items-center gap-[10px] rounded-[6px] bg-[#eb5017] px-3 py-2'
+          onClick={() => {
+            const currentPage = pathname.split('/')[3] || 'notification';
+
+            setTemplateDetails({
+              display: true,
+              isEditing: true,
+              data: null,
+              type: currentPage as '',
+            });
+          }}
+        >
           <PlusIcon />
           <p className='text-sm font-semibold text-white'>Use Template</p>
         </button>
@@ -41,6 +56,7 @@ const CronTemplate = ({ children }: { children: React.ReactNode }) => {
         ))}
       </div>
       {children}
+      {templateDetails.display && <TemplateModal />}
     </>
   );
 };

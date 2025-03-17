@@ -5,6 +5,7 @@ import CronTable from './CronTable';
 import dayjs from '@/app/dayjs';
 import useCronPageSetup from './useCronPageSetup';
 import { CronNotification, CronResponse } from '@/app/lib/mockTypes';
+import { useCronContext } from './CronContext';
 
 const reflectNotificationStatusStyle = (status: string) => {
   if (status === 'in draft') return 'text-[#514a4a] bg-[#fbf1f1]';
@@ -13,6 +14,7 @@ const reflectNotificationStatusStyle = (status: string) => {
 };
 
 const CronPage = () => {
+  const { setTemplateDetails } = useCronContext();
   const {
     isInitialLoad,
     currentPage,
@@ -33,17 +35,33 @@ const CronPage = () => {
         isLoading={useFetchNotifications.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td>
-              <div className='max-w-[350px] flex-col'>
-                <p className='text-sm font-medium text-gray-900 dark:text-white'>{item.subject}</p>
-                <p className='w-full text-ellipsis text-nowrap'>{item.message}</p>
-              </div>
+            <td
+              className='max-w-[350px] cursor-pointer flex-col hover:underline'
+              onClick={() =>
+                setTemplateDetails({
+                  isEditing: false,
+                  data: item,
+                  display: true,
+                  type: 'notification',
+                })
+              }
+            >
+              <p className='text-sm font-medium text-gray-900 dark:text-white'>{item.subject}</p>
+              <p className='w-full text-ellipsis text-nowrap'>{item.message}</p>
             </td>
             <td>{item.audience}</td>
             <td>{item.frequency}</td>
             <td>{dayjs(item.updatedAt).format('Do MMM, h:mmA')}</td>
             <td>
               <button
+                onClick={() =>
+                  setTemplateDetails({
+                    isEditing: false,
+                    data: item,
+                    display: true,
+                    type: 'notification',
+                  })
+                }
                 className={`${reflectNotificationStatusStyle(item.status.toLowerCase())} rounded-[12px] px-3 py-[2px] text-sm font-medium capitalize`}
               >
                 {item.status}

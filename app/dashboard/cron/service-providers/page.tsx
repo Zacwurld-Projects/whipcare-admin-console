@@ -6,8 +6,10 @@ import useCronPageSetup from '../useCronPageSetup';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import CronTable from '../CronTable';
 import { CronResponse, CronServiceActivities } from '@/app/lib/mockTypes';
+import { useCronContext } from '../CronContext';
 
 const ServiceProviderActivitiesPage = () => {
+  const { setTemplateDetails } = useCronContext();
   const {
     isInitialLoad,
     currentPage,
@@ -35,7 +37,17 @@ const ServiceProviderActivitiesPage = () => {
         isLoading={useFetchActivities.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td>
+            <td
+              className='cursor-pointer hover:underline'
+              onClick={() =>
+                setTemplateDetails({
+                  isEditing: false,
+                  data: item,
+                  display: true,
+                  type: 'service-provider',
+                })
+              }
+            >
               <p className='font-medium text-gray-900 dark:text-white'>{item.notificationType}</p>
               <p>{item.message}</p>
             </td>
@@ -47,7 +59,7 @@ const ServiceProviderActivitiesPage = () => {
             <td>
               {typeof item.deliveryChannel === 'string'
                 ? item.deliveryChannel
-                : item.deliveryChannel.join(', ')}
+                : item.deliveryChannel?.join(', ')}
             </td>
             <td>{item.targetGroup}</td>
             <td>{item.frequency}</td>

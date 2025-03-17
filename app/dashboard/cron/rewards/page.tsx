@@ -7,8 +7,10 @@ import CronTable from '../CronTable';
 import dayjs from '@/app/dayjs';
 import DotsIcon from '@/app/dashboard/assets/dotsIcon.svg';
 import { CronResponse, CronReward } from '@/app/lib/mockTypes';
+import { useCronContext } from '../CronContext';
 
 const RewardsPage = () => {
+  const { setTemplateDetails } = useCronContext();
   const {
     isInitialLoad,
     currentPage,
@@ -37,7 +39,19 @@ const RewardsPage = () => {
         isLoading={useFetchRewards.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td>{item.rewardName}</td>
+            <td
+              onClick={() =>
+                setTemplateDetails({
+                  isEditing: false,
+                  data: item,
+                  display: true,
+                  type: 'rewards',
+                })
+              }
+              className='cursor-pointer hover:underline'
+            >
+              {item.rewardName}
+            </td>
             <td>{item.rewardType}</td>
             <td>{item.audience}</td>
             <td>{item.frequency}</td>

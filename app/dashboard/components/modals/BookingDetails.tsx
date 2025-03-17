@@ -6,19 +6,7 @@ import SpinLoader from '../Loaders/SpinLoader';
 import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import { useGlobalContext } from '@/app/context/AppContext';
 
-const BookingDetails = (
-  {
-    //   type,
-    //   booking,
-    //   isLoading,
-    //   setIsDisplayingBookingDetails,
-    // }: {
-    //   type: string;
-    //   isLoading: boolean;
-    //   booking: OrderDetails;
-    //   setIsDisplayingBookingDetails: Dispatch<boolean>;
-  },
-) => {
+const BookingDetails = () => {
   const {
     bookingDetails: { data, isLoading, heading },
     setBookingDetails,
@@ -29,7 +17,7 @@ const BookingDetails = (
 
   if (!data) {
     return (
-      <SidebarModalContainer setIsDisplayingBookingDetails={closeModal}>
+      <SidebarModalContainer closeModal={closeModal}>
         <div className='center-grid h-[80vh] w-full border-green-700'>
           {isLoading ? (
             <SpinLoader size={64} color='#27231F' thickness={2} />
@@ -55,23 +43,6 @@ const BookingDetails = (
       value: `₦${data?.minPrice} - ₦${data?.maxPrice}`,
     },
   ];
-
-  // const trackBooking = (checkpoint: string) => {
-  //   const bookingStatus = [
-  //     'accepted',
-  //     'received',
-  //     'in progress',
-  //     'ready for delivery',
-  //     'delivered',
-  //     'completed',
-  //   ];
-  //   const currentCheckpoint = bookingStatus.findIndex((item) => item === booking?.status);
-  //   if (currentCheckpoint >= 0) {
-  //     return bookingStatus.findIndex((item) => item === checkpoint) <= currentCheckpoint
-  //       ? true
-  //       : false;
-  //   } else false;
-  // };
 
   const convertToCheckpointDate = (date: string | null) =>
     date ? dayjs(date).format('DD-MMM-YYYY / hh:mm A') : '';
@@ -116,7 +87,7 @@ const BookingDetails = (
   ];
 
   return (
-    <SidebarModalContainer setIsDisplayingBookingDetails={closeModal}>
+    <SidebarModalContainer closeModal={closeModal}>
       <>
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium dark:text-white'>
           <p>{heading}</p>

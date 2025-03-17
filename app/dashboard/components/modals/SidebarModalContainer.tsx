@@ -1,14 +1,14 @@
 'use client';
 import DarkOverlay from '../DarkOverlay';
 import LeftArrowIcon from '../../assets/leftArrow.svg';
-import { Dispatch, useRef } from 'react';
+import { useRef } from 'react';
 
 const SidebarModalContainer = ({
   children,
-  setIsDisplayingBookingDetails,
+  closeModal,
 }: {
   children: React.ReactNode;
-  setIsDisplayingBookingDetails: Dispatch<boolean>;
+  closeModal: () => void;
 }) => {
   const DetailsAsideRef = useRef<HTMLDivElement>(null);
 
@@ -16,7 +16,7 @@ const SidebarModalContainer = ({
     <DarkOverlay
       exitFunction={(e) => {
         if (!DetailsAsideRef.current?.contains(e.target as Node)) {
-          setIsDisplayingBookingDetails(false);
+          closeModal();
         }
       }}
     >
@@ -25,8 +25,8 @@ const SidebarModalContainer = ({
         className='ml-auto min-h-full w-[calc(50%-132px)] min-w-[500px] bg-white p-6 opacity-100 dark:bg-dark-secondary max-[1100px]:w-[50%]'
       >
         <button
-          className='center-grid sticky top-6 mb-4 size-[36px] rounded-full border border-[#d1d5db] dark:border-white'
-          onClick={() => setIsDisplayingBookingDetails(false)}
+          className='center-grid relative mb-4 size-[36px] rounded-full border border-[#d1d5db] dark:border-white'
+          onClick={closeModal}
         >
           <LeftArrowIcon className='dark:*:fill-white' />
         </button>

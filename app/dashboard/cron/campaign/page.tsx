@@ -6,8 +6,10 @@ import SectionLoader from '../../components/Loaders/SectionLoader';
 import CronTable from '../CronTable';
 import { CronCampaign, CronResponse } from '@/app/lib/mockTypes';
 import dayjs from '@/app/dayjs';
+import { useCronContext } from '../CronContext';
 
 const CustomerRetargeting = () => {
+  const { setTemplateDetails } = useCronContext();
   const {
     isInitialLoad,
     currentPage,
@@ -35,7 +37,19 @@ const CustomerRetargeting = () => {
         isLoading={useFetchCampaigns.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td>{item.campaignName}</td>
+            <td
+              className='cursor-pointer hover:underline'
+              onClick={() =>
+                setTemplateDetails({
+                  isEditing: false,
+                  data: item,
+                  display: true,
+                  type: 'campaign',
+                })
+              }
+            >
+              {item.campaignName}
+            </td>
             <td>{item.inactivityDuration}</td>
             <td>{item.message}</td>
             <td>

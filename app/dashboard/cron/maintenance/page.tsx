@@ -6,8 +6,10 @@ import SectionLoader from '../../components/Loaders/SectionLoader';
 import CronTable from '../CronTable';
 import { CronMaintenance, CronResponse } from '@/app/lib/mockTypes';
 import dayjs from '@/app/dayjs';
+import { useCronContext } from '../CronContext';
 
 const MaintenancePage = () => {
+  const { setTemplateDetails } = useCronContext();
   const {
     isInitialLoad,
     currentPage,
@@ -28,7 +30,19 @@ const MaintenancePage = () => {
         isLoading={useFetchMaintenance.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td>{dayjs(item.maintenanceDate).format('MMM DD, YYYY')}</td>
+            <td
+              className='cursor-pointer hover:underline'
+              onClick={() =>
+                setTemplateDetails({
+                  isEditing: false,
+                  data: item,
+                  display: true,
+                  type: 'maintenance',
+                })
+              }
+            >
+              {dayjs(item.maintenanceDate).format('MMM DD, YYYY')}
+            </td>
             <td>{item.purpose}</td>
             <td>{item.postUpdateMessage}</td>
             <td>{dayjs(item.updatedAt).format('Do MMM, h:mmA')}</td>
