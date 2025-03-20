@@ -10,7 +10,7 @@ import { createContext, Dispatch, useContext, useEffect, useState } from 'react'
 
 export type TemplateDetailsType<T> = {
   display: boolean;
-  type: 'notification' | 'rewards' | 'service-provider' | 'campaign' | 'maintenance' | '';
+  type: 'notification' | 'rewards' | 'service-providers' | 'campaign' | 'maintenance' | '';
   data: T | null;
   isEditing: boolean;
 };

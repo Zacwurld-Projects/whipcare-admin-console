@@ -36,7 +36,10 @@ const ServiceProviderTemplate = ({
   });
   const [isEditing, setIsEditing] = useState(templateDetails.isEditing);
 
-  const EventTriggers = [
+  const EventTriggers: Array<{
+    id: 'onNewBookingCreation' | 'onBookingUnrespondedOneHour' | 'onPerformanceMetricDrop';
+    title: string;
+  }> = [
     { id: 'onNewBookingCreation', title: 'On Booking Creation' },
     { id: 'onBookingUnrespondedOneHour', title: 'Unresponded One Hour' },
     { id: 'onPerformanceMetricDrop', title: 'On Performance Metric Drops' },
@@ -58,8 +61,7 @@ const ServiceProviderTemplate = ({
     {
       title: 'Event-based Triggers',
       value: EventTriggers.map((trigger) =>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (templateDetails.data as any)?.[trigger.id] ? trigger.title : null,
+        templateDetails.data?.[trigger.id] ? trigger.title : null,
       )
         .filter(Boolean)
         .join(', '),
@@ -160,8 +162,7 @@ const ServiceProviderTemplate = ({
                     name={item.id}
                     id={item.id}
                     type='checkbox'
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    checked={(serviceProviderData as any)[item.id]}
+                    checked={serviceProviderData[item.id]}
                     onChange={(e) =>
                       setServiceProviderData({
                         ...serviceProviderData,

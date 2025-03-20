@@ -37,7 +37,7 @@ const TemplateModal = () => {
       {templateDetails.type === 'rewards' && (
         <RewardsTemplate templateDetails={templateDetails as TemplateDetailsType<CronReward>} />
       )}
-      {templateDetails.type === 'service-provider' && (
+      {templateDetails.type === 'service-providers' && (
         <ServiceProviderTemplate
           templateDetails={templateDetails as TemplateDetailsType<CronServiceActivities>}
         />

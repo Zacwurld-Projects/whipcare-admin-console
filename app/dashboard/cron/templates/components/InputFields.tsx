@@ -3,8 +3,9 @@ import CalendarIcon from '@/app/dashboard/assets/calendarIcon.svg';
 import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useRef } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const handleInputChange = <T extends Record<string, any>>(
+export const handleInputChange = <
+  T extends Record<string, string | boolean | undefined | string[]>,
+>(
   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   data: T,
   setData: Dispatch<SetStateAction<T>>,
@@ -17,8 +18,7 @@ export const handleInputChange = <T extends Record<string, any>>(
   }));
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const InputFields = <T extends Record<string, any>>({
+const InputFields = <T extends Record<string, string | boolean | undefined | string[]>>({
   type,
   value,
   textDesc,

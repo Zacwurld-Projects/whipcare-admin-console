@@ -6,17 +6,21 @@ import { useRef } from 'react';
 const SidebarModalContainer = ({
   children,
   closeModal,
+  exitOnOutsideClick,
 }: {
   children: React.ReactNode;
   closeModal: () => void;
+  exitOnOutsideClick?: boolean;
 }) => {
   const DetailsAsideRef = useRef<HTMLDivElement>(null);
 
   return (
     <DarkOverlay
       exitFunction={(e) => {
-        if (!DetailsAsideRef.current?.contains(e.target as Node)) {
-          closeModal();
+        if (exitOnOutsideClick) {
+          if (!DetailsAsideRef.current?.contains(e.target as Node)) {
+            closeModal();
+          }
         }
       }}
     >

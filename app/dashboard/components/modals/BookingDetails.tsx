@@ -17,7 +17,7 @@ const BookingDetails = () => {
 
   if (!data) {
     return (
-      <SidebarModalContainer closeModal={closeModal}>
+      <SidebarModalContainer closeModal={closeModal} exitOnOutsideClick>
         <div className='center-grid h-[80vh] w-full border-green-700'>
           {isLoading ? (
             <SpinLoader size={64} color='#27231F' thickness={2} />
@@ -87,7 +87,7 @@ const BookingDetails = () => {
   ];
 
   return (
-    <SidebarModalContainer closeModal={closeModal}>
+    <SidebarModalContainer closeModal={closeModal} exitOnOutsideClick>
       <>
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium dark:text-white'>
           <p>{heading}</p>

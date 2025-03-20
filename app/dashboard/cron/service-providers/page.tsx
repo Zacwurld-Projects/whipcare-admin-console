@@ -44,7 +44,7 @@ const ServiceProviderActivitiesPage = () => {
                   isEditing: false,
                   data: item,
                   display: true,
-                  type: 'service-provider',
+                  type: 'service-providers',
                 })
               }
             >
