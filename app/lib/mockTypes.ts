@@ -242,5 +242,5 @@ export type CronMaintenance = {
 
 export type Test = {
   id: string;
-  test: string;
+  test: number;
 };
