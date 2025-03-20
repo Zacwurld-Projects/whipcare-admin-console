@@ -239,3 +239,7 @@ export type CronMaintenance = {
   updatedAt: string; // ISO date string
   __v: number;
 };
+
+export type Test = {
+  id: string;
+};
