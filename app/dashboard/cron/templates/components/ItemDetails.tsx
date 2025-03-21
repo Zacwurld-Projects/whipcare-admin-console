@@ -12,14 +12,16 @@ const ItemDetails = ({
 }) => {
   return (
     <div className='mb-20'>
-      <article className='mb-20 w-full rounded-lg border border-gray-200 p-6'>
+      <article className='mb-20 w-full rounded-lg border border-gray-200 p-6 dark:border-dark-primary'>
         {dataPreview.map((item, index) => (
           <div
             key={item.title}
-            className={`flex w-full justify-between border-b border-gray-200 py-6 text-sm ${index === dataPreview.length - 1 ? 'border-none pb-0' : ''} ${index === 0 ? 'pt-0' : ''}`}
+            className={`flex w-full justify-between border-b border-gray-200 py-6 text-sm dark:border-dark-primary ${index === dataPreview.length - 1 ? 'border-none pb-0' : ''} ${index === 0 ? 'pt-0' : ''}`}
           >
-            <p className='text-gray-500'>{item.title}</p>
-            <p className='max-w-[75%] text-left font-medium text-gray-700'>{item.value}</p>
+            <p className='text-gray-500 dark:text-dark-tertiary'>{item.title}</p>
+            <p className='max-w-[75%] text-left font-medium text-gray-700 dark:text-white'>
+              {item.value}
+            </p>
           </div>
         ))}
       </article>

@@ -12,8 +12,8 @@ const CronForm = ({
   return (
     <form onSubmit={(e) => e.preventDefault()} className='mb-32'>
       <div className='flex-column mb-8 w-full items-center gap-2 text-center'>
-        <h5 className='heading-h5 font-semibold text-[#1a1a21]'>{title}</h5>
-        <p className='text-[#8c94a6]'>{subText}</p>
+        <h5 className='heading-h5 font-semibold text-[#1a1a21] dark:text-white'>{title}</h5>
+        <p className='text-[#8c94a6] dark:text-white'>{subText}</p>
       </div>
       <div className='flex-column w-full gap-8'>{children}</div>
       <div className='mt-10 flex w-full gap-[6%] *:rounded-lg *:px-6 *:py-4 *:font-semibold'>

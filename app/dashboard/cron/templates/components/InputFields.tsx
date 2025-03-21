@@ -42,7 +42,7 @@ const InputFields = <T extends Record<string, string | boolean | undefined | str
   if (type === 'textarea')
     return (
       <label className='flex-column gap-1' htmlFor={name}>
-        <p className='text-sm font-medium text-[#475367]'>{title}</p>
+        <p className='text-sm font-medium text-[#475367] dark:text-white'>{title}</p>
         <textarea
           name={name}
           id={name}
@@ -50,23 +50,23 @@ const InputFields = <T extends Record<string, string | boolean | undefined | str
           value={value}
           onChange={(e) => handleInputChange(e, data, setData)}
           rows={4}
-          className='resize-none rounded-[6px] border border-[#d0d5dd] p-4 text-sm text-gray-600 scrollbar placeholder:text-[#98a2b3] focus:border-[#fa9874] focus:outline-none'
+          className='resize-none rounded-[6px] border border-[#d0d5dd] p-4 text-sm text-gray-600 scrollbar placeholder:text-[#98a2b3] focus:border-[#fa9874] focus:outline-none dark:border-dark-tertiary dark:bg-dark-primary dark:text-white dark:placeholder:text-white'
         ></textarea>
-        <p className='text-sm text-gray-500'>Keep this simple of 50 characters</p>
+        <p className='text-sm text-gray-500 dark:text-white'>Keep this simple of 50 characters</p>
       </label>
     );
 
   if (type === 'date') {
     return (
       <div className='flex-column gap-1'>
-        <p className='text-sm font-medium text-[#475367]'>{title}</p>
+        <p className='text-sm font-medium text-[#475367] dark:text-white'>{title}</p>
         <label
-          className='relative flex items-center gap-3 rounded-[6px] border border-[#d0d5dd] p-4 focus-within:border-[#fa9874]'
+          className='relative flex items-center gap-3 rounded-[6px] border border-[#d0d5dd] p-4 focus-within:border-[#fa9874] dark:border-dark-tertiary dark:bg-dark-primary dark:text-white'
           htmlFor={name}
           onClick={() => dateRef.current?.showPicker()}
         >
           <CalendarIcon />
-          <p className='w-full text-sm text-gray-600'>
+          <p className='w-full text-sm text-gray-600 dark:text-white'>
             {value ? dayjs(value).format('DD/MM/YYYY') : 'Select date'}
           </p>
           <input
@@ -85,7 +85,7 @@ const InputFields = <T extends Record<string, string | boolean | undefined | str
   }
   return (
     <label className='flex-column gap-1' htmlFor={name}>
-      <p className='text-sm font-medium text-[#475367]'>{title}</p>
+      <p className='text-sm font-medium text-[#475367] dark:text-white'>{title}</p>
       <input
         type='text'
         id={name}
@@ -93,9 +93,9 @@ const InputFields = <T extends Record<string, string | boolean | undefined | str
         value={value}
         onChange={(e) => handleInputChange(e, data, setData)}
         placeholder={placeholder ? placeholder : 'Enter Text'}
-        className='rounded-[6px] border border-[#d0d5dd] p-4 text-sm text-gray-600 placeholder:text-[#98a2b3] focus:border-[#fa9874] focus:outline-none'
+        className='rounded-[6px] border border-[#d0d5dd] p-4 text-sm text-gray-600 placeholder:text-[#98a2b3] focus:border-[#fa9874] focus:outline-none dark:border-dark-tertiary dark:bg-dark-primary dark:text-white dark:placeholder:text-white'
       />
-      {textDesc && <p className='text-sm text-gray-500'>{textDesc}</p>}
+      {textDesc && <p className='text-sm text-gray-500 dark:text-white'>{textDesc}</p>}
     </label>
   );
 };

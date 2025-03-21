@@ -150,14 +150,16 @@ const ServiceProviderTemplate = ({
               type='textarea'
             />
             <div className='flex-column w-full gap-4'>
-              <p className='text-sm font-medium text-[#475367]'>Event-Based Triggers</p>
+              <p className='text-sm font-medium text-[#475367] dark:text-white'>
+                Event-Based Triggers
+              </p>
               {EventTriggers.map((item) => (
                 <label
                   key={item.id}
                   htmlFor={item.id}
                   className='flex items-center justify-between'
                 >
-                  <p className='text-sm font-medium text-gray-500'>{item.title}</p>
+                  <p className='text-sm font-medium text-gray-500 dark:text-white'>{item.title}</p>
                   <input
                     name={item.id}
                     id={item.id}
@@ -171,8 +173,8 @@ const ServiceProviderTemplate = ({
                     }
                     className='peer hidden'
                   />
-                  <div className='relative h-[24px] w-[39px] rounded-[27.4px] bg-gray-200 p-[1.5px] peer-checked:bg-[#f56630] peer-checked:*:translate-x-[15.5px]'>
-                    <div className='size-[21px] rounded-full border bg-white transition-transform duration-200'></div>
+                  <div className='relative h-[24px] w-[39px] rounded-[27.4px] bg-gray-200 p-[1.5px] peer-checked:bg-[#f56630] peer-checked:*:translate-x-[15.5px] dark:bg-dark-tertiary dark:peer-checked:bg-dark-accent dark:peer-checked:*:bg-white'>
+                    <div className='size-[21px] rounded-full bg-white transition-transform duration-200 dark:bg-dark-primary'></div>
                   </div>
                 </label>
               ))}
