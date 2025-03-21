@@ -45,7 +45,7 @@ const SelectOptions = ({
             )}
           </p>
           <ChevronDownIcon
-            className={`rotate-90 transition-transform dark:*:fill-white ${isMenuOpen ? 'rotate-[-90deg]' : ''}`}
+            className={`dark: rotate-90 transition-transform dark:*:fill-white ${isMenuOpen ? 'rotate-[-90deg]' : ''}`}
           />
         </button>
         {isMenuOpen && (
