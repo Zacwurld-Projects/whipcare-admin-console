@@ -5,12 +5,14 @@ import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 import SpinLoader from '../Loaders/SpinLoader';
-import { BaseData } from '@/app/lib/mockTypes';
+import { BaseTableData } from '@/app/lib/mockTypes';
 
-interface InfoTableProps<T extends BaseData> {
+interface InfoTableProps<T extends BaseTableData> {
   heading: string;
   isLoading?: boolean;
   currentPage: number;
+  showItemNumber?: boolean;
+  onClickRows?: (item: T) => void;
   setCurrentPage: Dispatch<number>;
   data: {
     data: T[];
@@ -22,18 +24,20 @@ interface InfoTableProps<T extends BaseData> {
   ContentStructure?: ComponentType<{ item: T; index: number }>;
 }
 
-const DefaultContentStructure = <T extends BaseData>({ item }: { item: T }) => (
+const DefaultContentStructure = <T extends BaseTableData>({ item }: { item: T }) => (
   <>
     <td>{item._id}</td>
     <td>{item.createdAt}</td>
     <td>{item.lastLogin}</td>
   </>
 );
-const InfoTable = <T extends BaseData>({
+const InfoTable = <T extends BaseTableData>({
   heading,
   isLoading,
   data,
+  onClickRows,
   headings,
+  showItemNumber,
   currentPage,
   setCurrentPage,
   ContentStructure = DefaultContentStructure,
@@ -69,9 +73,13 @@ const InfoTable = <T extends BaseData>({
             <tbody>
               {data.data.map((item, index) => (
                 <tr
-                  className='[&_td]:text-xsmall border-y border-y-gray-75 dark:border-dark-primary [&_td]:px-[14px] [&_td]:py-3 [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white'
+                  className={`border-y border-y-gray-75 dark:border-dark-primary [&_:first-child]:rounded-l-lg [&_:last-child]:rounded-r-lg [&_td]:px-[14px] [&_td]:py-3 [&_td]:text-xs [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white ${onClickRows ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-primary' : ''}`}
                   key={index}
+                  onClick={() => {
+                    if (onClickRows) onClickRows(item);
+                  }}
                 >
+                  {showItemNumber && <td>{index + 1 + data.pageSize * (currentPage - 1)}</td>}
                   <ContentStructure index={index} item={item} />
                 </tr>
               ))}

@@ -363,39 +363,33 @@ export const fetchFeedbackStats = async () => {
   }
 };
 
-export const fetchFeedbackSuggestions = async () => {
+export const fetchFeedbackSuggestions = async (pageNumber = 1, pageSize = 15) =>
+  fetchTableResponse(`${ApiRoutes.Feedback}/suggestions`, pageSize, pageNumber);
+
+export const fetchFeedbackRatings = async (pageNumber = 1, pageSize = 15) =>
+  fetchTableResponse(`${ApiRoutes.Feedback}/ratings`, pageSize, pageNumber);
+
+export const fetchFeedbackComplaints = async (pageNumber = 1, pageSize = 15) =>
+  fetchTableResponse(`${ApiRoutes.Feedback}/complaints`, pageSize, pageNumber);
+
+export const updateComplaints = async (id: string, status: string) => {
   try {
-    const response = await API.get(`${ApiRoutes.Feedback}/suggestions`);
-    return response.data;
-  } catch (error) {
-    catchError(error);
-  }
-};
-export const fetchFeedbackRatings = async () => {
-  try {
-    const response = await API.get(`${ApiRoutes.Feedback}/ratings`);
-    return response.data;
-  } catch (error) {
-    catchError(error);
-  }
-};
-export const fetchFeedbackComplaints = async () => {
-  try {
-    const response = await API.get(`${ApiRoutes.Feedback}/complaints`);
-    return response.data;
-  } catch (error) {
-    catchError(error);
-  }
-};
-export const fetchFeedbackReviews = async () => {
-  try {
-    const response = await API.get(`${ApiRoutes.Feedback}/reviews`);
-    return response.data;
+    const reponse = await API.put(`${ApiRoutes.Feedback}/complaints/${id}`, {
+      status,
+    });
+    return reponse.data;
   } catch (error) {
     catchError(error);
   }
 };
 
+export const fetchFeedbackReviews = async (pageNumber = 1, pageSize = 15) =>
+  fetchTableResponse(`${ApiRoutes.Feedback}/reviews`, pageSize, pageNumber);
+//#endregion
+
+//#region MARKETING
+export const fetchMarketingEmailList = (pageNumber = 15, pageSize = 1) =>
+  fetchTableResponse(`${ApiRoutes.Marketing}/emails`, pageSize, pageNumber);
 //#endregion
 
 // #region CRON

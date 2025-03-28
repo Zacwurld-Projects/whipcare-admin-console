@@ -26,6 +26,14 @@ const RewardsPage = () => {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         heading='All Rewards'
+        onClickRows={(item) =>
+          setTemplateDetails({
+            isEditing: false,
+            data: item,
+            display: true,
+            type: 'rewards',
+          })
+        }
         tableHeadings={[
           'Reward Name',
           'Type',
@@ -39,19 +47,7 @@ const RewardsPage = () => {
         isLoading={useFetchRewards.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td
-              onClick={() =>
-                setTemplateDetails({
-                  isEditing: false,
-                  data: item,
-                  display: true,
-                  type: 'rewards',
-                })
-              }
-              className='cursor-pointer hover:underline'
-            >
-              {item.rewardName}
-            </td>
+            <td className=''>{item.rewardName}</td>
             <td>{item.rewardType}</td>
             <td>{item.audience}</td>
             <td>{item.frequency}</td>

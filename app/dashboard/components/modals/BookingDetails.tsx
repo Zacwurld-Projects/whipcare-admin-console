@@ -10,6 +10,7 @@ const BookingDetails = () => {
   const {
     bookingDetails: { data, isLoading, heading },
     setBookingDetails,
+    isDark,
   } = useGlobalContext();
 
   const closeModal = () =>
@@ -20,9 +21,9 @@ const BookingDetails = () => {
       <SidebarModalContainer closeModal={closeModal} exitOnOutsideClick>
         <div className='center-grid h-[80vh] w-full border-green-700'>
           {isLoading ? (
-            <SpinLoader size={64} color='#27231F' thickness={2} />
+            <SpinLoader size={64} color={`${isDark ? '#ffffff' : '#27231F'}`} thickness={2} />
           ) : (
-            <p>No Details for this booking.</p>
+            <p className='dark:text-white'>No Details for this booking.</p>
           )}
         </div>
       </SidebarModalContainer>

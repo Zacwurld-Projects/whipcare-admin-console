@@ -45,15 +45,12 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
         <PageLoader />
       ) : (
         <>
-          <div className='mt-4 flex items-center gap-[10px]'>
-            <Link
-              href={'/dashboard/service-provider/info'}
-              className='text-medium font-medium text-[#27231f]'
-            >
+          <div className='mt-4 flex items-center gap-[10px] text-[#27231f] dark:text-dark-tertiary'>
+            <Link href={'/dashboard/service-provider/info'} className='text-medium font-medium'>
               Service provider Info
             </Link>
-            <p className='text-medium font-medium text-[#27231f]'>{'>'}</p>
-            <p className='heading-h5 font-medium text-[#27231f]'>
+            <p className='text-medium font-medium'>{'>'}</p>
+            <p className='heading-h5 font-medium'>
               {kpisData.userContact.firstName} {kpisData.userContact.lastName}
             </p>
           </div>

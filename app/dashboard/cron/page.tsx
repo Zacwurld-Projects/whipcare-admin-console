@@ -28,6 +28,14 @@ const CronPage = () => {
     <>
       <CronTable
         currentPage={currentPage}
+        onClickRows={(item) =>
+          setTemplateDetails({
+            isEditing: false,
+            data: item,
+            display: true,
+            type: 'notification',
+          })
+        }
         setCurrentPage={setCurrentPage}
         heading='All Push Notifications'
         tableHeadings={['Titles', 'Target Audience', 'Frequency', 'Date and Time', 'Status']}
@@ -35,17 +43,7 @@ const CronPage = () => {
         isLoading={useFetchNotifications.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td
-              className='max-w-[350px] cursor-pointer flex-col hover:underline'
-              onClick={() =>
-                setTemplateDetails({
-                  isEditing: false,
-                  data: item,
-                  display: true,
-                  type: 'notification',
-                })
-              }
-            >
+            <td className='max-w-[350px] cursor-pointer flex-col'>
               <p className='text-sm font-medium text-gray-900 dark:text-white'>{item.subject}</p>
               <p className='w-full text-ellipsis text-nowrap'>{item.message}</p>
             </td>
@@ -53,19 +51,11 @@ const CronPage = () => {
             <td>{item.frequency}</td>
             <td>{dayjs(item.updatedAt).format('Do MMM, h:mmA')}</td>
             <td>
-              <button
-                onClick={() =>
-                  setTemplateDetails({
-                    isEditing: false,
-                    data: item,
-                    display: true,
-                    type: 'notification',
-                  })
-                }
-                className={`${reflectNotificationStatusStyle(item.status.toLowerCase())} rounded-[12px] px-3 py-[2px] text-sm font-medium capitalize`}
+              <p
+                className={`${reflectNotificationStatusStyle(item.status.toLowerCase())} w-fit rounded-[12px] px-3 py-[2px] text-sm font-medium capitalize`}
               >
                 {item.status}
-              </button>
+              </p>
             </td>
           </>
         )}

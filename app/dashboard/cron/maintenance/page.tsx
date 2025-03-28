@@ -24,25 +24,21 @@ const MaintenancePage = () => {
       <CronTable
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        onClickRows={(item) =>
+          setTemplateDetails({
+            isEditing: false,
+            data: item,
+            display: true,
+            type: 'maintenance',
+          })
+        }
         heading='All App Maintenance'
         tableHeadings={['Maintenance Date', 'Purpose', 'Post-Update Message', 'Date and Time', '']}
         tableResponse={useFetchMaintenance.data as CronResponse<CronMaintenance>}
         isLoading={useFetchMaintenance.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td
-              className='cursor-pointer hover:underline'
-              onClick={() =>
-                setTemplateDetails({
-                  isEditing: false,
-                  data: item,
-                  display: true,
-                  type: 'maintenance',
-                })
-              }
-            >
-              {dayjs(item.maintenanceDate).format('MMM DD, YYYY')}
-            </td>
+            <td>{dayjs(item.maintenanceDate).format('MMM DD, YYYY')}</td>
             <td>{item.purpose}</td>
             <td>{item.postUpdateMessage}</td>
             <td>{dayjs(item.updatedAt).format('Do MMM, h:mmA')}</td>

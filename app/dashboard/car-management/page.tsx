@@ -12,8 +12,17 @@ import PageLoader from '../components/Loaders/PageLoader';
 import InfoTable from '../components/tables/InfoTable';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { BaseTable, BaseTableData } from '@/app/lib/mockTypes';
 
 dayjs.extend(advancedFormat);
+
+type CarData = BaseTableData & {
+  carBrand: string;
+  carModel: string;
+  colour: string;
+  lastService: string;
+  lastServiceDate: string;
+};
 
 const carManagementStats = [
   {
@@ -75,7 +84,7 @@ const CarManagementPage = () => {
       <InfoTable
         heading='Registered Car List'
         isLoading={useFetchCarList.isLoading}
-        data={useFetchCarList.data}
+        data={useFetchCarList.data as BaseTable<CarData>}
         headings={[
           'No',
           'Car Brand',

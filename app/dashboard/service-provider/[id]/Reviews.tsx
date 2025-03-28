@@ -1,7 +1,7 @@
 'use client';
 
 import FilterForm from '../../components/tables/components/FilterForm';
-import RatingStar from '../../assets/starRate.svg';
+import { renderRatingStars } from '@/app/lib/accessoryFunctions';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 // import BookingDetails from '../../components/modals/BookingDetails';
@@ -19,19 +19,6 @@ const Reviews = ({
   }[];
 }) => {
   const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState(false);
-  const renderRatingStars = (rating: number) => {
-    const stars = Array.from({ length: 5 }, (_, i) => i + 1);
-    return (
-      <div className='flex w-fit items-center gap-[1.5px]'>
-        {stars.map((star) => (
-          <RatingStar
-            className={`${star <= rating ? '*:fill-[#f3a318]' : '*:fill-gray-200'}`}
-            key={star}
-          />
-        ))}
-      </div>
-    );
-  };
 
   return (
     <>

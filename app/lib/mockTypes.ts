@@ -52,6 +52,23 @@ export interface BaseData {
   lastServiceDate?: string | null;
 }
 
+export type BaseTable<T> = {
+  data: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+};
+
+export type BaseTableData = {
+  _id: string;
+  createdAt: string;
+  lastLogin: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  email: string;
+};
+
 export type UserActivity = {
   status: boolean;
   data: Activity[];

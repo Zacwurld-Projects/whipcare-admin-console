@@ -1,4 +1,5 @@
 import { getSession } from 'next-auth/react';
+import RatingStar from '../dashboard/assets/starRate.svg';
 
 export function timeAgo(timestamp: string | number) {
   const now = new Date();
@@ -61,4 +62,18 @@ export const fetchUserDetails = async () => {
     return { id, role, name, email, image };
   }
   throw new Error('Failed to retrieve user session.');
+};
+
+export const renderRatingStars = (rating: number) => {
+  const stars = Array.from({ length: 5 }, (_, i) => i + 1);
+  return (
+    <div className='flex w-fit items-center gap-[1.5px]'>
+      {stars.map((star) => (
+        <RatingStar
+          className={`${star <= rating ? '*:fill-[#f3a318]' : '*:fill-gray-200 dark:*:fill-white'}`}
+          key={star}
+        />
+      ))}
+    </div>
+  );
 };

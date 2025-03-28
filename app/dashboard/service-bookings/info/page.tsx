@@ -9,8 +9,19 @@ import InfoTable from '../../components/tables/InfoTable';
 import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import useGetBookingDetails from '../useGetBookingDetails';
+import { BaseTable, BaseTableData } from '@/app/lib/mockTypes';
 
 dayjs.extend(advancedFormat);
+
+type ServiceBookingData = BaseTableData & {
+  userName: string;
+  serviceProvider: string;
+  carOwnerPhone: string;
+  orderId: string;
+  serviceType: string;
+  date: string;
+  status: string;
+};
 
 const ServiceBookingInfo = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,7 +51,8 @@ const ServiceBookingInfo = () => {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             heading='Service Bookings List'
-            data={useFetchBookings.data}
+            onClickRows={(item) => openBookingDetailsModal(item._id)}
+            data={useFetchBookings.data as BaseTable<ServiceBookingData>}
             headings={[
               'No',
               'User name',
@@ -57,24 +69,15 @@ const ServiceBookingInfo = () => {
                 <td>{item.userName}</td>
                 <td>{item.serviceProvider}</td>
                 <td>{item.carOwnerPhone}</td>
-                <td>
-                  <button
-                    onClick={() => openBookingDetailsModal(item._id)}
-                    className='hover:underline'
-                  >
-                    {item.orderId}
-                  </button>
-                </td>
+                <td>{item.orderId}</td>
                 <td>{item.serviceType}</td>
                 <td className='capitalize'>{dayjs(item.date).format('MMM Do, YYYY')}</td>
                 <td>
-                  <button onClick={() => openBookingDetailsModal(item._id)}>
-                    <p
-                      className={`text-xsmall w-fit rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status ? item.status.toLowerCase() : '')}`}
-                    >
-                      {item.status}
-                    </p>
-                  </button>
+                  <p
+                    className={`text-xsmall w-fit rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.status ? item.status.toLowerCase() : '')}`}
+                  >
+                    {item.status}
+                  </p>
                 </td>
               </>
             )}

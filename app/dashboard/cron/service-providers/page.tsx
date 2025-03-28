@@ -35,19 +35,17 @@ const ServiceProviderActivitiesPage = () => {
         ]}
         tableResponse={useFetchActivities.data as CronResponse<CronServiceActivities>}
         isLoading={useFetchActivities.isLoading}
+        onClickRows={(item) =>
+          setTemplateDetails({
+            isEditing: false,
+            data: item,
+            display: true,
+            type: 'service-providers',
+          })
+        }
         ContentStructure={({ item }) => (
           <>
-            <td
-              className='cursor-pointer hover:underline'
-              onClick={() =>
-                setTemplateDetails({
-                  isEditing: false,
-                  data: item,
-                  display: true,
-                  type: 'service-providers',
-                })
-              }
-            >
+            <td className=''>
               <p className='font-medium text-gray-900 dark:text-white'>{item.notificationType}</p>
               <p>{item.message}</p>
             </td>

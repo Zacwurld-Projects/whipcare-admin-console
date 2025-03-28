@@ -13,11 +13,13 @@ const CronTable = <T,>({
   setCurrentPage,
   ContentStructure,
   isLoading,
+  onClickRows,
 }: {
   tableHeadings: string[];
   heading: string;
   tableResponse: CronResponse<T>;
   isLoading?: boolean;
+  onClickRows?: (item: T) => void;
   currentPage: number;
   setCurrentPage: Dispatch<number>;
   ContentStructure: ComponentType<{ item: (typeof tableResponse.data)[0]; index: number }>;
@@ -62,7 +64,10 @@ const CronTable = <T,>({
               {tableResponse.data.map((item, index) => (
                 <tr
                   key={index}
-                  className='[&_td]:text-small [&_td]:px-6 [&_td]:py-4 [&_td]:text-gray-700 dark:[&_td]:text-white'
+                  onClick={() => {
+                    if (onClickRows) onClickRows(item);
+                  }}
+                  className={`[&_td]:text-small [&_:first-child]:rounded-l-lg [&_:last-child]:rounded-r-lg [&_td]:px-6 [&_td]:py-4 [&_td]:text-gray-700 dark:[&_td]:text-white ${onClickRows ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-primary' : ''}`}
                 >
                   <ContentStructure item={item} index={index} />
                 </tr>

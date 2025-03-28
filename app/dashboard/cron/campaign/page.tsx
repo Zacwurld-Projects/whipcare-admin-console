@@ -24,6 +24,14 @@ const CustomerRetargeting = () => {
       <CronTable
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        onClickRows={(item) =>
+          setTemplateDetails({
+            isEditing: false,
+            data: item,
+            display: true,
+            type: 'campaign',
+          })
+        }
         heading='All Campaigns'
         tableHeadings={[
           'Campaign Name',
@@ -37,19 +45,7 @@ const CustomerRetargeting = () => {
         isLoading={useFetchCampaigns.isLoading}
         ContentStructure={({ item }) => (
           <>
-            <td
-              className='cursor-pointer hover:underline'
-              onClick={() =>
-                setTemplateDetails({
-                  isEditing: false,
-                  data: item,
-                  display: true,
-                  type: 'campaign',
-                })
-              }
-            >
-              {item.campaignName}
-            </td>
+            <td>{item.campaignName}</td>
             <td>{item.inactivityDuration}</td>
             <td>{item.message}</td>
             <td>

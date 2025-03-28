@@ -22,9 +22,7 @@ const TopPerformers = () => {
   return (
     <div className='my-8'>
       <div className='flex items-center justify-between'>
-        <p className='text-large font-semibold text-gray-900 dark:text-white'>
-          Waitlist Service Provider
-        </p>
+        <p className='text-large font-semibold text-gray-900 dark:text-white'>Top Performers</p>
         <button className='text-small flex items-center gap-2 rounded-[6px] bg-[#eb5017] px-3 py-2 font-semibold text-white'>
           <p>View Leaderboard</p>
           <ChevronRightIcon className='*:fill-white' />
