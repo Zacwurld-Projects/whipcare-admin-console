@@ -1,46 +1,42 @@
 'use client';
 // import ChevronDownIcon from '../../assets/chevronDown.svg';
+import EmptyStateIcon from '../../assets/profileEmptyStateIcon.svg';
 import { ComponentType, Dispatch } from 'react';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 import SpinLoader from '../Loaders/SpinLoader';
-import { BaseTableData } from '@/app/lib/mockTypes';
+import { EmptyStateProps, TableData } from '@/app/types/shared';
+import TableEmptyState from '../empty-states/TableEmptyState';
 
-interface InfoTableProps<T extends BaseTableData> {
+interface InfoTableProps<T> {
   heading: string;
+  emptyStateProps?: EmptyStateProps;
   isLoading?: boolean;
   currentPage: number;
   showItemNumber?: boolean;
   onClickRows?: (item: T) => void;
   setCurrentPage: Dispatch<number>;
-  data: {
-    data: T[];
-    totalCount: number;
-    pageNumber: number;
-    pageSize: number;
-  };
+  data: TableData<T>;
   headings: Array<string>;
-  ContentStructure?: ComponentType<{ item: T; index: number }>;
+  ContentStructure: ComponentType<{ item: T; index: number }>;
 }
 
-const DefaultContentStructure = <T extends BaseTableData>({ item }: { item: T }) => (
-  <>
-    <td>{item._id}</td>
-    <td>{item.createdAt}</td>
-    <td>{item.lastLogin}</td>
-  </>
-);
-const InfoTable = <T extends BaseTableData>({
+const InfoTable = <T,>({
   heading,
   isLoading,
   data,
   onClickRows,
+  emptyStateProps = {
+    icon: <EmptyStateIcon className='dark:*:fill-dark-accent' />,
+    title: 'No available data',
+    subText: '',
+  },
   headings,
   showItemNumber,
   currentPage,
   setCurrentPage,
-  ContentStructure = DefaultContentStructure,
+  ContentStructure,
 }: InfoTableProps<T>) => {
   return (
     <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4 dark:border-transparent dark:bg-dark-secondary'>
@@ -51,12 +47,12 @@ const InfoTable = <T extends BaseTableData>({
           <ExportTable />
         </div>
       </div>
-      <div className='w-full scrollbar'>
+      <div className='w-full overflow-x-auto scrollbar'>
         {isLoading ? (
           <div className='center-grid h-[60vh] w-full'>
             <SpinLoader thickness={2} size={80} color='#983504' />
           </div>
-        ) : (
+        ) : data?.data?.length ? (
           <table className='w-full'>
             <thead>
               <tr>
@@ -85,6 +81,8 @@ const InfoTable = <T extends BaseTableData>({
               ))}
             </tbody>
           </table>
+        ) : (
+          <TableEmptyState {...emptyStateProps} />
         )}
       </div>
       {data && (

@@ -4,7 +4,7 @@ import PageHeading from '../components/PageHeading';
 import BagIcon from '../assets/bagIcon.svg';
 import AllMatchIcon from '../assets/allMatchIcon.svg';
 import CheckCircleIcon from '../assets/checkCircleIcon.svg';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchServiceBookings, fetchServiceBookingsKpis } from '@/app/api/apiClient';
 import NumbersOverview from '../components/NumbersOverview';
 import PlainTable from '../components/tables/PlainTable';
@@ -15,7 +15,8 @@ import PageLoader from '../components/Loaders/PageLoader';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import useGetBookingDetails from './useGetBookingDetails';
 import LineChart from '../components/charts/LineChart';
-import { BaseTableData } from '@/app/lib/mockTypes';
+import { TableData } from '@/app/types/shared';
+import { ServiceBookingData } from '@/app/types/service-bookings';
 
 dayjs.extend(advancedFormat);
 
@@ -43,20 +44,16 @@ const serviceBookingsKpi = [
   },
 ];
 
-type ServiceBookingData = BaseTableData & {
-  userName: string;
-  serviceProvider: string;
-  carOwnerPhone: string;
-  orderId: string;
-  serviceType: string;
-  date: string;
-  status: string;
-};
-
 const ServiceBookingsPage = () => {
   const [selectedDates, setSelectedDates] = useState({
     maxDate: '',
     minDate: '',
+  });
+  const [bookingsData, setBookingsData] = useState<TableData<ServiceBookingData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
   });
 
   const useFetchBookings = useQuery({
@@ -72,8 +69,11 @@ const ServiceBookingsPage = () => {
 
   const { openBookingDetailsModal } = useGetBookingDetails();
 
-  if (useFetchBookings.isLoading) return <PageLoader />;
+  useEffect(() => {
+    if (useFetchBookings.data) setBookingsData(useFetchBookings.data);
+  }, [useFetchBookings.data]);
 
+  if (useFetchBookings.isLoading) return <PageLoader />;
   return (
     <>
       <PageHeading page='Service Bookings' pageFilters setSelectedDates={setSelectedDates} />
@@ -89,7 +89,7 @@ const ServiceBookingsPage = () => {
       <PlainTable
         page='service-bookings'
         heading='Service Booking summary'
-        content={useFetchBookings.data.data as ServiceBookingData[]}
+        data={bookingsData}
         headings={[
           'No',
           'User name',

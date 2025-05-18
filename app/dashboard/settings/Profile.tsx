@@ -63,7 +63,7 @@ const Profile = ({ profileData }: { profileData: UserData }) => {
   });
 
   const changePassword = useMutation({
-    mutationKey: ['chnageUserPassword'],
+    mutationKey: ['changeUserPassword'],
     mutationFn: async () => changeUserPassword(passwordData),
     onSuccess: () => toast.success('Password updated successfully'),
     onError: (error) => toast.error(error.message || 'Something went wrong'),

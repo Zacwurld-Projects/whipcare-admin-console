@@ -32,7 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   callbacks: {
     async jwt({ token, account, user }): Promise<JWT | null> {
-      // 1. Handle initial login or token updates
+      // Handle initial login or token updates
       if (account?.type === 'credentials' && user) {
         // Initial login: set expires_at
         return {
@@ -45,18 +45,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       }
 
-      // 2. For subsequent requests, ensure expires_at exists
+      //  For subsequent requests, ensure expires_at exists
       if (!token.expires_at) {
         token.expires_at = Date.now() + 60 * 60 * 24 * 10 * 1000; // Default 10 days
       }
 
-      // 3. Update expired flag
+      // Update expired flag
       token.expired = Date.now() > token.expires_at;
 
       return token;
     },
     async session({ session, token }) {
-      // 4. Explicitly pass expiresAt to the session
+      // Explicitly pass expiresAt to the session
       session.expiresAt = token.expires_at as number;
       session.user = {
         ...session.user,

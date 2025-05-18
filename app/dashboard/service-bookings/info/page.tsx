@@ -9,22 +9,18 @@ import InfoTable from '../../components/tables/InfoTable';
 import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import useGetBookingDetails from '../useGetBookingDetails';
-import { BaseTable, BaseTableData } from '@/app/lib/mockTypes';
+import { ServiceBookingData } from '@/app/types/service-bookings';
+import { TableData } from '@/app/types/shared';
 
 dayjs.extend(advancedFormat);
-
-type ServiceBookingData = BaseTableData & {
-  userName: string;
-  serviceProvider: string;
-  carOwnerPhone: string;
-  orderId: string;
-  serviceType: string;
-  date: string;
-  status: string;
-};
-
 const ServiceBookingInfo = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [bookingsData, setBookingsData] = useState<TableData<ServiceBookingData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
+  });
 
   const useFetchBookings = useQuery({
     queryKey: ['fetchServiceBookings', currentPage],
@@ -39,6 +35,10 @@ const ServiceBookingInfo = () => {
     if (!useFetchBookings.isLoading && useFetchBookings.data) setIsInitialLoad(false);
   }, [useFetchBookings.isLoading, useFetchBookings.data]);
 
+  useEffect(() => {
+    if (useFetchBookings.data) setBookingsData(useFetchBookings.data);
+  }, [useFetchBookings.data]);
+
   return (
     <>
       <PageHeading page='Service Bookings' />
@@ -52,7 +52,7 @@ const ServiceBookingInfo = () => {
             setCurrentPage={setCurrentPage}
             heading='Service Bookings List'
             onClickRows={(item) => openBookingDetailsModal(item._id)}
-            data={useFetchBookings.data as BaseTable<ServiceBookingData>}
+            data={bookingsData}
             headings={[
               'No',
               'User name',

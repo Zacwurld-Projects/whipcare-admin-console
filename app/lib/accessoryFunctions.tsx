@@ -1,5 +1,11 @@
 import { getSession } from 'next-auth/react';
 import RatingStar from '../dashboard/assets/starRate.svg';
+import clsx, { ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
 
 export function timeAgo(timestamp: string | number) {
   const now = new Date();

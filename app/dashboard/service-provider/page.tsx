@@ -20,10 +20,14 @@ import Link from 'next/link';
 import dayjs from 'dayjs';
 import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { TableData } from '@/app/types/shared';
+import { ServiceProviderTableData } from '@/app/types/service-provider';
+import { useRouter } from 'next/navigation';
 
 dayjs.extend(advancedFormat);
 
 const ServiceProviderPage = () => {
+  const router = useRouter();
   const [selectedDates, setSelectedDates] = useState({
     maxDate: '',
     minDate: '',
@@ -69,20 +73,12 @@ const ServiceProviderPage = () => {
     }),
   );
 
-  const [serviceProviders, setServiceProviders] = useState<
-    Array<{
-      _id: string;
-      email: string;
-      image: null | string;
-      firstName: string;
-      lastName: string;
-      phone: null | string;
-      lastLogin: string;
-      createdAt: string;
-      services: string[];
-      status?: string;
-    }>
-  >([]);
+  const [serviceProviders, setServiceProviders] = useState<TableData<ServiceProviderTableData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
+  });
 
   const { data: waitlistData, isLoading: isWaitlistLoading } = useQuery({
     queryKey: ['waitlist'],
@@ -100,10 +96,10 @@ const ServiceProviderPage = () => {
   }, [isWaitlistLoading, waitlistData]);
 
   useEffect(() => {
-    if (!isServiceProviderLoadng && serviceProviderData) {
-      setServiceProviders(serviceProviderData.data);
+    if (serviceProviderData) {
+      setServiceProviders(serviceProviderData);
     }
-  }, [isServiceProviderLoadng, serviceProviderData]);
+  }, [serviceProviderData]);
 
   return (
     <>
@@ -120,6 +116,7 @@ const ServiceProviderPage = () => {
           <RecentProviders recentServiceProviders={waitlist} />
           <TopPerformers />
           <PlainTable
+            onClickRows={(item) => router.push(`/dashboard/service-provider/${item._id}`)}
             page='service-provider'
             heading='Service Providers Info'
             headings={[
@@ -132,17 +129,12 @@ const ServiceProviderPage = () => {
               'Last Login Date',
               'Status',
             ]}
-            content={serviceProviders}
+            data={serviceProviders}
             ContentStructure={({ item, index }) => (
               <>
                 <td>{index + 1}</td>
                 <td>
-                  <Link
-                    className='hover:underline'
-                    href={`/dashboard/service-provider/${item._id}`}
-                  >
-                    {item.firstName} {item.lastName}
-                  </Link>
+                  {item.firstName} {item.lastName}
                 </td>
                 <td>{item.email}</td>
                 <td>{item.phone}</td>

@@ -9,11 +9,21 @@ import OpenLinkIcon from '../../assets/openLinkIcon.svg';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { BaseData } from '@/app/lib/mockTypes';
+import { useRouter } from 'next/navigation';
+import { TableData } from '@/app/types/shared';
 
 dayjs.extend(advancedFormat);
 
 const UserManagementInfo = () => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [userData, setUserData] = useState<TableData<BaseData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
+  });
 
   const useFetchUser = useQuery({
     queryKey: ['fetchFullUsers', currentPage],
@@ -26,6 +36,12 @@ const UserManagementInfo = () => {
     if (!useFetchUser.isLoading && useFetchUser.data) setIsInitialLoad(false);
   }, [useFetchUser.isLoading, useFetchUser.data]);
 
+  useEffect(() => {
+    if (useFetchUser.data) {
+      setUserData(useFetchUser.data);
+    }
+  }, [useFetchUser.data]);
+
   return (
     <>
       <PageHeading page='User management' />
@@ -36,6 +52,7 @@ const UserManagementInfo = () => {
           <>
             <InfoTable
               isLoading={useFetchUser.isLoading}
+              onClickRows={(item) => router.push(`/dashboard/user-management/${item._id}`)}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               heading='Users Info'
@@ -48,18 +65,13 @@ const UserManagementInfo = () => {
                 'Last Login Date',
                 'Action',
               ]}
-              data={useFetchUser.data}
+              data={userData}
               ContentStructure={({ item, index }) => {
                 return (
                   <>
                     <td>{index + 1}</td>
                     <td>
-                      <Link
-                        className='hover:underline'
-                        href={`/dashboard/user-management/${item._id}`}
-                      >
-                        {item.firstName} {item.lastName}
-                      </Link>
+                      {item.firstName} {item.lastName}
                     </td>
                     <td>{item.email}</td>
                     <td>{item.phone}</td>

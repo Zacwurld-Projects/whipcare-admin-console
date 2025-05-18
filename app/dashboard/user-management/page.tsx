@@ -10,7 +10,7 @@ import UserGrowthChart from '../components/charts/UserGrowthChart';
 import ChurnRateChart from '../components/charts/ChurnRateChart';
 import CustomerMapping from '../components/charts/CustomerMapping';
 import PlainTable from '../components/tables/PlainTable';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
 import { fetchUserManagementKpis, fetchUsers } from '@/app/api/apiClient';
 import { useQuery } from '@tanstack/react-query';
@@ -18,6 +18,9 @@ import PageLoader from '../components/Loaders/PageLoader';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { BaseData } from '@/app/lib/mockTypes';
+import { TableData } from '@/app/types/shared';
+import { useRouter } from 'next/navigation';
 
 dayjs.extend(advancedFormat);
 
@@ -46,9 +49,16 @@ const userManagementStats = [
 ];
 
 const UserManagementPage = () => {
+  const router = useRouter();
   const [selectedDates, setSelectedDates] = useState({
     maxDate: '',
     minDate: '',
+  });
+  const [userData, setUserData] = useState<TableData<BaseData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
   });
 
   const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(
@@ -61,6 +71,12 @@ const UserManagementPage = () => {
     queryKey: ['fetchUsers'],
     queryFn: async () => fetchUsers(15, 1),
   });
+
+  useEffect(() => {
+    if (useFetchUser.data) {
+      setUserData(useFetchUser.data);
+    }
+  }, [useFetchUser.data]);
 
   if (useFetchUser.isLoading) {
     return <PageLoader />;
@@ -87,6 +103,7 @@ const UserManagementPage = () => {
       <PlainTable
         page='user-management'
         heading='Users Info'
+        onClickRows={(item) => router.push(`/dashboard/user-management/${item._id}`)}
         headings={[
           'No',
           'User name',
@@ -100,9 +117,7 @@ const UserManagementPage = () => {
           <>
             <td>{index + 1}</td>
             <td>
-              <Link className='hover:underline' href={`/dashboard/user-management/${item._id}`}>
-                {item.firstName} {item.lastName}
-              </Link>
+              {item.firstName} {item.lastName}
             </td>
             <td>{item.email}</td>
             <td>{item.phone}</td>
@@ -116,7 +131,7 @@ const UserManagementPage = () => {
             </td>
           </>
         )}
-        content={useFetchUser.data.data || {}}
+        data={userData}
       />
     </>
   );
