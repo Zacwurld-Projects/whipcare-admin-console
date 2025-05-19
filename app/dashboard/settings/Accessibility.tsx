@@ -79,7 +79,7 @@ const Accessibility = ({
 
   return (
     <>
-      {membersData.length < 0 ? (
+      {membersData.length > 0 ? (
         <article>
           <div className='flex flex-wrap gap-x-[190px] gap-y-8'>
             <TitleBox
