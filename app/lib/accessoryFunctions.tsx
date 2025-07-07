@@ -63,15 +63,17 @@ export const reflectStatusStyle = (status: string) => {
 
 // In src/app/lib/accessoryFunctions.ts (or a new utility file)
 export const getKycStatusStyles = (status: string | undefined) => {
+  if (!status) return 'bg-gray-100 text-gray-600';
+  const normalized = status.trim().toLowerCase();
   const statusStyles: Record<string, string> = {
-    'Not Verified': 'bg-gray-200 text-gray-800',
-    Pending: 'bg-yellow-100 text-yellow-800',
-    Approved: 'bg-green-100 text-green-800',
-    Rejected: 'bg-red-100 text-red-800',
-    'Resubmit Required': 'bg-orange-100 text-orange-800',
+    'not verified': 'bg-gray-200 text-gray-800',
+    verified: 'bg-blue-100 text-blue-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    approved: 'bg-green-100 text-green-800',
+    rejected: 'bg-red-100 text-red-800',
+    'resubmit required': 'bg-orange-100 text-orange-800',
   };
-
-  return status ? statusStyles[status] || 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-600';
+  return statusStyles[normalized] || 'bg-gray-100 text-gray-600';
 };
 
 export const fetchUserDetails = async () => {

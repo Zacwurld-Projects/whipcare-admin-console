@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchServiceProviders } from '@/app/api/apiClient';
 import InfoTable from '../../components/tables/InfoTable';
 import dayjs from 'dayjs';
-import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
+import { getKycStatusStyles } from '@/app/lib/accessoryFunctions';
 import Link from 'next/link';
 
 const PAGE_SIZE = 15;
@@ -105,7 +105,7 @@ const ServiceProviderInfo = () => {
                 <td>
                   <Link href={`/dashboard/service-provider/${item._id}`}>
                     <p
-                      className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${reflectStatusStyle(item.kycStatus)}`}
+                      className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${getKycStatusStyles(item.kycStatus)}`}
                     >
                       {item.kycStatus}
                     </p>
