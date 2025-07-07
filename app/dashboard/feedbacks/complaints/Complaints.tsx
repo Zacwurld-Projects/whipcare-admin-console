@@ -44,9 +44,10 @@ const ComplaintModal = ({
   });
 
   if (!ComplaintData) return null;
-
   const markComplaintAsReviewed = () => {
-    updateComplaintMutaion.mutate({ id: ComplaintData._id, status: 'Reviewed' });
+    if (ComplaintData._id) {
+      updateComplaintMutaion.mutate({ id: ComplaintData._id, status: 'Reviewed' });
+    }
   };
 
   return (
@@ -186,6 +187,10 @@ const Complaints = ({
             </td>
           </>
         )}
+        search={''}
+        onSearch={function (): void {
+          throw new Error('Function not implemented.');
+        }}
       />
       {isShowingComplaintsData && (
         <ComplaintModal

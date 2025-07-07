@@ -1,9 +1,10 @@
 'use client';
+
 import { ApplicationRoutes } from '@/app/constants/applicationRoutes';
 import { Icons } from '@/app/components/ui/icons';
 import Link from 'next/link';
 import React from 'react';
-import images from '@/public/images';
+import { images } from '@/public/images';
 import { usePathname } from 'next/navigation';
 import CustomImage from '@/app/components/ui/image';
 

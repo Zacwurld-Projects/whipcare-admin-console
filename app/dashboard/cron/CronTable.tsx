@@ -39,7 +39,7 @@ const CronTable = <T,>({
     <article className='rounded-lg border border-[#e0ddd9] bg-white dark:border-transparent dark:bg-dark-secondary'>
       <div className='flex items-center justify-between px-6 py-4'>
         <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>{heading}</h2>
-        <FilterForm className='w-[50%]' />
+        <FilterForm className='w-[50%]' onSearch={() => {}} onFilterClick={() => {}} search='' />
       </div>
       <div className='border-y border-gray-200 px-6 dark:border-[#2c2c3c]'>
         {isLoading ? (

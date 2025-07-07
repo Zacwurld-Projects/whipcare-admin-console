@@ -61,6 +61,19 @@ export const reflectStatusStyle = (status: string) => {
   }
 };
 
+// In src/app/lib/accessoryFunctions.ts (or a new utility file)
+export const getKycStatusStyles = (status: string | undefined) => {
+  const statusStyles: Record<string, string> = {
+    'Not Verified': 'bg-gray-200 text-gray-800',
+    Pending: 'bg-yellow-100 text-yellow-800',
+    Approved: 'bg-green-100 text-green-800',
+    Rejected: 'bg-red-100 text-red-800',
+    'Resubmit Required': 'bg-orange-100 text-orange-800',
+  };
+
+  return status ? statusStyles[status] || 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-600';
+};
+
 export const fetchUserDetails = async () => {
   const session = await getSession();
   if (session) {

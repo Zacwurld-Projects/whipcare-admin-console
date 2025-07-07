@@ -1,13 +1,20 @@
 'use client';
 // import ChevronDownIcon from '../../assets/chevronDown.svg';
 import EmptyStateIcon from '../../assets/profileEmptyStateIcon.svg';
-import { ComponentType, Dispatch } from 'react';
+import { ComponentType, Dispatch, useState } from 'react';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 import SpinLoader from '../Loaders/SpinLoader';
 import { EmptyStateProps, TableData } from '@/app/types/shared';
 import TableEmptyState from '../empty-states/TableEmptyState';
+import FilterModal from '../modals/FilterModal';
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 interface InfoTableProps<T> {
   heading: string;
@@ -20,6 +27,8 @@ interface InfoTableProps<T> {
   data: TableData<T>;
   headings: Array<string>;
   ContentStructure: ComponentType<{ item: T; index: number }>;
+  search: string;
+  onSearch: (value: string) => void;
 }
 
 const InfoTable = <T,>({
@@ -37,13 +46,39 @@ const InfoTable = <T,>({
   currentPage,
   setCurrentPage,
   ContentStructure,
-}: InfoTableProps<T>) => {
+  search,
+  onSearch,
+}: InfoTableProps<
+  T & {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+    createdAt?: string;
+    kycStatus?: string;
+  }
+>) => {
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [status, setStatus] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // No more frontend filtering for search; use data prop directly
+
   return (
     <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4 dark:border-transparent dark:bg-dark-secondary'>
       <div className='mb-[36px] flex items-center justify-between'>
         <h6 className='heading-h6 font-semibold dark:text-white'>{heading}</h6>
         <div className='flex w-[60%] justify-end gap-6'>
-          <FilterForm className='flex-1' />
+          <FilterForm
+            className='flex-1'
+            onSearch={(value) => {
+              onSearch(value);
+              setCurrentPage(1);
+            }}
+            search={search}
+            onFilterClick={() => setIsFilterModalOpen(true)}
+          />
           <ExportTable />
         </div>
       </div>
@@ -92,6 +127,19 @@ const InfoTable = <T,>({
           currentPage={currentPage}
           totalPages={Math.ceil(data.totalCount / data.pageSize)}
           setCurrentPage={setCurrentPage}
+        />
+      )}
+      {isFilterModalOpen && (
+        <FilterModal
+          onClose={() => setIsFilterModalOpen(false)}
+          onApply={({ status, startDate, endDate }) => {
+            setStatus(status);
+            setStartDate(startDate);
+            setEndDate(endDate);
+          }}
+          initialStatus={status}
+          initialStartDate={startDate}
+          initialEndDate={endDate}
         />
       )}
     </article>

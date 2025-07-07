@@ -82,7 +82,7 @@ const MaintenanceTemplate = ({
         </CronForm>
       ) : (
         <ItemDetails
-          dataPreview={dataPreview}
+          dataPreview={dataPreview.map((item) => ({ ...item, value: item.value || undefined }))}
           editItem={editMaintenance}
           status={templateDetails.data?.status}
         />

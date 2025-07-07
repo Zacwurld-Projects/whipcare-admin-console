@@ -81,6 +81,10 @@ const ServiceBookingInfo = () => {
                 </td>
               </>
             )}
+            search={''}
+            onSearch={function (): void {
+              throw new Error('Function not implemented.');
+            }}
           />
         )}
       </div>

@@ -25,7 +25,7 @@ const Reviews = ({
       <article className='flex-column w-full gap-6 bg-white p-6 pt-2'>
         <div className='flex items-center justify-between border-b border-gray-100 p-3 py-5'>
           <p className='text-large font-semibold'>All Reviews</p>
-          <FilterForm />
+          <FilterForm className='w-[50%]' onSearch={() => {}} onFilterClick={() => {}} search='' />
         </div>
         <ul className='flex-column gap-3'>
           {reviewData.map((item, index) => (

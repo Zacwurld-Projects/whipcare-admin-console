@@ -59,7 +59,7 @@ const Reviews = ({
       <div className='flex items-center justify-between border-b border-[#f0f2f5] px-6 pb-[16px] dark:border-dark-secondary'>
         <h6 className='heading-h6 font-semibold dark:text-white'>All Reviews</h6>
         <div className='flex w-[60%] justify-end gap-6'>
-          <FilterForm className='flex-1' />
+          <FilterForm className='flex-1' search='' onSearch={() => {}} onFilterClick={() => {}} />
           {/* <ExportTable /> */}
         </div>
       </div>

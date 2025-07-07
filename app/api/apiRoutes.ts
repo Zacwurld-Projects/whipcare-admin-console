@@ -24,4 +24,6 @@ export default class ApiRoutes {
   static Users: string = '/user';
 
   static Cron: string = '/cron';
+
+  static Kyc: string = '/kyc';
 }

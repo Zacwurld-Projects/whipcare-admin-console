@@ -47,7 +47,7 @@ const HistoryTable = ({
       <article className='bg-white dark:bg-dark-secondary'>
         <div className='mb-6 flex items-center justify-between px-6 py-3'>
           <h2 className='text-[30px] font-medium text-gray-800 dark:text-white'>{heading}</h2>
-          <FilterForm />
+          <FilterForm className='w-[60%]' onSearch={() => {}} onFilterClick={() => {}} search='' />
         </div>
         <div className='w-full overflow-auto scrollbar'>
           <table className='w-full min-w-[1100px]'>

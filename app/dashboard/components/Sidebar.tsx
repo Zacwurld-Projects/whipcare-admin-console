@@ -1,4 +1,5 @@
 'use client';
+
 // import Image from 'next/image';
 import LogoIcon from '../assets/logo.svg';
 import OverviewIcon from '../assets/overviewIcon.svg';
@@ -96,7 +97,7 @@ const Sidebar = () => {
     }
 
     return () => document.removeEventListener('click', checkClick);
-  }, [sidebarRef, isSidebarOpen]);
+  }, [sidebarRef, isSidebarOpen, setIsSidebarOpen]);
 
   return (
     <aside

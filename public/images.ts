@@ -1,5 +1,7 @@
-import logo from '@/public/images/logo.png';
+import logo from '@/public/images/png/logo.png';
+import verify from '@/public/images/svg/verify.svg';
 
-export default {
+export const images = {
   logo,
+  verify,
 };
