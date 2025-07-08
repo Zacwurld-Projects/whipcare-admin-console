@@ -9,6 +9,21 @@ import Image from 'next/image';
 import dayjs from 'dayjs';
 import VerifyIcon from '@/app/dashboard/assets/verify.svg';
 import { MapPinIcon } from 'lucide-react';
+// import { getDistanceFromLatLonInKm } from '@/app/lib/locator';
+
+// Define Address type for clarity
+type Address = {
+  id?: string;
+  address: string;
+  type?: string;
+  landmark?: string;
+  longitude?: number;
+  latitude?: number;
+};
+
+// Example reference point (user's location or office)
+// const REFERENCE_LAT = 6.539284260246615;
+// const REFERENCE_LON = 3.3788054050900724;
 
 const Profile = ({
   profileInfo,
@@ -68,14 +83,45 @@ const Profile = ({
               {profileInfo.NIN && <DisplayInfo title='NIN' value={profileInfo.NIN} />}
               <DisplayInfo title='Language' value={profileInfo.language} />
               <div className='flex-column gap-3'>
-                <p className='text-large mb-1 font-semibold text-gray-800'>Address</p>
-                {profileInfo.address && (
-                  <div className='flex items-center gap-3'>
-                    <div className='w-fit rounded-full bg-[#711E00] p-2'>
-                      <MapPinIcon color='white' className='' />
-                    </div>
-                    <p className='text-sm font-medium'>Work Address</p>
-                  </div>
+                <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>
+                  Address
+                </p>
+                {Array.isArray(profileInfo.address) && profileInfo.address.length > 0 ? (
+                  <ul className='flex flex-col gap-2'>
+                    {(profileInfo.address as Address[]).map((addr, idx) => {
+                      //   let distanceKm: string | null = null;
+                      //   if (typeof addr.latitude === 'number' && typeof addr.longitude === 'number') {
+                      //     const dist = getDistanceFromLatLonInKm(
+                      //       addr.latitude,
+                      //       addr.longitude,
+                      //       REFERENCE_LAT,
+                      //       REFERENCE_LON,
+                      //     );
+                      //     distanceKm = dist.toFixed(2);
+                      // }
+                      return (
+                        <li key={addr.id || idx} className='flex items-center gap-3'>
+                          <div className='w-fit rounded-full bg-[#711E00] p-2'>
+                            <MapPinIcon color='white' className='' />
+                          </div>
+                          <div className='text-gray-800 dark:text-white'>
+                            <p className='text-sm font-medium dark:text-white'>Work Address</p>
+                            <p className='text-sm font-medium capitalize'>
+                              {addr.address}
+                              {/* {distanceKm && (
+                                <span className='ml-2 text-xs text-gray-500'>
+                                  ({distanceKm} km away)
+                                </span>
+                              )} */}
+                            </p>
+                            {/* {addr.landmark && <p className='text-xs'>Landmark: {addr.landmark}</p>} */}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className='text-sm text-gray-500'>No address available.</p>
                 )}
               </div>
             </div>
@@ -97,14 +143,28 @@ const Profile = ({
                 />
                 <DisplayInfo
                   title='Preferred Brand'
-                  value={profileInfo.servicesProvided
-                    .reduce((acc: string[], item) => {
-                      if (!acc.includes(item.preferredCarBrand)) {
+                  value={
+                    profileInfo.servicesProvided.reduce((acc: string[], item) => {
+                      if (item.preferredCarBrand && !acc.includes(item.preferredCarBrand)) {
                         acc.push(item.preferredCarBrand);
                       }
                       return acc;
-                    }, [])
-                    .join(', ')}
+                    }, []).length === 1
+                      ? profileInfo.servicesProvided.reduce((acc: string[], item) => {
+                          if (item.preferredCarBrand && !acc.includes(item.preferredCarBrand)) {
+                            acc.push(item.preferredCarBrand);
+                          }
+                          return acc;
+                        }, [])[0]
+                      : profileInfo.servicesProvided
+                          .reduce((acc: string[], item) => {
+                            if (item.preferredCarBrand && !acc.includes(item.preferredCarBrand)) {
+                              acc.push(item.preferredCarBrand);
+                            }
+                            return acc;
+                          }, [])
+                          .join(', ')
+                  }
                 />
               </div>
               <div>
