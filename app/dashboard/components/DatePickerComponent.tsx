@@ -32,7 +32,7 @@ const DatePickerComponent = ({
 
   useEffect(() => {
     if (customDateFilter[0]) setSelectedFilter('custom');
-    else setSelectedFilter('today');
+    else setSelectedFilter('all');
   }, [customDateFilter, setSelectedFilter]);
 
   return (

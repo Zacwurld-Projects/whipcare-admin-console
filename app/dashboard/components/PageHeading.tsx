@@ -15,8 +15,8 @@ const PageHeading = ({
     minDate: string;
   }>;
 }) => {
-  const filters = ['today', '1 week', '2 months'];
-  const [selectedFilter, setSelectedFilter] = useState<string>('today');
+  const filters = ['all', 'today', '1 week', '2 months'];
+  const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [customDateFilter, setCustomDateFilter] = useState<[Date | null, Date | null]>([
     null,
     null,
