@@ -131,7 +131,7 @@ const ServiceProviderInfo = () => {
       lastName: item.lastName ?? undefined,
       email: item.email ?? undefined,
       createdAt: item.createdAt ?? undefined,
-      services: item.services ?? [],
+      serviceType: item.serviceType ?? [],
       _id: item._id,
       lastLogin: item.lastLogin ?? undefined,
       kycStatus: item.kycStatus ?? undefined,
@@ -188,9 +188,7 @@ const ServiceProviderInfo = () => {
                 </td>
                 <td>{item.email}</td>
                 <td>{item.phone}</td>
-                <td className='capitalize'>
-                  {item.services && item.services.length > 0 ? item.services[0] : ''}
-                </td>
+                <td className='capitalize'>{item.serviceType || ''}</td>
                 <td className='capitalize'>
                   {item.createdAt ? dayjs(item.createdAt).format('MMM DD, YYYY') : ''}
                 </td>

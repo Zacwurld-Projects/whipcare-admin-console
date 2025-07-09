@@ -124,7 +124,7 @@ const ServiceProviderPage = () => {
                 </td>
                 <td>{item.email}</td>
                 <td>{item.phone}</td>
-                {item.services && <td className='capitalize'>{item.services[0]}</td>}
+                {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}
                 <td className='capitalize'>{dayjs(item.createdAt).format('MMM DD, YYYY')}</td>
                 <td className='capitalize'>{dayjs(item.lastLogin).format('MMM DD, YYYY')}</td>
                 {item.kycStatus ? (

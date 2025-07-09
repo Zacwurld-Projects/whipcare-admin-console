@@ -11,4 +11,5 @@ export type ServiceProviderTableData = {
   // status?: string;
   kycStatus?: string | null;
   nationality?: string | null;
+  serviceType: string[];
 };

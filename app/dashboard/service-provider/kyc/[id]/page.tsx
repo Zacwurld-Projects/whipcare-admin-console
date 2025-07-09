@@ -61,7 +61,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
           lastName: kpisData.userContact?.lastName || kpisData.lastName,
           email: kpisData.userContact?.email || kpisData.email,
           nationality: kpisData.userContact?.nationality || kpisData.nationality,
-          serviceType: kpisData.userContact?.services || kpisData.services,
+          serviceType: kpisData.userContact?.serviceType || kpisData.serviceType,
           phone: kpisData.userContact?.phone || kpisData.phone,
           image: kpisData.userContact?.image || kpisData.image,
           kycStatus: kpisData.userContact?.status || kpisData.status,
@@ -219,7 +219,14 @@ const KYC = ({ params }: { params: { id: string } }) => {
               <DisplayInfo title='Nationality' value={profileInfo.nationality} />
               <DisplayInfo
                 title='Service Type'
-                value={mappedKpisData.userContact.serviceType || 'N/A'}
+                value={
+                  mappedKpisData.userContact.serviceType &&
+                  mappedKpisData.userContact.serviceType !== ''
+                    ? mappedKpisData.userContact.serviceType
+                    : kpisData.serviceType && kpisData.serviceType !== ''
+                      ? kpisData.serviceType
+                      : 'N/A'
+                }
                 className='text-medium'
               />
             </div>

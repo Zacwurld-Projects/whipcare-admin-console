@@ -1,9 +1,6 @@
 import dayjs from 'dayjs';
 
 export function getDateRange(filter: string, customRange?: [Date | null, Date | null]) {
-  if (filter === 'all') {
-    return { minDate: '', maxDate: '' };
-  }
   if (filter === 'today') {
     const today = dayjs().format('YYYY-MM-DD');
     return { minDate: today, maxDate: today };

@@ -208,16 +208,16 @@ export const fetchServiceProviders = async (
   pageSize = 15,
   search = '',
   status = 'all',
-  startDate = '',
-  endDate = '',
+  minDate = '',
+  maxDate = '',
 ) => {
   const params = new URLSearchParams();
   params.append('pageNumber', pageNumber.toString());
   params.append('pageSize', pageSize.toString());
   if (search) params.append('search', search);
   if (status && status !== 'all') params.append('status', status);
-  if (startDate) params.append('startDate', startDate);
-  if (endDate) params.append('endDate', endDate);
+  if (minDate) params.append('startDate', minDate);
+  if (maxDate) params.append('endDate', maxDate);
 
   const response = await API.get(`${ApiRoutes.ServiceProvider}?${params.toString()}`);
   return response.data;
