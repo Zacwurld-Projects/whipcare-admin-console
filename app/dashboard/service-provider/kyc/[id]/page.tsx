@@ -6,6 +6,7 @@ import {
   fetchServiceProviderKyc,
   approveServiceProviderKyc,
   rejectServiceProviderKyc,
+  fetchServiceProviderProfile,
 } from '@/app/api/apiClient';
 import PageLoader from '@/app/dashboard/components/Loaders/PageLoader';
 import PageHeading from '@/app/dashboard/components/PageHeading';
@@ -14,11 +15,12 @@ import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { FileImage, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import KycApprovalModal from '../../../components/modals/KycApprovalModal';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import KycRejectionModal from '../../../components/modals/KycRejectionModal';
+// import { ServiceProviderProfile } from '@/app/lib/mockTypes';
 
 const KYC = ({ params }: { params: { id: string } }) => {
   const {
@@ -39,6 +41,16 @@ const KYC = ({ params }: { params: { id: string } }) => {
     queryFn: () => fetchServiceProviderKyc(params.id),
   });
 
+  //this was used to fetch the profile info for the nationaltity to be displayed
+
+  const { data: kycProfileData } = useQuery({
+    queryKey: ['serviceProviderProfile', params.id],
+    queryFn: () => fetchServiceProviderProfile(params.id),
+  });
+  const profileInfo = {
+    ...(kycProfileData || {}),
+    nationality: kycProfileData?.nationality || 'N/A',
+  };
   // Map _id into userContact for KYC
   const mappedKpisData = kpisData
     ? {
@@ -53,6 +65,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
           phone: kpisData.userContact?.phone || kpisData.phone,
           image: kpisData.userContact?.image || kpisData.image,
           kycStatus: kpisData.userContact?.status || kpisData.status,
+          createdAt: kpisData.userContact?.createdAt || kpisData.createdAt,
         },
       }
     : null;
@@ -127,29 +140,34 @@ const KYC = ({ params }: { params: { id: string } }) => {
 
   const kyc = kycData?.data;
 
-  const kycDocs = [
-    {
-      label: 'Selfie',
-      doc: kyc.facePhoto,
-    },
-    {
-      label: 'NIN',
-      doc: kyc.nin,
-    },
-    {
-      label: 'Driver License',
-      doc: kyc.driversLicense,
-    },
-    {
-      label: "Voters' Card",
-      doc: kyc.votersCard,
-    },
-  ];
-  const getFileTypeIcon = (url: string) => {
-    if (url.endsWith('.pdf'))
-      return <Image src='/icons/pdf-icon.svg' alt='PDF Icon' className='text-[#eb5017]' />;
-    return <Image src='/icons/image-icon.svg' alt='Image Icon' className='text-[#eb5017]' />;
-  };
+  // Support multiple KYC documents (array or single)
+  let kycDocs: Array<{ label: string; url: string; createdAt: string; size: number }> = [];
+  if (Array.isArray(kyc?.kycDocuments)) {
+    kycDocs = kyc.kycDocuments.map((doc: any) => ({
+      label: doc.label || doc.url?.split('/').pop() || 'Document',
+      url: doc.url,
+      createdAt: doc.createdAt || new Date().toISOString(),
+      size: doc.size || 0,
+    }));
+  } else if (kyc?.kycDocument) {
+    kycDocs = [
+      {
+        label: 'Document',
+        url: kyc.kycDocument,
+        createdAt: kyc?.createdAt || new Date().toISOString(),
+        size: 13 * 1024 * 1024, // fallback size
+      },
+    ];
+  }
+
+  function formatDate(dateStr: string) {
+    const date = new Date(dateStr);
+    return `${date.toLocaleDateString()} | ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  }
+
+  function formatSize(bytes: number) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+  }
 
   return (
     <div>
@@ -193,11 +211,12 @@ const KYC = ({ params }: { params: { id: string } }) => {
                 value={mappedKpisData.userContact.email}
                 className='text-medium'
               />
-              <DisplayInfo
+              {/* <DisplayInfo
                 title='Nationality'
                 value={mappedKpisData.userContact.nationality || 'N/A'}
                 className='text-medium'
-              />
+              /> */}
+              <DisplayInfo title='Nationality' value={profileInfo.nationality} />
               <DisplayInfo
                 title='Service Type'
                 value={mappedKpisData.userContact.serviceType || 'N/A'}
@@ -212,54 +231,34 @@ const KYC = ({ params }: { params: { id: string } }) => {
           <div className='w-2/3'>
             <h1 className='text-xl font-semibold'>KYC Verification</h1>
             <p className='text-sm text-gray-500 dark:text-white'>
-              Below are the KYC details for this provider.
+              Below is the KYC document for this provider.
             </p>
           </div>
-          {kyc ? (
-            <div className='mt-6 flex w-full flex-col gap-4'>
-              {kycDocs.map(({ label, doc }) => (
-                <div
-                  key={label}
-                  className='flex min-w-[220px] flex-1 flex-col justify-between rounded-lg border border-[#eceae8] bg-[#f9f8f7] px-6 py-4 dark:bg-dark-primary'
+          {kycDocs.length > 0 ? (
+            <div className='flex w-full flex-col gap-4'>
+              {kycDocs.map((doc) => (
+                <button
+                  key={doc.url}
+                  onClick={() => handleOpenModal(doc.url)}
+                  className='flex w-full items-center gap-4 rounded-lg border bg-[#f9f8f7] px-6 py-4 text-left transition hover:border-blue-400 focus:border-blue-400 focus:outline-none'
+                  tabIndex={0}
                 >
-                  <div className='mb-2 flex items-center gap-4'>
-                    <span className='rounded-full bg-[#f3e7e2] p-2 dark:bg-dark-primary'>
-                      {doc?.docUrl ? (
-                        getFileTypeIcon(doc.docUrl)
-                      ) : (
-                        <FileImage className='text-[#eb5017]' />
-                      )}
+                  <span className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
+                    <ExternalLink className='h-5 w-5 text-gray-500' />
+                  </span>
+                  <div className='flex flex-col'>
+                    <span className='text-lg font-semibold text-black dark:text-black'>
+                      {doc.label || doc.url.split('/').pop()}
                     </span>
-                    <div>
-                      <div className='font-medium'>
-                        {label}
-                        {doc?.docUrl ? `.${doc.docUrl.split('.').pop()}` : ''}
-                      </div>
-                      <div className='text-xs text-gray-400'>
-                        {doc?.createdAt
-                          ? `${new Date(doc.createdAt).toLocaleDateString()} • ${new Date(doc.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                          : ''}
-                        {doc?.size ? ` • ${(doc.size / (1024 * 1024)).toFixed(1)}MB` : ''}
-                      </div>
-                    </div>
+                    <span className='text-sm text-gray-500'>
+                      {formatDate(doc.createdAt)} • {formatSize(doc.size)}
+                    </span>
                   </div>
-                  {doc?.docUrl ? (
-                    <button
-                      type='button'
-                      onClick={() => handleOpenModal(doc.docUrl)}
-                      className='mt-2 flex items-center gap-1 font-medium text-[#eb5017]'
-                    >
-                      <ExternalLink className='h-4 w-4' />
-                      View Document
-                    </button>
-                  ) : (
-                    <div className='mt-2 text-xs text-gray-500 dark:text-white'>Not uploaded</div>
-                  )}
-                </div>
+                </button>
               ))}
             </div>
           ) : (
-            <div>No KYC details found for this provider.</div>
+            <div>No KYC document found for this provider.</div>
           )}
         </div>
       </div>
@@ -301,7 +300,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
 
       {modalUrl && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-          <div className='relative w-full max-w-2xl rounded-lg bg-white p-4'>
+          <div className='relative w-full max-w-2xl rounded-lg bg-black/50 p-4'>
             <button
               onClick={handleCloseModal}
               className='absolute right-2 top-2 text-gray-500 hover:text-black'
@@ -309,7 +308,13 @@ const KYC = ({ params }: { params: { id: string } }) => {
               &times;
             </button>
             {modalType === 'image' ? (
-              <Image src={modalUrl} alt='Document' className='mx-auto max-h-[70vh]' />
+              <Image
+                src={modalUrl}
+                alt='Document'
+                width={500}
+                height={500}
+                className='mx-auto max-h-[100vh]'
+              />
             ) : (
               <iframe src={modalUrl} title='PDF Document' className='h-[70vh] w-full' />
             )}

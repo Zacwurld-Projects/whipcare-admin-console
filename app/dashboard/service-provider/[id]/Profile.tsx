@@ -105,7 +105,9 @@ const Profile = ({
                             <MapPinIcon color='white' className='' />
                           </div>
                           <div className='text-gray-800 dark:text-white'>
-                            <p className='text-sm font-medium dark:text-white'>Work Address</p>
+                            <p className='text-sm font-semibold capitalize dark:text-white'>
+                              {addr.type} Address
+                            </p>
                             <p className='text-sm font-medium capitalize'>
                               {addr.address}
                               {/* {distanceKm && (
