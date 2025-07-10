@@ -481,3 +481,9 @@ export const fetchCronMaintenance = async (pageNumber = 1, pageSize = 8) =>
 export const fetchCronCampaigns = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/campaign`, pageSize, pageNumber);
 // #endregion
+
+// Fetch KYC details for a provider
+export const fetchKycDetails = async (id: string) => {
+  const response = await API.get(`/kyc/${id}/details`);
+  return response.data;
+};

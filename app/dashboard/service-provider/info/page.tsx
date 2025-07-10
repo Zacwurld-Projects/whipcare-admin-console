@@ -30,8 +30,10 @@ const ServiceProviderInfo = () => {
   const [search, setSearch] = useState('');
   const [showFilter, setShowFilter] = useState(false);
   const [status, setStatus] = useState('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [selectedDates, setSelectedDates] = useState<{ minDate: string; maxDate: string }>({
+    minDate: '',
+    maxDate: '',
+  });
 
   // On mount, sync state with URL params (client only)
   useEffect(() => {
@@ -40,8 +42,10 @@ const ServiceProviderInfo = () => {
       const params = new URLSearchParams(window.location.search);
       setSearch(params.get('search') || '');
       setStatus(params.get('status') || 'all');
-      setStartDate(params.get('startDate') || '');
-      setEndDate(params.get('endDate') || '');
+      setSelectedDates({
+        minDate: params.get('minDate') || '',
+        maxDate: params.get('maxDate') || '',
+      });
       const pageParam = params.get('pageNumber');
       setCurrentPage(pageParam ? parseInt(pageParam, 10) || 1 : 1);
     }
@@ -59,15 +63,15 @@ const ServiceProviderInfo = () => {
       else url.searchParams.delete('search');
       if (status && status !== 'all') url.searchParams.set('status', status);
       else url.searchParams.delete('status');
-      if (startDate) url.searchParams.set('startDate', startDate);
-      else url.searchParams.delete('startDate');
-      if (endDate) url.searchParams.set('endDate', endDate);
-      else url.searchParams.delete('endDate');
+      if (selectedDates.minDate) url.searchParams.set('minDate', selectedDates.minDate);
+      else url.searchParams.delete('minDate');
+      if (selectedDates.maxDate) url.searchParams.set('maxDate', selectedDates.maxDate);
+      else url.searchParams.delete('maxDate');
       url.searchParams.set('pageNumber', String(currentPage));
       router.replace(url.pathname + url.search, { scroll: false });
     }, 300);
     return () => clearTimeout(handler);
-  }, [search, status, startDate, endDate, currentPage, isClient, router]);
+  }, [search, status, selectedDates.minDate, selectedDates.maxDate, currentPage, isClient, router]);
 
   // Update URL when filters or page change
   // const updateUrl = (params: Record<string, string | number | undefined>) => {
@@ -81,18 +85,18 @@ const ServiceProviderInfo = () => {
   // };
 
   // Update URL on filter/page/search change
-  const handleFilterApply = ({
-    status,
-    startDate,
-    endDate,
-  }: {
+  const handleFilterApply = (filters: {
     status: string;
-    startDate: string;
-    endDate: string;
+    startDate?: string;
+    endDate?: string;
+    minDate?: string;
+    maxDate?: string;
   }) => {
-    setStatus(status);
-    setStartDate(startDate);
-    setEndDate(endDate);
+    setStatus(filters.status);
+    setSelectedDates({
+      minDate: filters.minDate ?? filters.startDate ?? '',
+      maxDate: filters.maxDate ?? filters.endDate ?? '',
+    });
     setCurrentPage(1);
   };
   const handleSearch = (value: string) => {
@@ -104,9 +108,23 @@ const ServiceProviderInfo = () => {
   };
 
   const { data: serviceProviderData, isLoading: isServiceProviderLoading } = useQuery({
-    queryKey: ['serviceProviders', currentPage, search, status, startDate, endDate],
+    queryKey: [
+      'serviceProviders',
+      currentPage,
+      search,
+      status,
+      selectedDates.minDate,
+      selectedDates.maxDate,
+    ],
     queryFn: () =>
-      fetchServiceProviders(currentPage, PAGE_SIZE, search, status, startDate, endDate),
+      fetchServiceProviders(
+        currentPage,
+        PAGE_SIZE,
+        search,
+        status,
+        selectedDates.minDate,
+        selectedDates.maxDate,
+      ),
     enabled: isClient, // Only fetch on client
   });
 
@@ -138,17 +156,51 @@ const ServiceProviderInfo = () => {
     })),
   };
 
+  // Helper to filter by lastLogin within a date range
+  function isWithinRange(dateStr: string | undefined, min: string, max: string) {
+    if (!dateStr) return false;
+    if (!min && !max) return true;
+    const date = dayjs(dateStr).format('YYYY-MM-DD');
+    if (min && max) return date >= min && date <= max;
+    if (min) return date >= min;
+    if (max) return date <= max;
+    return true;
+  }
+
+  // Determine if a date range is selected
+  const isRangeSelected = selectedDates.minDate !== '' || selectedDates.maxDate !== '';
+
+  // Filter mappedProviders by lastLogin within startDate/endDate only if a range is selected
+
+  const filteredProviders = isRangeSelected
+    ? mappedProviders.data.filter((item: ServiceProviderTableData) =>
+        isWithinRange(
+          item.lastLogin as string | undefined,
+          typeof selectedDates.minDate === 'string' ? selectedDates.minDate : '',
+          typeof selectedDates.maxDate === 'string' ? selectedDates.maxDate : '',
+        ),
+      )
+    : mappedProviders.data;
+
+  const filteredMappedProviders = { ...mappedProviders, data: filteredProviders };
+
   return (
     <>
-      <PageHeading page='Service Provider' pageFilters />
+      <PageHeading
+        page='Service Provider'
+        pageFilters
+        setSelectedDates={setSelectedDates}
+        selectedStartDate={selectedDates.minDate}
+        selectedEndDate={selectedDates.maxDate}
+      />
       <div className='mb-4 flex justify-end'></div>
       {showFilter && (
         <FilterModal
           onClose={() => setShowFilter(false)}
           onApply={handleFilterApply}
           initialStatus={status}
-          initialStartDate={startDate}
-          initialEndDate={endDate}
+          initialStartDate={selectedDates.minDate}
+          initialEndDate={selectedDates.maxDate}
         />
       )}
       <div className='mt-6 w-full'>
@@ -171,7 +223,7 @@ const ServiceProviderInfo = () => {
               'Last Login Date',
               'Status',
             ]}
-            data={mappedProviders}
+            data={filteredMappedProviders}
             search={search}
             onSearch={handleSearch}
             ContentStructure={({

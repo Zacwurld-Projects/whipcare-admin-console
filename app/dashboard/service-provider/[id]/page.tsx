@@ -87,7 +87,11 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
             setSelectedPageOption={setSelectedPageOption}
           />
           {selectedPageOption === 'profile' && (
-            <Profile profileInfo={profileData} kycStatus={kycData?.data?.kycStatus} />
+            <Profile
+              profileInfo={profileData}
+              kycStatus={kycData?.data?.kycStatus}
+              providerId={params.id}
+            />
           )}
           {selectedPageOption === 'orders' &&
             (kycData?.data?.kycStatus === 'Approved' ? (

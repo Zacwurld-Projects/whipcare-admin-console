@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
 import VerifyIcon from '@/app/dashboard/assets/verify.svg';
 import { MapPinIcon } from 'lucide-react';
 // import { getDistanceFromLatLonInKm } from '@/app/lib/locator';
+import { useQuery } from '@tanstack/react-query';
+import { fetchServiceProviderKyc } from '@/app/api/apiClient';
 
 // Define Address type for clarity
 type Address = {
@@ -28,10 +30,22 @@ type Address = {
 const Profile = ({
   profileInfo,
   kycStatus,
+  providerId,
 }: {
   profileInfo: ServiceProviderProfile;
   kycStatus?: string;
+  providerId: string;
 }) => {
+  // Fetch KYC details for this provider using the /kyc/:providerId/details endpoint
+  const { data: kycData } = useQuery({
+    queryKey: ['kycDetails', providerId],
+    queryFn: () => fetchServiceProviderKyc(providerId),
+  });
+  // console.log('Profile providerId', providerId);
+  // console.log('Profile kycData', kycData);
+  const ninId = kycData?.data?.kycDocument?.nin?.docId;
+  const driversLicenseId = kycData?.data?.kycDocument?.driversLicense?.docId;
+
   const reflectStatusStyle = (status: string) => {
     switch (true) {
       case status === 'Rejected' || 'Deactivated':
@@ -80,6 +94,10 @@ const Profile = ({
                 value={dayjs(profileInfo.lastLoginDate).format('DD/MM/YY')}
               />
               <DisplayInfo title='Nationality' value={profileInfo.nationality} />
+              {ninId && <DisplayInfo title='NIN ID' value={ninId} />}
+              {driversLicenseId && (
+                <DisplayInfo title='Driver License ID' value={driversLicenseId} />
+              )}
               {profileInfo.NIN && <DisplayInfo title='NIN' value={profileInfo.NIN} />}
               <DisplayInfo title='Language' value={profileInfo.language} />
               <div className='flex-column gap-3'>

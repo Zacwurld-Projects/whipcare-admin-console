@@ -140,34 +140,50 @@ const KYC = ({ params }: { params: { id: string } }) => {
 
   const kyc = kycData?.data;
 
-  // Support multiple KYC documents (array or single)
-  let kycDocs: Array<{ label: string; url: string; createdAt: string; size: number }> = [];
-  if (Array.isArray(kyc?.kycDocuments)) {
-    kycDocs = kyc.kycDocuments.map((doc: any) => ({
-      label: doc.label || doc.url?.split('/').pop() || 'Document',
-      url: doc.url,
-      createdAt: doc.createdAt || new Date().toISOString(),
-      size: doc.size || 0,
-    }));
-  } else if (kyc?.kycDocument) {
-    kycDocs = [
-      {
-        label: 'Document',
-        url: kyc.kycDocument,
-        createdAt: kyc?.createdAt || new Date().toISOString(),
-        size: 13 * 1024 * 1024, // fallback size
-      },
-    ];
+  // Support facePhoto and nin documents from the new response structure
+  const kycDocs: Array<{
+    label: string;
+    url: string;
+    status: string;
+    createdAt?: string;
+    size?: number;
+  }> = [];
+  if (kyc?.kycDocument?.facePhoto) {
+    kycDocs.push({
+      label: 'Selfie',
+      url: kyc.kycDocument.facePhoto.docUrl,
+      status: kyc.kycDocument.facePhoto.status,
+      createdAt: kyc.kycDocument.facePhoto.createdAt || kyc.kycDocument.createdAt,
+      size: kyc.kycDocument.facePhoto.size,
+    });
+  }
+  if (kyc?.kycDocument?.nin) {
+    kycDocs.push({
+      label: 'NIN',
+      url: kyc.kycDocument.nin.docUrl,
+      status: kyc.kycDocument.nin.status,
+      createdAt: kyc.kycDocument.nin.createdAt || kyc.kycDocument.createdAt,
+      size: kyc.kycDocument.nin.size,
+    });
+  }
+  if (kyc?.kycDocument?.driversLicense) {
+    kycDocs.push({
+      label: 'Driver License',
+      url: kyc.kycDocument.driversLicense.docUrl,
+      status: kyc.kycDocument.driversLicense.status,
+      createdAt: kyc.kycDocument.driversLicense.createdAt || kyc.kycDocument.createdAt,
+      size: kyc.kycDocument.driversLicense.size,
+    });
   }
 
-  function formatDate(dateStr: string) {
-    const date = new Date(dateStr);
-    return `${date.toLocaleDateString()} | ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-  }
+  // function formatDate(dateStr: string) {
+  //   const date = new Date(dateStr);
+  //   return `${date.toLocaleDateString()} | ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  // }
 
-  function formatSize(bytes: number) {
-    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
-  }
+  // function formatSize(bytes: number) {
+  //   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+  // }
 
   return (
     <div>
@@ -244,25 +260,46 @@ const KYC = ({ params }: { params: { id: string } }) => {
           {kycDocs.length > 0 ? (
             <div className='flex w-full flex-col gap-4'>
               {kycDocs.map((doc) => (
-                <button
+                <div
                   key={doc.url}
-                  onClick={() => handleOpenModal(doc.url)}
-                  className='flex w-full items-center gap-4 rounded-lg border bg-[#f9f8f7] px-6 py-4 text-left transition hover:border-blue-400 focus:border-blue-400 focus:outline-none'
-                  tabIndex={0}
+                  className='flex items-center gap-4 rounded-xl bg-[#fff9f7] px-6 py-4'
                 >
-                  <span className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
+                  <button
+                    onClick={() => handleOpenModal(doc.url)}
+                    className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100'
+                  >
                     <ExternalLink className='h-5 w-5 text-gray-500' />
-                  </span>
+                  </button>
                   <div className='flex flex-col'>
-                    <span className='text-lg font-semibold text-black dark:text-black'>
+                    <span className='text-base font-semibold text-gray-900'>
                       {doc.label || doc.url.split('/').pop()}
                     </span>
-                    <span className='text-sm text-gray-500'>
-                      {formatDate(doc.createdAt)} • {formatSize(doc.size)}
+                    <span className='mt-1 flex gap-2 text-xs text-gray-500'>
+                      {doc.createdAt
+                        ? `${new Date(doc.createdAt).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })} 
+                           ${new Date(doc.createdAt).toLocaleTimeString([], {
+                             hour: '2-digit',
+                             minute: '2-digit',
+                             hour12: true,
+                           })}`
+                        : ``}
+                      {doc.size && (
+                        <>
+                          <span>•</span>
+                          <span>{(doc.size / (1024 * 1024)).toFixed(0)}MB</span>
+                        </>
+                      )}
                     </span>
                   </div>
-                </button>
+                </div>
               ))}
+              {kyc?.rejectionReason && (
+                <div className='mt-2 text-red-600'>Rejection Reason: {kyc.rejectionReason}</div>
+              )}
             </div>
           ) : (
             <div>No KYC document found for this provider.</div>
@@ -306,7 +343,10 @@ const KYC = ({ params }: { params: { id: string } }) => {
       {/* Modal for viewing documents */}
 
       {modalUrl && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+        <div
+          className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'
+          onClick={handleCloseModal}
+        >
           <div className='relative w-full max-w-2xl rounded-lg bg-black/50 p-4'>
             <button
               onClick={handleCloseModal}
