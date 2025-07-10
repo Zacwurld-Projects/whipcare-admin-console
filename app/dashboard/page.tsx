@@ -58,7 +58,7 @@ const Overview = () => {
           yLabel='Amount(Thousands)'
           xLabels={['Mech/Tech', 'Wash', 'Hauling', 'Detailing']}
           heading='Revenue'
-          data={[800, 950, 600, 600]}
+          data={[850, 950, 600, 600]}
         />
         <ProgressBarChart
           heading='Service Efficiency'

@@ -5,6 +5,7 @@ export type TableData<T> = {
   totalCount: number;
   pageNumber: number;
   pageSize: number;
+  totalProviders?: number;
 };
 
 export type EmptyStateProps = {

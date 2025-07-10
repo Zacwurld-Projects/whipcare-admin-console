@@ -30,10 +30,10 @@ export type UserProfileData = {
 
 export interface BaseData {
   _id: string;
-  createdAt: string;
-  lastLogin: string;
-  firstName: string;
-  lastName: string;
+  createdAt?: string | undefined;
+  lastLogin?: string | undefined;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
   userName?: string;
   serviceProvider?: string;
   carOwnerPhone?: string;
@@ -41,10 +41,10 @@ export interface BaseData {
   serviceProviderPhone?: string;
   serviceType?: string;
   date?: string;
-  email: string;
+  email?: string | undefined;
   status?: string;
   services?: string[];
-  phone: string | null;
+  phone?: string | undefined;
   carModel?: string;
   carBrand?: string;
   colour?: string;
@@ -60,13 +60,13 @@ export type BaseTable<T> = {
 };
 
 export type BaseTableData = {
-  _id: string;
-  createdAt: string;
-  lastLogin: string;
-  firstName: string;
-  lastName: string;
-  phone: string | null;
-  email: string;
+  _id?: string;
+  createdAt?: string | undefined;
+  lastLogin?: string | undefined;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  phone?: string | undefined;
+  email?: string | undefined;
 };
 
 export type UserActivity = {
@@ -98,11 +98,12 @@ export type Activity = {
 export type ServiceProviderProfile = {
   signUpDate: number;
   status?: string;
+  kycStatus?: string;
   lastLoginDate: number;
   nationality: string;
   language: string;
   NIN?: string;
-  address: [];
+  address?: [];
   servicesProvided: Array<{
     _id: string;
     serviceType: string;
@@ -229,8 +230,8 @@ export type CronServiceActivities = {
   onNewBookingCreation: boolean;
   onBookingUnrespondedOneHour: boolean;
   onPerformanceMetricDrop: boolean;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  createdAt: string | null;
+  updatedAt: string | null;
   __v: number;
 };
 
@@ -241,19 +242,19 @@ export type CronCampaign = {
   message: string;
   deliveryChannel: string | string[];
   status: string;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  createdAt: string | null;
+  updatedAt: string | null;
   __v: number;
 };
 
 export type CronMaintenance = {
   _id: string;
-  maintenanceDate: string; // ISO date string
+  maintenanceDate: string | null;
   purpose: string;
   postUpdateMessage: string;
   status: string;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  createdAt: string | null;
+  updatedAt: string | null;
   __v: number;
 };
 

@@ -1,12 +1,15 @@
 export type ServiceProviderTableData = {
   _id: string;
-  email: string;
+  email: string | null;
   image: null | string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   phone: null | string;
-  lastLogin: string;
-  createdAt: string;
+  lastLogin: string | null;
+  createdAt: string | null;
   services: string[];
-  status?: string;
+  // status?: string;
+  kycStatus?: string | null;
+  nationality?: string | null;
+  serviceType: string[];
 };

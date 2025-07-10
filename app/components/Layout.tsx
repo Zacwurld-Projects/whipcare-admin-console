@@ -2,7 +2,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import Sidebar from './shared/Sidebar';
 import CustomImage from './ui/image';
-import images from '@/public/images';
+import { images } from '@/public/images';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { initializeIcons, loadTheme } from '@fluentui/react';
@@ -74,7 +74,7 @@ const Layout = ({ children }: Props) => {
       push('/login');
     }
     // fetchUserProfileInformation();
-  }, [status, session, isResetPasswordPage, isResetPasswordPage, push]);
+  }, [status, session, isResetPasswordPage, push, isForgotPasswordPage]);
 
   return (
     <>

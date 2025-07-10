@@ -177,7 +177,7 @@ const Navbar = () => {
                   <p className='text-small font-semibold text-[#f56630]'>
                     {userDetails?.name
                       ?.split(' ')
-                      .map((item) => <>{item.slice(0, 1).toUpperCase()}</>)}
+                      .map((item) => <span key={item}>{item.slice(0, 1).toUpperCase()}</span>)}
                   </p>
                 </div>
               )}
@@ -202,7 +202,7 @@ const Navbar = () => {
                       <p className='text-small font-semibold text-[#f56630]'>
                         {userDetails?.name
                           ?.split(' ')
-                          .map((item) => <>{item.slice(0, 1).toUpperCase()}</>)}
+                          .map((item) => <div key={item}>{item.slice(0, 1).toUpperCase()}</div>)}
                       </p>
                     </div>
                   )}

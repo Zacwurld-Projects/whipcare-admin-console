@@ -17,11 +17,11 @@ import { BaseTable, BaseTableData } from '@/app/lib/mockTypes';
 dayjs.extend(advancedFormat);
 
 type CarData = BaseTableData & {
-  carBrand: string;
-  carModel: string;
-  colour: string;
-  lastService: string;
-  lastServiceDate: string;
+  carBrand: string | null;
+  carModel: string | null;
+  colour: string | null;
+  lastService: string | null;
+  lastServiceDate: string | null;
 };
 
 const carManagementStats = [
@@ -111,6 +111,10 @@ const CarManagementPage = () => {
             </td>
           </>
         )}
+        search={''}
+        onSearch={function (): void {
+          throw new Error('Function not implemented.');
+        }}
       />
     </>
   );

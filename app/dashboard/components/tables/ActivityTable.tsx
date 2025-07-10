@@ -60,7 +60,7 @@ const ActivityTable = ({
   return (
     <article className='rounded-lg border border-[#e0ddd9] bg-white dark:border-transparent dark:bg-dark-secondary'>
       <div className='flex w-full justify-between px-6 py-4'>
-        <FilterForm className='w-[50%]' />
+        <FilterForm className='w-[50%]' onSearch={() => {}} onFilterClick={() => {}} search='' />
         <ExportTable />
       </div>
       <div className='border-y border-gray-200 px-6 dark:border-[#2c2c3c]'>

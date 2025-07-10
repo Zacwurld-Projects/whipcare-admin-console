@@ -196,11 +196,37 @@ export const fetchServiceProviderWaitList = async () => {
   return reponse.data;
 };
 
-export const fetchServiceProviders = async (pageNumber = 1, pageSize = 15) => {
-  const reponse = await API.get(
-    `${ApiRoutes.ServiceProvider}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-  );
-  return reponse.data;
+// export const fetchServiceProviders = async (pageNumber = 1, pageSize = 15) => {
+//   const reponse = await API.get(
+//     `${ApiRoutes.ServiceProvider}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+//   );
+//   return reponse.data;
+// };
+
+export const fetchServiceProviders = async (
+  pageNumber = 1,
+  pageSize = 15,
+  search = '',
+  status = 'all',
+  minDate = '',
+  maxDate = '',
+) => {
+  const params = new URLSearchParams();
+  params.append('pageNumber', pageNumber.toString());
+  params.append('pageSize', pageSize.toString());
+  if (search) params.append('search', search);
+  if (status && status !== 'all') params.append('status', status);
+  if (minDate) params.append('startDate', minDate);
+  if (maxDate) params.append('endDate', maxDate);
+
+  const response = await API.get(`${ApiRoutes.ServiceProvider}?${params.toString()}`);
+  return response.data;
+};
+
+export const fetchServiceProviderProfile = async (id: string) => {
+  const response = await API.get(`${ApiRoutes.ServiceProvider}/${id}/profile`);
+  console.log('API Response:', response.data); // Log the response
+  return response.data;
 };
 
 export const fetchServiceProviderKpis = async (id: string) => {
@@ -208,10 +234,10 @@ export const fetchServiceProviderKpis = async (id: string) => {
   return reponse.data;
 };
 
-export const fetchServiceProviderProfile = async (id: string) => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/profile`);
-  return reponse.data;
-};
+// export const fetchServiceProviderProfile = async (id: string) => {
+//   const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/profile`);
+//   return reponse.data;
+// };
 
 export const fetchServiceProviderOrders = async (id: string) => {
   const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/orders`);
@@ -228,6 +254,53 @@ export const fetchServiceProviderPayments = async (id: string) => {
   return reponse.data;
 };
 
+export const fetchServiceProviderKyc = async (_id: string) => {
+  const response = await API.get(`${ApiRoutes.Kyc}/${_id}/details`);
+  return response.data;
+};
+
+// #region APPROVE SERVICE PROVIDER KYC
+export const approveServiceProviderKyc = async (id: string) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Kyc}/${id}/status`, { status: 'Approved' });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+//#region REJECT SERVICE PROVIDER KYC
+export const rejectServiceProviderKyc = async (id: string, rejectionReason: string) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Kyc}/${id}/status`, {
+      status: 'Rejected',
+      rejectionReason,
+    });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+// #region SERVICE PROVIDER DEACTIVATION
+export const deactivateServiceProvider = async (id: string) => {
+  try {
+    const response = await API.patch(`${ApiRoutes.ServiceProvider}/${id}/deactivate`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+//#region SERVICE PROVIDER ACTIVATION
+export const activateServiceProvider = async (id: string) => {
+  try {
+    const response = await API.patch(`${ApiRoutes.ServiceProvider}/${id}/activate`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
 // #endregion
 
 // #region SERVICE BOOKINGS
@@ -408,3 +481,9 @@ export const fetchCronMaintenance = async (pageNumber = 1, pageSize = 8) =>
 export const fetchCronCampaigns = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/campaign`, pageSize, pageNumber);
 // #endregion
+
+// Fetch KYC details for a provider
+export const fetchKycDetails = async (id: string) => {
+  const response = await API.get(`/kyc/${id}/details`);
+  return response.data;
+};

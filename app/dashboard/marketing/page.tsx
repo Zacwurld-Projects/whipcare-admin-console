@@ -51,6 +51,10 @@ const EmailListPage = () => {
             </>
           );
         }}
+        search={''}
+        onSearch={function (): void {
+          throw new Error('Function not implemented.');
+        }}
       />
     </section>
   );

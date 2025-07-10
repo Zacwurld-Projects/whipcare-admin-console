@@ -40,27 +40,35 @@ const TablePagination = ({
       </button>
     );
 
-    return range.map((page, index) => (
-      <>
-        {page === totalPages && totalPages - currentPage > 2 && (
+    return range.map((page, index) => {
+      const elements = [];
+
+      if (page === totalPages && totalPages - currentPage > 2) {
+        elements.push(
           <p
-            key={'before_ellipse'}
+            key={`before_ellipse_${page}`}
             className='text-small px-3 pb-1 pt-2 font-medium text-gray-800 dark:text-white'
           >
             ...
-          </p>
-        )}
-        {renderButton(page, index)}
-        {page === 1 && currentPage > 3 && (
+          </p>,
+        );
+      }
+
+      elements.push(renderButton(page, index));
+
+      if (page === 1 && currentPage > 3) {
+        elements.push(
           <p
-            key={'after_ellipse'}
+            key={`after_ellipse_${page}`}
             className='text-small px-3 pb-1 pt-2 font-medium text-gray-800 dark:text-white'
           >
             ...
-          </p>
-        )}
-      </>
-    ));
+          </p>,
+        );
+      }
+
+      return elements;
+    });
   };
 
   return (

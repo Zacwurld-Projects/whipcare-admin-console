@@ -5,7 +5,7 @@ import topPerformerImage from '../../assets/topPerformerImage.png';
 
 const topPerformers = Array.from(
   {
-    length: 8,
+    length: 2,
   },
   (_, i) => {
     return {
