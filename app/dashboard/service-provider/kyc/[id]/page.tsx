@@ -257,6 +257,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
               Below is the KYC document for this provider.
             </p>
           </div>
+          {/* <h2 className='text-lg font-semibold'>Documents</h2> */}
           {kycDocs.length > 0 ? (
             <div className='flex w-full flex-col gap-4'>
               {kycDocs.map((doc) => (

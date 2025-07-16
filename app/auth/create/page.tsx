@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import SectionLoader from '@/app/dashboard/components/Loaders/SectionLoader';
 
 const CreateUserPageContent = () => {
-  const [isverified, setIsVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const steps = ['input-userInfo', 'input-otp', 'success'];
   const [currentStep, setCurrentStep] = useState(steps[0]);
   const [userInfo, setUserInfo] = useState({
@@ -39,12 +39,13 @@ const CreateUserPageContent = () => {
       return verifyCreateToken(token);
     },
     onSuccess: (response) => {
-      // console.log(response);
+      // toast.success('You can now create an account');
       setIsVerified(true);
       setUserInfo({ ...userInfo, email: response.email });
     },
-    onError: () => {
-      router.push('/auth');
+    onError: (error) => {
+      toast.error(`Failed to verify token: ${error.message || 'Invalid or expired token'}`);
+      setTimeout(() => router.push('/auth'), 2000);
     },
   });
 
@@ -69,7 +70,7 @@ const CreateUserPageContent = () => {
       return verifyMemberOtp(otp.join(''), createToken as string);
     },
     onSuccess: () => {
-      toast.success('OTP has been sent to your email');
+      toast.success('Account created successfully');
       setCurrentStep(steps[2]);
     },
     onError: (error) => {
@@ -81,16 +82,18 @@ const CreateUserPageContent = () => {
     if (createToken) {
       useVerifyToken.mutate(createToken);
     } else {
-      router.push('/auth');
+      toast.error('No token provided. Please use a valid signup link.');
+      setTimeout(() => router.push('/auth'), 2000);
     }
-  }, [createToken, router]);
+  }, [createToken, router, useVerifyToken]);
 
-  if (!isverified || useVerifyToken.isPending)
+  if (!isVerified || useVerifyToken.isPending) {
     return (
       <section className='center-grid'>
         <SectionLoader height='fit-content' />
       </section>
     );
+  }
 
   return (
     <section className='center-grid'>

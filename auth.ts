@@ -10,6 +10,7 @@ declare module 'next-auth' {
     name?: string | null;
     role?: string;
     token?: string;
+    privileges?: string[];
   }
 
   interface Session {
@@ -41,6 +42,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           accessToken: user.token,
           expires_at: Date.now() + 60 * 60 * 24 * 10 * 1000, // 10 days
           role: user.role,
+          privileges: user.privileges,
           expired: false,
         };
       }
@@ -63,6 +65,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         id: token.userId as string,
         token: token.accessToken as string,
         role: token.role as string,
+        privileges: token.privileges as string[],
       };
       return session;
     },
@@ -77,7 +80,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await userService.authenticate(email, password);
         if (user && user.token) {
-          return { ...user, token: user.token };
+          return { ...user, token: user.token, privileges: user.privileges };
         }
         return null;
       },

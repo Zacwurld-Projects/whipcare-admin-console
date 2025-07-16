@@ -1,5 +1,5 @@
 'use client';
-import mockUserImage from '../../assets/mockUserImg.png';
+// import mockUserImage from '../../assets/mockUserImg.png';
 import BookingsIcon from '../../assets/bookingsIcon.svg';
 import SpendingsIcon from '../../assets/spendingsIcon.svg';
 import Image from 'next/image';
@@ -49,8 +49,8 @@ const BasicInfo = ({
       <div className='flex w-[43%] flex-wrap items-center px-[47.5px] py-8 [column-gap:32px] [row-gap:4px]'>
         {userContact.image ? (
           <Image
-            src={mockUserImage}
-            alt='Isaac Zacwurlds image'
+            src={userContact.image}
+            alt='User Image'
             height={79}
             width={79}
             className='rounded-full'

@@ -79,8 +79,8 @@ export const getKycStatusStyles = (status: string | undefined) => {
 export const fetchUserDetails = async () => {
   const session = await getSession();
   if (session) {
-    const { id, role, name, email, image } = session.user;
-    return { id, role, name, email, image };
+    const { id, role, name, email, image, privileges } = session.user;
+    return { id, role, name, email, image, privileges };
   }
   throw new Error('Failed to retrieve user session.');
 };

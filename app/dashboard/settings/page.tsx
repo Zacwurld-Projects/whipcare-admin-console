@@ -9,7 +9,7 @@ import Accessibility from './Accessibility';
 import SectionLoader from '../components/Loaders/SectionLoader';
 
 const SettingsPage = () => {
-  const pageOptions = ['profile', 'accessibility'];
+  const pageOptions = ['profile', 'accessibility', 'notification'];
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
   const { isLoading: isProfileLoading, data: profile } = useQuery({
     queryKey: ['userProfile'],
@@ -21,8 +21,17 @@ const SettingsPage = () => {
     queryFn: fetchAdminMembers,
     enabled: selectedPageOption === 'accessibility',
   });
+  const {
+    isLoading: isNotificationDataLoading,
+    // , data: notificationData
+  } = useQuery({
+    queryKey: ['getMembers'],
+    queryFn: fetchAdminMembers,
+    enabled: selectedPageOption === 'accessibility',
+  });
 
-  const isFetchingPageDetails = isProfileLoading || isMembersDataLoading;
+  const isFetchingPageDetails =
+    isProfileLoading || isMembersDataLoading || isNotificationDataLoading;
 
   return (
     <>
@@ -40,6 +49,10 @@ const SettingsPage = () => {
             {selectedPageOption === 'profile' && <Profile profileData={profile.data} />}
             {selectedPageOption === 'accessibility' && (
               <Accessibility membersData={membersData.data} />
+            )}
+            {selectedPageOption === 'notification' && (
+              // <Accessibility membersData={membersData.data} />
+              <></>
             )}
           </>
         )}

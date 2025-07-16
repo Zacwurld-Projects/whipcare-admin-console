@@ -58,18 +58,21 @@ const Accessibility = ({
     role: '',
     email: '',
   });
+  const [newPrivileges, setNewPrivileges] = useState<string[]>([]);
 
   const inviteMembersMutation = useMutation({
     mutationKey: ['inviteMember'],
     mutationFn: () => {
-      return inviteMember(newMemberDetails);
+      return inviteMember({ ...newMemberDetails, privileges: newPrivileges as [] });
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log('Invite member response:', response);
       toast.success('Invite sent to email');
       setNewMemberDetails({
         role: '',
         email: '',
       });
+      setNewPrivileges([]);
       setIsDisplayingInviteModal(false);
     },
     onError: (error) => toast.error(error.message || 'Something went wrong.'),
@@ -81,14 +84,17 @@ const Accessibility = ({
     <>
       {membersData.length > 0 ? (
         <article>
-          <div className='flex flex-wrap gap-x-[190px] gap-y-8'>
+          <div className='flex w-full gap-[190px] gap-y-8'>
             <TitleBox
               title='Add new member'
               content='You can add new member by sending invite to their email'
             />
-            <div className='mx-auto w-[386px] py-6 lg:mx-0'>
+            <div className='w-1/2 py-6 lg:mx-0'>
               <InviteMembersForm
-                onSubmit={() => inviteMembersMutation.mutate()}
+                onSubmit={(_e, privileges) => {
+                  setNewPrivileges(privileges);
+                  setTimeout(() => inviteMembersMutation.mutate(), 0);
+                }}
                 isLoading={inviteMembersMutation.isPending}
                 memberDetails={newMemberDetails}
                 setMemberDetails={setNewMemberDetails}

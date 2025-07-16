@@ -20,13 +20,15 @@ import {
 } from '@/app/api/apiClient';
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
-import ActivityTable from '../../components/tables/ActivityTable';
+// import ActivityTable from '../../components/tables/ActivityTable';
 import VerifyIcon from '@/app/dashboard/assets/verify.svg';
 
 const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
   const pageOptions = ['profile', 'orders', 'payment', 'activities', 'reviews'];
   const [isDeactivating, setIsDeactivating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const contentPerPage = 10; // or whatever you want
 
   const { data: kpisData, isLoading: isKpisLoading } = useQuery({
     queryKey: ['serviceProviderKpis'],
@@ -98,20 +100,24 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
               isOrdersDataLoading ? (
                 <SectionLoader height='300px' />
               ) : (
-                <HistoryTable
-                  type='orders'
-                  userId={params.id}
-                  heading='Orders History'
-                  tableHeadings={[
-                    'Order ID',
-                    'Order Date',
-                    'Car serviced',
-                    'Address',
-                    'Service type',
-                    'Status',
-                  ]}
-                  tableContent={ordersData.data}
-                />
+                <>
+                  <HistoryTable
+                    tableHeadings={[
+                      'Order ID',
+                      'Order Date',
+                      'Car serviced',
+                      'Address',
+                      'Service type',
+                      'Status',
+                    ]}
+                    heading='Orders History'
+                    tableContent={ordersData.data}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    totalCount={ordersData.totalCount}
+                    contentPerPage={contentPerPage}
+                  />
+                </>
               )
             ) : (
               <div className='flex min-h-[300px] flex-col items-center justify-center gap-2'>
