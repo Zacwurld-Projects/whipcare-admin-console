@@ -1,5 +1,6 @@
 'use client';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
+import { useEffect, useState } from 'react';
 
 const data = [
   {
@@ -29,12 +30,18 @@ const ProgressBarChart = ({
 }) => {
   const orderedData = data.sort((a, b) => b.value - a.value);
 
+  // Hydration fix: Only show formatted date on client
+  const [clientDate, setClientDate] = useState<string | null>(null);
+  useEffect(() => {
+    setClientDate(timeAgo(timestamp));
+  }, [timestamp]);
+
   return (
     <div className='rounded-lg bg-white p-4 dark:bg-dark-primary'>
       <div className='mb-3 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-white'>
         <p className='text-medium font-semibold text-gray-800 dark:text-white'>{heading}</p>
         <p className='text-xsmall text-gray-600 dark:text-white'>
-          Last updated: {timeAgo(timestamp)}
+          {clientDate ? `Last updated: ${clientDate}` : ''}
         </p>
       </div>
       <ul className='flex-column mb-6 mt-8 w-[80%] gap-8'>

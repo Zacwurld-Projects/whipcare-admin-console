@@ -5,14 +5,16 @@ import dayjs from 'dayjs';
 import SpinLoader from '../Loaders/SpinLoader';
 // import { reflectStatusStyle } from '@/app/lib/accessoryFunctions';
 import { useGlobalContext } from '@/app/context/AppContext';
-import { fetchServiceProviderOrderById } from '@/app/api/apiClient';
+import { fetchServiceProviderKpis, fetchServiceProviderOrderById } from '@/app/api/apiClient';
 import { useEffect, useState } from 'react';
+import { getOrdersStatusStyles } from '@/app/lib/accessoryFunctions';
+import { useQuery } from '@tanstack/react-query';
+import { LucideCheck } from 'lucide-react';
 
 const OrderDetails = () => {
   const {
     orderDetails: { data, isLoading, heading },
     setOrderDetails,
-    userDetails,
     isDark,
   } = useGlobalContext();
 
@@ -30,7 +32,26 @@ const OrderDetails = () => {
         })
         .finally(() => setLoading(false));
     }
-  }, [data, userDetails.id]);
+  }, [data]);
+  const { data: kpisData } = useQuery({
+    queryKey: ['serviceProviderKpis'],
+    queryFn: () => fetchServiceProviderKpis(data?.userId ?? ''),
+  });
+
+  // Map _id into userContact for KYC
+  const mappedKpisData = kpisData
+    ? {
+        ...kpisData,
+        userContact: {
+          _id: kpisData._id,
+          firstName: kpisData.userContact?.firstName || kpisData.firstName,
+          lastName: kpisData.userContact?.lastName || kpisData.lastName,
+          email: kpisData.userContact?.email || kpisData.email,
+          phone: kpisData.userContact?.phone || kpisData.phone,
+          image: kpisData.userContact?.image || kpisData.image,
+        },
+      }
+    : null;
 
   const closeModal = () =>
     setOrderDetails({ display: false, data: null, heading: '', isLoading: false });
@@ -47,17 +68,31 @@ const OrderDetails = () => {
 
   // Display user-friendly fields for the order model
   const info = [
-    { title: 'User ID', value: userDetails.id },
-    { title: 'Order ID', value: order._id },
-    { title: 'Order Date', value: dayjs(order.createdAt).format('MM/DD/YYYY / hh:mm A') },
+    // { title: 'User ID', value: userDetails.id },
+    // { title: 'Order ID', value: order._id },
+    { title: 'Booking Date', value: dayjs(order.createdAt).format('MM/DD/YYYY / hh:mm A') },
     { title: 'Car', value: `${order.carBrand} ${order.carModel}` },
-    { title: 'Service Type', value: order.serviceType },
+    { title: 'Service', value: order.serviceType },
     {
-      title: 'Service Titles',
+      title: 'Service Type',
       value: Array.isArray(order.serviceTitle) ? order.serviceTitle.join(', ') : order.serviceTitle,
+    },
+    {
+      title: 'Service Provider',
+      value: `${mappedKpisData?.userContact.firstName} ${mappedKpisData?.userContact.lastName}`,
     },
     { title: 'Status', value: order.status },
     { title: 'Customer', value: `${order.firstName} ${order.lastName}` },
+  ];
+
+  // Dummy data for track booking
+  const bookingSteps = [
+    { title: 'Order Accepted', date: '05-May-2024 / 12:43 PM', completed: true },
+    { title: 'Car Received at Mechanic Shop', date: '05-May-2024 / 1:43 PM', completed: true },
+    { title: 'Order Service In Progress', date: '05-May-2024 / 2:43 PM', completed: true },
+    { title: 'Ready For Pickup/Delivery', date: '05-May-2024 / 3:43 PM', completed: true },
+    { title: 'Delivered', date: '05-May-2024 / 4:43 PM', completed: true },
+    { title: 'Payment', date: '05-May-2024 / 4:43 PM', completed: true },
   ];
 
   return (
@@ -66,10 +101,15 @@ const OrderDetails = () => {
         <div className='mb-3 flex items-center gap-[10px] text-[#27231f] *:font-medium dark:text-white'>
           <p>{heading}</p>
           <p>{'>'}</p>
-          <h5 className='heading-h5 max-w-[189px] truncate'>{order._id}</h5>
+          <h5 className='heading-h5'>{order._id}</h5>
+          <button
+            className={`${getOrdersStatusStyles(order.status)} rounded-[8px] px-3 py-1 text-[13px] font-semibold`}
+          >
+            {order.status}
+          </button>
         </div>
         <div className='flex-column mx-3 gap-6 p-5'>
-          <p className='text-[20px] font-semibold text-gray-800 dark:text-white'>Order Info</p>
+          <p className='text-[20px] font-semibold text-gray-800 dark:text-white'>Booking Info</p>
           <ul className='flex-column gap-[15.4px]'>
             {info.map((item) => (
               <li className={`flex items-center justify-between text-[13px]`} key={item.title}>
@@ -80,6 +120,45 @@ const OrderDetails = () => {
               </li>
             ))}
           </ul>
+        </div>
+
+        <div className='flex w-full items-center justify-center px-10 py-4'>
+          <div className='w-full'>
+            <h2 className='mb-8 text-start text-xl font-bold text-gray-800 dark:text-white'>
+              Track Booking
+            </h2>
+            <ol className='relative border-l-[10px] border-[#711E00]'>
+              {bookingSteps.map((step, idx) => (
+                <li key={idx} className='mb-10 flex items-start last:mb-0'>
+                  <span className='absolute -left-[1.6rem] flex h-10 w-10 items-center justify-center rounded-full border-[7px] border-white bg-[#711E00] text-white shadow-md dark:border-dark-secondary dark:bg-[#711E00]'>
+                    {/* <svg
+                    width='18'
+                    height='18'
+                    viewBox='0 0 20 20'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <circle cx='10' cy='10' r='10' fill='currentColor' />
+                    <path
+                      d='M6 10.5L9 13.5L14 8.5'
+                      stroke='white'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg> */}
+                    <LucideCheck size={16} />
+                  </span>
+                  <div className='ml-6'>
+                    <div className='text-base font-semibold text-gray-800 dark:text-white'>
+                      {step.title}
+                    </div>
+                    <div className='mt-1 text-sm text-gray-500 dark:text-gray-300'>{step.date}</div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
         <div className='center-grid w-full'>
           <button
