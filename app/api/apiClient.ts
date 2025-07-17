@@ -231,7 +231,7 @@ export const fetchServiceProviders = async (
 
 export const fetchServiceProviderProfile = async (id: string) => {
   const response = await API.get(`${ApiRoutes.ServiceProvider}/${id}/profile`);
-  console.log('API Response:', response.data); // Log the response
+  // console.log('API Response:', response.data); // Log the response
   return response.data;
 };
 
@@ -245,13 +245,25 @@ export const fetchServiceProviderKpis = async (id: string) => {
 //   return reponse.data;
 // };
 
-export const fetchServiceProviderOrders = async (id: string) => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/orders`);
-  return reponse.data;
+export const fetchServiceProviderOrders = async (
+  id: string,
+  search: string = '',
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => {
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (pageNumber) params.append('pageNumber', pageNumber.toString());
+  if (pageSize) params.append('pageSize', pageSize.toString());
+
+  const response = await API.get(
+    `${ApiRoutes.ServiceProvider}/${id}/orders${params.toString() ? `?${params}` : ''}`,
+  );
+  return response.data;
 };
 
-export const fetchServiceProviderOrderById = async (userId: string, orderId: string) => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${userId}/orders/${orderId}`);
+export const fetchServiceProviderOrderById = async (id: string, orderId: string) => {
+  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/orders/${orderId}`);
   return reponse.data;
 };
 

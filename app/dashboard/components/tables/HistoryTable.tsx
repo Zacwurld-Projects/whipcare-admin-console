@@ -1,7 +1,7 @@
 'use client';
 // import { useEffect, useState } from 'react';
 import FilterForm from './components/FilterForm';
-import { convertBookingAndOrderStatus, reflectStatusStyle } from '@/app/lib/accessoryFunctions';
+import { convertBookingAndOrderStatus, getOrdersStatusStyles } from '@/app/lib/accessoryFunctions';
 // import BookingDetails from '../modals/BookingDetails';
 import { Orders } from '@/app/lib/mockTypes';
 import dayjs from 'dayjs';
@@ -9,6 +9,10 @@ import { Dispatch } from 'react';
 // import { useQuery } from '@tanstack/react-query';
 // import { fetchServiceProviderOrderById } from '@/app/api/apiClient';
 import TablePagination from './components/TablePagination';
+import { useGlobalContext } from '@/app/context/AppContext';
+import OrderDetails from '../modals/OrderDetails';
+import { fetchServiceProviderOrderById } from '@/app/api/apiClient';
+import { useState } from 'react';
 
 const HistoryTable = ({
   tableHeadings,
@@ -18,6 +22,11 @@ const HistoryTable = ({
   setCurrentPage,
   totalCount,
   contentPerPage,
+  userId,
+  onSearch: parentOnSearch,
+  search: parentSearch,
+  setSearch: parentSetSearch,
+  searchInput: parentSearchInput,
 }: {
   tableHeadings: string[];
   heading: string;
@@ -26,34 +35,67 @@ const HistoryTable = ({
   setCurrentPage: Dispatch<number>;
   totalCount: number;
   contentPerPage: number;
+  userId: string;
+  onSearch?: (value: string) => void;
+  search?: string;
+  setSearch?: (value: string) => void;
+  searchInput?: string;
 }) => {
-  // const [isDisplayingBookingDetails, setIsDisplayingBookingDetails] = useState<boolean>(false);
+  const { setOrderDetails, orderDetails } = useGlobalContext();
+  const [, setLoadingId] = useState<string | null>(null);
 
-  // const [orderId, setOrderId] = useState<string | null>(null);
+  // Local search state if not provided by parent
+  const [search, setSearch] = useState('');
+  const effectiveSearch = parentSearch !== undefined ? parentSearch : search;
+  const effectiveSetSearch = parentSetSearch !== undefined ? parentSetSearch : setSearch;
+  const effectiveOnSearch = parentOnSearch !== undefined ? parentOnSearch : effectiveSetSearch;
+  const effectiveSearchInput =
+    parentSearchInput !== undefined ? parentSearchInput : effectiveSearch;
 
-  // const { data: orderDetails, isLoading: isOrderDetailsLoading } = useQuery({
-  //   queryKey: [type + 'Details', orderId, userId],
-  //   queryFn: () => fetchServiceProviderOrderById(userId, orderId ? orderId : ''),
-  //   enabled: !!orderId,
-  // });
-
+  // Optionally, trigger a fetch when search changes (parent should handle this if passing search)
   // useEffect(() => {
-  //   if (!isDisplayingBookingDetails) {
-  //     setTimeout(() => setOrderId(null), 200); // delay clearing orderId
-  //   }
-  // }, [isDisplayingBookingDetails]);
+  //   // Fetch logic here if needed
+  // }, [effectiveSearch]);
 
-  // const handleOpenOrderDetails = (id: string) => {
-  //   setOrderId(id);
-  //   setIsDisplayingBookingDetails(true);
-  // };
+  const handleOrderClick = async (orderId: string) => {
+    setOrderDetails({
+      display: true,
+      data: {
+        _id: orderId,
+        userId,
+        createdAt: '',
+        carBrand: '',
+        carModel: '',
+        serviceType: '',
+        serviceTitle: '',
+        status: '',
+        firstName: '',
+        lastName: '',
+      },
+      isLoading: true,
+      heading,
+    });
+    setLoadingId(orderId);
+    try {
+      const orderDetails = await fetchServiceProviderOrderById(userId, orderId);
+      setOrderDetails({ display: true, data: orderDetails.data, isLoading: false, heading });
+    } catch (e) {
+      setOrderDetails({ display: true, data: null, isLoading: false, heading });
+    }
+    setLoadingId(null);
+  };
 
   return (
     <>
       <article className='bg-white dark:bg-dark-secondary'>
         <div className='mb-6 flex items-center justify-between px-6 py-3'>
           <h2 className='text-[30px] font-medium text-gray-800 dark:text-white'>{heading}</h2>
-          <FilterForm className='w-[60%]' onSearch={() => {}} onFilterClick={() => {}} search='' />
+          <FilterForm
+            className='w-[60%]'
+            onSearch={effectiveOnSearch}
+            onFilterClick={() => {}}
+            search={effectiveSearchInput}
+          />
         </div>
         <div className='w-full overflow-auto scrollbar'>
           <table className='w-full min-w-[1100px]'>
@@ -83,12 +125,14 @@ const HistoryTable = ({
                 tableContent.map((item, index) => (
                   <tr
                     key={index}
-                    className='border-t border-gray-200 dark:border-dark-primary [&_td]:py-6 [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white'
+                    className='cursor-pointer border-t border-gray-200 dark:border-dark-primary [&_td]:py-6 [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white'
+                    onClick={() => handleOrderClick(item._id)}
                   >
                     <td className='pl-12'>
                       <button
                         className='hover:underline'
                         // onClick={() => handleOpenOrderDetails(item._id)}
+                        type='button'
                       >
                         {item._id}
                       </button>
@@ -106,7 +150,7 @@ const HistoryTable = ({
                     )} */}
                     <td>
                       <button
-                        className={`text-medium w-[124px] rounded-[9.37px] text-center font-medium capitalize ${reflectStatusStyle(convertBookingAndOrderStatus(item.status))}`}
+                        className={`text-medium w-[124px] rounded-[9.37px] text-center font-medium capitalize ${getOrdersStatusStyles(convertBookingAndOrderStatus(item.status))}`}
                         // onClick={() => handleOpenOrderDetails(item._id)}
                       >
                         {convertBookingAndOrderStatus(item.status)}
@@ -134,6 +178,7 @@ const HistoryTable = ({
           setIsDisplayingBookingDetails={setIsDisplayingBookingDetails}
         />
       )} */}
+      {orderDetails.display && <OrderDetails />}
     </>
   );
 };

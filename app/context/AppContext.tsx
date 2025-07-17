@@ -4,6 +4,21 @@ import { BookingResponse } from '../lib/mockTypes';
 import { registerUnauthorizedSetter } from '../api/apiClient';
 import { usePathname } from 'next/navigation';
 
+// Define proper types for order details
+interface OrderData {
+  _id: string;
+  userId: string;
+  createdAt: string;
+  carBrand: string;
+  carModel: string;
+  serviceType: string;
+  serviceTitle: string | string[];
+  status: string;
+  firstName: string;
+  lastName: string;
+  location?: string;
+}
+
 type AppContextType = {
   isSidebarOpen: boolean;
   setIsSidebarOpen: Dispatch<boolean>;
@@ -35,9 +50,21 @@ type AppContextType = {
     isLoading: boolean;
     heading: string;
   };
+  setBookingDetails: Dispatch<AppContextType['bookingDetails']>;
+  orderDetails: {
+    display: boolean;
+    data: OrderData | null;
+    isLoading: boolean;
+    heading: string;
+  };
+  setOrderDetails: Dispatch<{
+    display: boolean;
+    data: OrderData | null;
+    isLoading: boolean;
+    heading: string;
+  }>;
   isDark: boolean;
   toggleTheme: () => void;
-  setBookingDetails: Dispatch<AppContextType['bookingDetails']>;
   unauthorized: boolean;
   setUnauthorized: Dispatch<boolean>;
   resetContext: () => void;
@@ -71,6 +98,18 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [bookingDetails, setBookingDetails] = useState<{
     display: boolean;
     data: BookingResponse | null;
+    isLoading: boolean;
+    heading: string;
+  }>({
+    display: false,
+    data: null,
+    isLoading: false,
+    heading: '',
+  });
+
+  const [orderDetails, setOrderDetails] = useState<{
+    display: boolean;
+    data: OrderData | null;
     isLoading: boolean;
     heading: string;
   }>({
@@ -136,6 +175,12 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       isLoading: false,
       heading: '',
     });
+    setOrderDetails({
+      display: false,
+      data: null,
+      isLoading: false,
+      heading: '',
+    });
     setUnauthorized(false);
     // Optionally clear other state here
   };
@@ -157,6 +202,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         defaultUserDetails,
         bookingDetails,
         setBookingDetails,
+        orderDetails,
+        setOrderDetails,
         unauthorized,
         setUnauthorized,
         resetContext,

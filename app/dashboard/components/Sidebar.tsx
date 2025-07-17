@@ -92,13 +92,13 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   // Local state for fetched user details
-  const [fetchedPrivileges, setFetchedPrivileges] = useState<string[] | undefined>(undefined);
+  const [, setFetchedPrivileges] = useState<string[] | undefined>(undefined);
 
   useEffect(() => {
     fetchUserDetails()
       .then((user) => {
         setFetchedPrivileges(user?.privileges);
-        console.log('Fetched user object in Sidebar:', user); // Log the whole user object
+        // console.log('Fetched user object in Sidebar:', user); // Log the whole user object
       })
       .catch((err) => {
         console.error('Error fetching user details in Sidebar:', err);
@@ -106,9 +106,9 @@ const Sidebar = () => {
   }, []);
 
   // Debug: Log current user privileges from context
-  console.log('Sidebar userDetails.privileges (from context):', userDetails.privileges);
-  // Debug: Log fetched privileges
-  console.log('Sidebar fetchedPrivileges (from session):', fetchedPrivileges);
+  // console.log('Sidebar userDetails.privileges (from context):', userDetails.privileges);
+  // // Debug: Log fetched privileges
+  // console.log('Sidebar fetchedPrivileges (from session):', fetchedPrivileges);
 
   const checkCurrentPage = (path: string) => {
     if (path !== '/') return pathname.split('/').includes(path.split('/')[1]);

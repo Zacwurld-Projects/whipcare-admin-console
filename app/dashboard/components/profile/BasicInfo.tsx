@@ -39,9 +39,9 @@ const BasicInfo = ({
   });
 
   useEffect(() => {
-    console.log('userContact._id:', userContact._id);
-    console.log('userContact:', userContact);
-    console.log('KYC Status:', userContact.kycStatus);
+    // console.log('userContact._id:', userContact._id);
+    // console.log('userContact:', userContact);
+    // console.log('KYC Status:', userContact.kycStatus);
   }, [userContact]);
 
   return (

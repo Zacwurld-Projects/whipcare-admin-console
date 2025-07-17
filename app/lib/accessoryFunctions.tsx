@@ -44,7 +44,12 @@ export const formatDateToDDMMYY = (date: Date | number): string => {
 };
 
 export const convertBookingAndOrderStatus = (status: string) => {
-  if (status === 'completed' || status === 'cancelled') return status;
+  if (!status) return 'pending';
+  const normalized = status.toLowerCase();
+  if (normalized === 'cancelled') return 'cancelled';
+  if (normalized === 'delivered') return 'completed';
+  if (normalized === 'payment') return 'pending';
+  if (normalized === 'completed') return 'completed';
   return 'pending';
 };
 
@@ -72,6 +77,18 @@ export const getKycStatusStyles = (status: string | undefined) => {
     approved: 'bg-green-100 text-green-800',
     rejected: 'bg-red-100 text-red-800',
     'resubmit required': 'bg-orange-100 text-orange-800',
+  };
+  return statusStyles[normalized] || 'bg-gray-100 text-gray-600';
+};
+
+export const getOrdersStatusStyles = (status: string | undefined) => {
+  if (!status) return 'bg-gray-100 text-gray-600';
+  const normalized = status.trim().toLowerCase();
+  const statusStyles: Record<string, string> = {
+    payment: 'bg-primary-50 text-[#ff915b]',
+    delivered: 'bg-[#e7f6ec] text-[#40b869]',
+    cancelled: 'bg-[#fbeae9] text-[#dd524d]',
+    'on going': 'bg-[#e7f6ec] text-[#40b869]',
   };
   return statusStyles[normalized] || 'bg-gray-100 text-gray-600';
 };
