@@ -1,6 +1,23 @@
 'use client';
-import React, { Dispatch, useContext, useEffect, useState } from 'react';
+import React, { Dispatch, useContext, useEffect, useState, useMemo } from 'react';
 import { BookingResponse } from '../lib/mockTypes';
+import { registerUnauthorizedSetter } from '../api/apiClient';
+import { usePathname } from 'next/navigation';
+
+// Define proper types for order details
+interface OrderData {
+  _id: string;
+  userId: string;
+  createdAt: string;
+  carBrand: string;
+  carModel: string;
+  serviceType: string;
+  serviceTitle: string | string[];
+  status: string;
+  firstName: string;
+  lastName: string;
+  location?: string;
+}
 
 type AppContextType = {
   isSidebarOpen: boolean;
@@ -11,6 +28,7 @@ type AppContextType = {
     name: string | null | undefined;
     email: string | null | undefined;
     image: string | null | undefined;
+    privileges?: string[];
   };
   setUserDetails: Dispatch<{
     id: string | undefined;
@@ -32,21 +50,40 @@ type AppContextType = {
     isLoading: boolean;
     heading: string;
   };
+  setBookingDetails: Dispatch<AppContextType['bookingDetails']>;
+  orderDetails: {
+    display: boolean;
+    data: OrderData | null;
+    isLoading: boolean;
+    heading: string;
+  };
+  setOrderDetails: Dispatch<{
+    display: boolean;
+    data: OrderData | null;
+    isLoading: boolean;
+    heading: string;
+  }>;
   isDark: boolean;
   toggleTheme: () => void;
-  setBookingDetails: Dispatch<AppContextType['bookingDetails']>;
+  unauthorized: boolean;
+  setUnauthorized: Dispatch<boolean>;
+  resetContext: () => void;
 };
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const defaultUserDetails = {
-    id: '',
-    role: '',
-    name: '',
-    email: '',
-    image: '',
-  };
+  const defaultUserDetails = useMemo(
+    () => ({
+      id: '',
+      role: '',
+      name: '',
+      email: '',
+      image: '',
+      privileges: [],
+    }),
+    [],
+  );
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userDetails, setUserDetails] = useState<{
@@ -55,6 +92,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     name: string | null | undefined;
     email: string | null | undefined;
     image: string | null | undefined;
+    privileges?: string[];
   }>(defaultUserDetails);
 
   const [bookingDetails, setBookingDetails] = useState<{
@@ -69,13 +107,30 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     heading: '',
   });
 
+  const [orderDetails, setOrderDetails] = useState<{
+    display: boolean;
+    data: OrderData | null;
+    isLoading: boolean;
+    heading: string;
+  }>({
+    display: false,
+    data: null,
+    isLoading: false,
+    heading: '',
+  });
+
   const [isDark, setIsDark] = useState(false);
+  const [unauthorized, setUnauthorized] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.documentElement.classList.toggle('dark', saved ? saved === 'dark' : systemDark);
     setIsDark(saved ? saved === 'dark' : systemDark);
+  }, []);
+
+  useEffect(() => {
+    registerUnauthorizedSetter(setUnauthorized);
   }, []);
 
   const toggleTheme = () => {
@@ -104,6 +159,37 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem('currentUser');
     }
   }, [userDetails]);
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setUnauthorized(false);
+  }, [pathname]);
+
+  const resetContext = () => {
+    setUserDetails(defaultUserDetails);
+    setIsSidebarOpen(false);
+    setBookingDetails({
+      display: false,
+      data: null,
+      isLoading: false,
+      heading: '',
+    });
+    setOrderDetails({
+      display: false,
+      data: null,
+      isLoading: false,
+      heading: '',
+    });
+    setUnauthorized(false);
+    // Optionally clear other state here
+  };
+
+  if (typeof window !== 'undefined') {
+    // @ts-expect-error: Expose resetContext for debugging and manual context reset in the browser
+    window.__resetAppContext = resetContext;
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -116,6 +202,11 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         defaultUserDetails,
         bookingDetails,
         setBookingDetails,
+        orderDetails,
+        setOrderDetails,
+        unauthorized,
+        setUnauthorized,
+        resetContext,
       }}
     >
       {children}

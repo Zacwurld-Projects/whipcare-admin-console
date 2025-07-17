@@ -4,7 +4,8 @@ import Link from 'next/link';
 import PageHeading from '../../components/PageHeading';
 import BasicInfo from '../../components/profile/BasicInfo';
 import ProfileOptions from '../../components/profile/ProfileOptions';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 // import ActivityTable from '../../components/tables/ActivityTable';
 import HistoryTable from '../../components/tables/HistoryTable';
 import Profile from './Profile';
@@ -20,13 +21,38 @@ import {
 } from '@/app/api/apiClient';
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
-import ActivityTable from '../../components/tables/ActivityTable';
+// import ActivityTable from '../../components/tables/ActivityTable';
 import VerifyIcon from '@/app/dashboard/assets/verify.svg';
+import { useGlobalContext } from '@/app/context/AppContext';
 
 const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
   const pageOptions = ['profile', 'orders', 'payment', 'activities', 'reviews'];
   const [isDeactivating, setIsDeactivating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const contentPerPage = 10; // or whatever you want
+  const [search, setSearch] = useState(searchParams.get('search') || '');
+  const { userDetails } = useGlobalContext();
+
+  // Update URL when search changes
+  const updateSearchInURL = (searchValue: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchValue) {
+      params.set('search', searchValue);
+    } else {
+      params.delete('search');
+    }
+    router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle search changes
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+    setCurrentPage(1); // Reset to first page on new search
+    updateSearchInURL(searchValue);
+  };
 
   const { data: kpisData, isLoading: isKpisLoading } = useQuery({
     queryKey: ['serviceProviderKpis'],
@@ -54,8 +80,8 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   });
 
   const { data: ordersData, isLoading: isOrdersDataLoading } = useQuery({
-    queryKey: ['serviceProviderOrders'],
-    queryFn: () => fetchServiceProviderOrders(params.id),
+    queryKey: ['serviceProviderOrders', params.id, search, currentPage],
+    queryFn: () => fetchServiceProviderOrders(params.id, search, currentPage, contentPerPage),
     enabled: selectedPageOption === 'orders',
   });
 
@@ -98,20 +124,28 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
               isOrdersDataLoading ? (
                 <SectionLoader height='300px' />
               ) : (
-                <HistoryTable
-                  type='orders'
-                  userId={params.id}
-                  heading='Orders History'
-                  tableHeadings={[
-                    'Order ID',
-                    'Order Date',
-                    'Car serviced',
-                    'Address',
-                    'Service type',
-                    'Status',
-                  ]}
-                  tableContent={ordersData.data}
-                />
+                <>
+                  <HistoryTable
+                    tableHeadings={[
+                      'Order ID',
+                      'Order Date',
+                      'Car serviced',
+                      'Address',
+                      'Service type',
+                      'Status',
+                    ]}
+                    userId={kpisData?.userContact?._id || params.id}
+                    heading='Orders History'
+                    tableContent={ordersData.data}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    totalCount={ordersData.totalCount}
+                    contentPerPage={contentPerPage}
+                    search={search}
+                    setSearch={handleSearch}
+                    searchInput={search}
+                  />
+                </>
               )
             ) : (
               <div className='flex min-h-[300px] flex-col items-center justify-center gap-2'>

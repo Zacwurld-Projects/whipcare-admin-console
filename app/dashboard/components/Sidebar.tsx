@@ -18,67 +18,97 @@ import AlternateServiceBookIcon from '../assets/alternateServiceIcon.svg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useGlobalContext } from '@/app/context/AppContext';
-import { useEffect, useRef } from 'react';
+import { fetchUserDetails } from '@/app/lib/accessoryFunctions';
+import { useState, useEffect, useRef } from 'react';
 
 const links = [
   {
     icon: OverviewIcon,
     title: 'Overview',
     link: '/',
+    privilege: 'overview',
   },
   {
     icon: UserMgtIcon,
     title: 'User Management',
     link: '/user-management',
+    privilege: 'userManagement',
   },
   {
     icon: ServiceProIcon,
     title: 'Service Provider',
     link: '/service-provider',
+    privilege: 'serviceProvider',
   },
   {
     icon: ServiceBookIcon,
     alternateIcon: AlternateServiceBookIcon,
     title: 'Service Bookings',
     link: '/service-bookings',
+    privilege: 'serviceBooking', // <-- fixed to match backend
   },
   {
     icon: CarMgtIcon,
     title: 'Car Management',
     link: '/car-management',
+    privilege: 'carManagement',
   },
   {
     icon: ActivityIcon,
     title: 'Activities',
     link: '/activities',
+    privilege: 'activities',
   },
   {
     icon: FeedbackIcon,
     title: 'Feedbacks',
     link: '/feedbacks',
+    privilege: 'feedbacks',
   },
   {
     icon: MarketIcon,
     alternateIcon: AlternateMarketIcon,
     title: 'Marketing',
     link: '/marketing',
+    privilege: 'marketing',
   },
   {
     icon: FinancialIcon,
     title: 'Financials',
     link: '/financials',
+    privilege: 'financials',
   },
   {
     icon: CronIcon,
     alternateIcon: AlternateCronIcon,
     title: 'CRON',
     link: '/cron',
+    privilege: 'cron',
   },
 ];
 
 const Sidebar = () => {
-  const { isSidebarOpen, setIsSidebarOpen } = useGlobalContext();
+  const { isSidebarOpen, setIsSidebarOpen, userDetails } = useGlobalContext();
   const pathname = usePathname();
+
+  // Local state for fetched user details
+  const [, setFetchedPrivileges] = useState<string[] | undefined>(undefined);
+
+  useEffect(() => {
+    fetchUserDetails()
+      .then((user) => {
+        setFetchedPrivileges(user?.privileges);
+        // console.log('Fetched user object in Sidebar:', user); // Log the whole user object
+      })
+      .catch((err) => {
+        console.error('Error fetching user details in Sidebar:', err);
+      });
+  }, []);
+
+  // Debug: Log current user privileges from context
+  // console.log('Sidebar userDetails.privileges (from context):', userDetails.privileges);
+  // // Debug: Log fetched privileges
+  // console.log('Sidebar fetchedPrivileges (from session):', fetchedPrivileges);
 
   const checkCurrentPage = (path: string) => {
     if (path !== '/') return pathname.split('/').includes(path.split('/')[1]);
@@ -109,26 +139,28 @@ const Sidebar = () => {
       </div>
       <div className='h-[calc(100vh-140px)] overflow-y-auto scrollbar'>
         <div className='flex-column ml-auto w-[248px] gap-[7px] pb-2'>
-          {links.map((item, index) => (
-            <Link
-              href={`/dashboard${item.link}`}
-              key={index}
-              className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50 dark:bg-dark-accent dark:text-white' : 'hover:bg-gray-200 dark:hover:bg-[#3d3d4a]'}`}
-            >
-              {item.alternateIcon ? (
-                checkCurrentPage(item.link) ? (
-                  <item.alternateIcon />
+          {links
+            .filter((item) => !item.privilege || userDetails.privileges?.includes(item.privilege))
+            .map((item, index) => (
+              <Link
+                href={`/dashboard${item.link}`}
+                key={index}
+                className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50 dark:bg-dark-accent dark:text-white' : 'hover:bg-gray-200 dark:hover:bg-[#3d3d4a]'}`}
+              >
+                {item.alternateIcon ? (
+                  checkCurrentPage(item.link) ? (
+                    <item.alternateIcon />
+                  ) : (
+                    <item.icon />
+                  )
                 ) : (
-                  <item.icon />
-                )
-              ) : (
-                <item.icon
-                  className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50 dark:fill-white dark:*:fill-white' : ''}`}
-                />
-              )}
-              <p className='text-medium'>{item.title}</p>
-            </Link>
-          ))}
+                  <item.icon
+                    className={`${checkCurrentPage(item.link) ? 'fill-primary-50 *:*:fill-primary-50 *:fill-primary-50 dark:fill-white dark:*:fill-white' : ''}`}
+                  />
+                )}
+                <p className='text-medium'>{item.title}</p>
+              </Link>
+            ))}
         </div>
       </div>
     </aside>

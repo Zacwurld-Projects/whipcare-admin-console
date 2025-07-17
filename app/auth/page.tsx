@@ -6,14 +6,14 @@ import Link from 'next/link';
 import FormButton from './components/FormButton';
 import { doCredentialLogin } from '../actions/authActions';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useGlobalContext } from '../context/AppContext';
 import { fetchUserDetails } from '../lib/accessoryFunctions';
 
 const SignInPage = () => {
   const { setUserDetails } = useGlobalContext();
-  const router = useRouter();
+  // const router = useRouter();
   const [userInfo, setUserInfo] = useState({
     email: '',
     password: '',
@@ -35,10 +35,11 @@ const SignInPage = () => {
     onSuccess: async () => {
       try {
         const user = await fetchUserDetails();
+        console.log('Fetched user details after login:', user); // Debug log
         if (user) {
           setUserDetails(user);
           toast.success('Login successful!');
-          router.push('/dashboard');
+          window.location.href = '/dashboard'; // Force reload to get fresh session
         }
       } catch (error) {
         console.error('error fetching user details:', error);

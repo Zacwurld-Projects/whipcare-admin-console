@@ -4,6 +4,10 @@ import { getSession } from 'next-auth/react';
 import { Session } from 'next-auth';
 
 let cachedSession: Session | null = null;
+let setUnauthorizedGlobal: ((v: boolean) => void) | null = null;
+export function registerUnauthorizedSetter(setter: (v: boolean) => void) {
+  setUnauthorizedGlobal = setter;
+}
 
 export const API = axios.create({
   baseURL: ApiRoutes.BASE_URL,
@@ -34,8 +38,9 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      cachedSession = null; // Clear the cache on unauthorized error
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      cachedSession = null;
+      if (setUnauthorizedGlobal) setUnauthorizedGlobal(true);
     }
     return Promise.reject(error);
   },
@@ -82,12 +87,13 @@ export const userService = {
 
     const { data, success, token } = response.data;
     if (success)
-      return { ...data, token: token } as {
+      return { ...data, token: token, privileges: data.privileges } as {
         id: string;
         email: string;
         name: string;
         role: string;
         token: string;
+        privileges: string[];
       };
 
     return null;
@@ -225,7 +231,7 @@ export const fetchServiceProviders = async (
 
 export const fetchServiceProviderProfile = async (id: string) => {
   const response = await API.get(`${ApiRoutes.ServiceProvider}/${id}/profile`);
-  console.log('API Response:', response.data); // Log the response
+  // console.log('API Response:', response.data); // Log the response
   return response.data;
 };
 
@@ -239,13 +245,25 @@ export const fetchServiceProviderKpis = async (id: string) => {
 //   return reponse.data;
 // };
 
-export const fetchServiceProviderOrders = async (id: string) => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/orders`);
-  return reponse.data;
+export const fetchServiceProviderOrders = async (
+  id: string,
+  search: string = '',
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => {
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (pageNumber) params.append('pageNumber', pageNumber.toString());
+  if (pageSize) params.append('pageSize', pageSize.toString());
+
+  const response = await API.get(
+    `${ApiRoutes.ServiceProvider}/${id}/orders${params.toString() ? `?${params}` : ''}`,
+  );
+  return response.data;
 };
 
-export const fetchServiceProviderOrderById = async (userId: string, orderId: string) => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${userId}/orders/${orderId}`);
+export const fetchServiceProviderOrderById = async (id: string, orderId: string) => {
+  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/orders/${orderId}`);
   return reponse.data;
 };
 
@@ -367,7 +385,7 @@ export const changeUserPassword = async (passwordData: {
   }
 };
 
-export const inviteMember = async (memberData: { role: string; email: string }) => {
+export const inviteMember = async (memberData: { role: string; email: string; privileges: [] }) => {
   try {
     const response = await API.post(`${ApiRoutes.Settings}/members/invite`, { ...memberData });
     return response.data;
@@ -375,6 +393,15 @@ export const inviteMember = async (memberData: { role: string; email: string }) 
     catchError(error);
   }
 };
+
+// export const addPrivileges = async (privileges: string[]) => {
+//   try {
+//     const response = await API.post(`${ApiRoutes.Settings}/addPrivileges`, { privileges });
+//     return response.data;
+//   } catch (error) {
+//     catchError(error);
+//   }
+// };
 
 export const fetchAdminMembers = async () => {
   try {
@@ -423,6 +450,8 @@ export const verifyMemberOtp = async (otp: string, token: string) => {
     catchError(error);
   }
 };
+
+// export const
 
 //#endregion
 
@@ -487,3 +516,14 @@ export const fetchKycDetails = async (id: string) => {
   const response = await API.get(`/kyc/${id}/details`);
   return response.data;
 };
+
+// Expose a function to clear cachedSession for logout
+// export function clearCachedSession() {
+//   cachedSession = null;
+// }
+
+// // Optionally attach to window for global access in logout
+// if (typeof window !== 'undefined') {
+//   // @ts-ignore
+//   window.clearApiClientSession = clearCachedSession;
+// }

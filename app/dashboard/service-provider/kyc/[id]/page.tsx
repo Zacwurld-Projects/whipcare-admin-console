@@ -2,13 +2,13 @@
 'use client';
 
 import {
-  fetchServiceProviderKpis,
+  // fetchServiceProviderKpis,
   fetchServiceProviderKyc,
   approveServiceProviderKyc,
   rejectServiceProviderKyc,
   fetchServiceProviderProfile,
 } from '@/app/api/apiClient';
-import PageLoader from '@/app/dashboard/components/Loaders/PageLoader';
+// import PageLoader from '@/app/dashboard/components/Loaders/PageLoader';
 import PageHeading from '@/app/dashboard/components/PageHeading';
 import DisplayInfo from '@/app/dashboard/components/profile/DisplayInfo';
 import { useQuery } from '@tanstack/react-query';
@@ -23,19 +23,19 @@ import KycRejectionModal from '../../../components/modals/KycRejectionModal';
 // import { ServiceProviderProfile } from '@/app/lib/mockTypes';
 
 const KYC = ({ params }: { params: { id: string } }) => {
-  const {
-    data: kpisData,
-    isLoading: isKpisLoading,
-    error,
-  } = useQuery({
-    queryKey: ['serviceProviderKpis'],
-    queryFn: () => fetchServiceProviderKpis(params.id),
-  });
+  // const {
+  //   data: kpisData,
+  //   isLoading: isKpisLoading,
+  //   error,
+  // } = useQuery({
+  //   queryKey: ['serviceProviderKpis'],
+  //   queryFn: () => fetchServiceProviderKpis(params.id),
+  // });
 
   const {
     data: kycData,
-    isLoading: isKycLoading,
-    error: kycError,
+    // isLoading: isKycLoading,
+    // error: kycError,
   } = useQuery({
     queryKey: ['serviceProviderKyc', params.id],
     queryFn: () => fetchServiceProviderKyc(params.id),
@@ -43,32 +43,40 @@ const KYC = ({ params }: { params: { id: string } }) => {
 
   //this was used to fetch the profile info for the nationaltity to be displayed
 
-  const { data: kycProfileData } = useQuery({
+  const { data: profileData } = useQuery({
     queryKey: ['serviceProviderProfile', params.id],
     queryFn: () => fetchServiceProviderProfile(params.id),
   });
+  // console.log('fetchServiceProviderProfile response:', profileData);
   const profileInfo = {
-    ...(kycProfileData || {}),
-    nationality: kycProfileData?.nationality || 'N/A',
+    ...(profileData || {}),
+    firstName: profileData?.user?.firstName || 'N/A',
+    lastName: profileData?.user?.lastName || 'N/A',
+    image: profileData?.user?.image || '/images/default-avatar.png',
+    email: profileData?.user?.email || 'N/A',
+    phone: profileData?.user?.phone || 'N/A',
+    // _id: profileData?.user?._id || params.id,
+    nationality: profileData?.user?.nationality || 'N/A',
+    serviceType: profileData?.user?.serviceType || 'N/A',
   };
   // Map _id into userContact for KYC
-  const mappedKpisData = kpisData
-    ? {
-        ...kpisData,
-        userContact: {
-          _id: kpisData._id || params.id,
-          firstName: kpisData.userContact?.firstName || kpisData.firstName,
-          lastName: kpisData.userContact?.lastName || kpisData.lastName,
-          email: kpisData.userContact?.email || kpisData.email,
-          nationality: kpisData.userContact?.nationality || kpisData.nationality,
-          serviceType: kpisData.userContact?.serviceType || kpisData.serviceType,
-          phone: kpisData.userContact?.phone || kpisData.phone,
-          image: kpisData.userContact?.image || kpisData.image,
-          kycStatus: kpisData.userContact?.status || kpisData.status,
-          createdAt: kpisData.userContact?.createdAt || kpisData.createdAt,
-        },
-      }
-    : null;
+  // const mappedKpisData = kpisData
+  //   ? {
+  //       ...kpisData,
+  //       userContact: {
+  //         _id: kpisData._id || params.id,
+  //         firstName: kpisData.userContact?.firstName || kpisData.firstName,
+  //         lastName: kpisData.userContact?.lastName || kpisData.lastName,
+  //         email: kpisData.userContact?.email || kpisData.email,
+  //         nationality: kpisData.userContact?.nationality || kpisData.nationality,
+  //         serviceType: kpisData.userContact?.serviceType || kpisData.serviceType,
+  //         phone: kpisData.userContact?.phone || kpisData.phone,
+  //         image: kpisData.userContact?.image || kpisData.image,
+  //         kycStatus: kpisData.userContact?.status || kpisData.status,
+  //         createdAt: kpisData.userContact?.createdAt || kpisData.createdAt,
+  //       },
+  //     }
+  //   : null;
 
   const [modalUrl, setModalUrl] = useState<string | null>(null);
   const [modalType, setModalType] = useState<'image' | 'pdf' | null>(null);
@@ -134,9 +142,9 @@ const KYC = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  if (isKpisLoading || isKycLoading) return <PageLoader />;
-  if (error || kycError) return <div>Failed to fetch KYC details</div>;
-  if (!mappedKpisData || !mappedKpisData.userContact) return <div>No KYC data found.</div>;
+  // if (isKpisLoading || isKycLoading) return <PageLoader />;
+  // if (error || kycError) return <div>Failed to fetch KYC details</div>;
+  // if (!mappedKpisData || !mappedKpisData.userContact) return <div>No KYC data found.</div>;
 
   const kyc = kycData?.data;
 
@@ -194,7 +202,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
         </Link>
         <p className='text-medium font-medium'>{'>'}</p>
         <p className='heading-h5 font-medium'>
-          {mappedKpisData.userContact.firstName} {mappedKpisData.userContact.lastName}
+          {profileInfo.firstName} {profileInfo.lastName}
         </p>
       </div>
 
@@ -210,7 +218,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
           <div className='mt-10 flex w-full items-start gap-10'>
             <div className='flex items-center gap-2'>
               <Image
-                src={mappedKpisData.userContact.image}
+                src={profileInfo.image}
                 alt='user'
                 width={180}
                 height={180}
@@ -220,29 +228,13 @@ const KYC = ({ params }: { params: { id: string } }) => {
             <div className='flex w-full flex-col gap-2'>
               <DisplayInfo
                 title='Full Name'
-                value={`${mappedKpisData.userContact.firstName} ${mappedKpisData.userContact.lastName}`}
+                value={`${profileInfo.firstName} ${profileInfo.lastName}`}
               />
-              <DisplayInfo
-                title='Email'
-                value={mappedKpisData.userContact.email}
-                className='text-medium'
-              />
-              {/* <DisplayInfo
-                title='Nationality'
-                value={mappedKpisData.userContact.nationality || 'N/A'}
-                className='text-medium'
-              /> */}
+              <DisplayInfo title='Email' value={profileInfo.email} className='text-medium' />
               <DisplayInfo title='Nationality' value={profileInfo.nationality} />
               <DisplayInfo
                 title='Service Type'
-                value={
-                  mappedKpisData.userContact.serviceType &&
-                  mappedKpisData.userContact.serviceType !== ''
-                    ? mappedKpisData.userContact.serviceType
-                    : kpisData.serviceType && kpisData.serviceType !== ''
-                      ? kpisData.serviceType
-                      : 'N/A'
-                }
+                value={profileInfo.serviceType}
                 className='text-medium'
               />
             </div>
@@ -257,6 +249,7 @@ const KYC = ({ params }: { params: { id: string } }) => {
               Below is the KYC document for this provider.
             </p>
           </div>
+          {/* <h2 className='text-lg font-semibold'>Documents</h2> */}
           {kycDocs.length > 0 ? (
             <div className='flex w-full flex-col gap-4'>
               {kycDocs.map((doc) => (
@@ -324,8 +317,8 @@ const KYC = ({ params }: { params: { id: string } }) => {
       <KycApprovalModal
         open={showApprovalModal}
         onClose={() => setShowApprovalModal(false)}
-        firstName={mappedKpisData.userContact.firstName}
-        lastName={mappedKpisData.userContact.lastName}
+        firstName={profileInfo.firstName}
+        lastName={profileInfo.lastName}
         onConfirm={handleConfirmApproval}
         isLoading={isApproving}
         error={approveError}

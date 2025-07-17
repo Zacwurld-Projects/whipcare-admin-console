@@ -13,15 +13,23 @@ const FilterForm = ({
   onFilterClick: () => void;
   search: string;
 }) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const searchValue = formData.get('search') as string;
+    onSearch(searchValue);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // If the input is cleared (empty), trigger search with empty string
+    if (e.target.value === '') {
+      onSearch('');
+    }
+  };
+
   return (
     <div className={`${className} flex items-stretch justify-stretch gap-6`}>
-      <form
-        action=''
-        className='flex-1'
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-      >
+      <form action='' className='flex-1' onSubmit={handleSubmit}>
         <label
           htmlFor='search'
           className='flex items-center gap-2 rounded-md border border-gray-300 px-3 py-2'
@@ -32,10 +40,8 @@ const FilterForm = ({
             id='search'
             name='search'
             placeholder='Search here...'
-            value={search}
-            onChange={(e) => {
-              onSearch(e.target.value);
-            }}
+            defaultValue={search}
+            onChange={handleInputChange}
             className='placeholder:text-small w-full placeholder:text-gray-500 focus:outline-none dark:bg-dark-secondary dark:text-white dark:placeholder:text-[#a0a0b2]'
           />
         </label>
