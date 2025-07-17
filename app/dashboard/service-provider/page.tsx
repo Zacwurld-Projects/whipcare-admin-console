@@ -7,28 +7,49 @@ import NumbersOverview from '../components/NumbersOverview';
 import PlainTable from '../components/tables/PlainTable';
 import RecentProviders from '../components/service-provider/RecentProviders';
 import { useQuery } from '@tanstack/react-query';
-import { fetchServiceProviderWaitList, fetchServiceProviders } from '@/app/api/apiClient';
+import {
+  fetchServiceProvidersKpis as fetchServiceProvidersKpisRaw,
+  fetchServiceProviderWaitList,
+  fetchServiceProviders,
+} from '@/app/api/apiClient';
 import { useEffect, useState } from 'react';
 import TopPerformers from '../components/service-provider/TopPerformers';
 import PageLoader from '../components/Loaders/PageLoader';
+import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
 import Link from 'next/link';
 import dayjs from 'dayjs';
+import { getKycStatusStyles } from '@/app/lib/accessoryFunctions';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { TableData } from '@/app/types/shared';
 import { ServiceProviderTableData } from '@/app/types/service-provider';
 import { useRouter } from 'next/navigation';
-import { getKycStatusStyles } from '@/app/lib/accessoryFunctions';
 
 dayjs.extend(advancedFormat);
 
 const ServiceProviderPage = () => {
   const router = useRouter();
-
-  // Add state for selected date range
   const [selectedDates, setSelectedDates] = useState<{ minDate: string; maxDate: string }>({
     minDate: '',
     maxDate: '',
   });
+  const [serviceProviders, setServiceProviders] = useState<TableData<ServiceProviderTableData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
+  });
+  const [waitlist, setWaitList] = useState(
+    Array.from({ length: 7 }, () => {
+      return {
+        _id: '5656566',
+        firstName: 'Ariana',
+        lastName: 'Bush',
+        image: null,
+        email: 'arianabush@gmail.com',
+      };
+    }),
+  );
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
   // On mount, sync state with URL params
   useEffect(() => {
@@ -53,48 +74,42 @@ const ServiceProviderPage = () => {
     }
   }, [selectedDates, router]);
 
-  const [waitlist, setWaitList] = useState(
-    Array.from({ length: 7 }, () => {
-      return {
-        _id: '5656566',
-        firstName: 'Ariana',
-        lastName: 'Bush',
-        image: null,
-        email: 'arianabush@gmail.com',
-      };
-    }),
-  );
-
-  const [serviceProviders, setServiceProviders] = useState<TableData<ServiceProviderTableData>>({
-    data: [],
-    pageNumber: 0,
-    pageSize: 0,
-    totalCount: 0,
-  });
-
+  // Fetch waitlist
   const { data: waitlistData, isLoading: isWaitlistLoading } = useQuery({
     queryKey: ['waitlist'],
     queryFn: fetchServiceProviderWaitList,
   });
-  // Use selectedDates in the queryKey and queryFn
+
+  // Fetch service providers with date range
   const { data: serviceProviderData, isLoading: isServiceProviderLoading } = useQuery({
     queryKey: ['serviceProviders', 1, 15, selectedDates.minDate, selectedDates.maxDate],
     queryFn: () =>
       fetchServiceProviders(1, 15, '', 'all', selectedDates.minDate, selectedDates.maxDate),
   });
 
+  // Set waitlist when data is loaded
   useEffect(() => {
     if (!isWaitlistLoading && waitlistData) {
       setWaitList(waitlistData.data);
     }
   }, [isWaitlistLoading, waitlistData]);
 
+  // Set service providers and extract unique service types
   useEffect(() => {
     if (serviceProviderData) {
       setServiceProviders({
         ...serviceProviderData,
         totalCount: serviceProviderData.totalProviders,
       });
+      // Extract unique service types
+      const types = Array.from(
+        new Set(
+          (serviceProviderData.data || [])
+            .map((item: ServiceProviderTableData) => item.serviceType)
+            .filter((t: string): t is string => Boolean(t)),
+        ),
+      ) as string[];
+      setServiceTypes(types);
     }
   }, [serviceProviderData]);
 
@@ -123,41 +138,53 @@ const ServiceProviderPage = () => {
       )
     : serviceProviders.data;
 
-  const kpiData = [
-    {
-      icon: BagIcon,
-      title: 'Number of Service Providers',
-      id: 'serviceProvider',
-      count: isRangeSelected
-        ? filteredProviders.length
-        : (serviceProviderData?.totalProviders ?? 0),
-      growth: 0,
-    },
-    {
-      icon: AllMatchIcon,
-      title: 'Number of Active Service Providers',
-      id: 'activeServiceProvider',
-      count: 0,
-      growth: 0,
-    },
-    {
-      icon: CheckCircleIcon,
-      title: 'Number of Inactive Service Providers',
-      id: 'inActiveServiceProvider',
-      count: 0,
-      growth: 0,
-    },
-  ];
+  // Wrapper to ensure correct date order for KPIs
+  const fetchServiceProvidersKpis = (minDate?: string, maxDate?: string) =>
+    fetchServiceProvidersKpisRaw(minDate, maxDate);
+
+  // KPIs
+  const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(
+    [
+      {
+        icon: BagIcon,
+        title: 'Number of Service Providers',
+        id: 'serviceProvider',
+        count: 0,
+        growth: 0,
+      },
+      {
+        icon: AllMatchIcon,
+        title: 'Number of Active Service Providers',
+        id: 'activeServiceProvider',
+        count: 0,
+        growth: 0,
+      },
+      {
+        icon: CheckCircleIcon,
+        title: 'Number of Inactive Service Providers',
+        id: 'inActiveServiceProvider',
+        count: 0,
+        growth: 0,
+      },
+    ],
+    selectedDates,
+    fetchServiceProvidersKpis,
+  );
 
   return (
     <>
-      {/* Pass setSelectedDates to PageHeading */}
-      <PageHeading page='Service Provider' pageFilters setSelectedDates={setSelectedDates} />
+      <PageHeading page='Service Provider' setSelectedDates={setSelectedDates} pageFilters />
       {isServiceProviderLoading || isWaitlistLoading ? (
         <PageLoader />
       ) : (
         <>
-          <NumbersOverview stats={kpiData} className='mt-8' isLoading={isServiceProviderLoading} />
+          <NumbersOverview
+            stats={kpiData}
+            className='mt-8'
+            isLoading={useFetchOverviewKpis.isLoading}
+          />
+          {/* Display all unique service types */}
+          <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div>
           <RecentProviders recentServiceProviders={waitlist} />
           <TopPerformers />
           <PlainTable
