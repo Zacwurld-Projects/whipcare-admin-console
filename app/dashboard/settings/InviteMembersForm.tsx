@@ -1,5 +1,5 @@
 import useMenu from '@/app/hooks/useMenu';
-import { Dispatch, FormEvent, useRef, useState } from 'react';
+import { Dispatch, FormEvent, useRef, useState, useEffect } from 'react';
 import ChevronDownIcon from '../assets/chevronDown.svg';
 import FormButton from '@/app/auth/components/FormButton';
 
@@ -104,6 +104,18 @@ const InviteMembersForm = ({
     setSelectedPermissions([]);
   };
 
+  // Track previous isLoading to detect when invite is sent
+  const prevIsLoading = useRef(isLoading);
+  useEffect(() => {
+    if (prevIsLoading.current && !isLoading) {
+      // Invite was just sent, reset form
+      setMemberDetails({ role: '', email: '' });
+      setSelectedPermissions([]);
+      setIsCustomRole(false);
+    }
+    prevIsLoading.current = isLoading;
+  }, [isLoading, setMemberDetails]);
+
   return (
     <form
       onSubmit={(e) => {
@@ -140,7 +152,7 @@ const InviteMembersForm = ({
             {isMenuOpen && !isCustomRole && (
               <div
                 ref={roleMenuRef}
-                className='absolute right-0 top-[110%] z-20 w-64 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800'
+                className='absolute right-0 top-[110%] z-20 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800'
               >
                 {roleOptions.map((item) => (
                   <button
@@ -168,11 +180,6 @@ const InviteMembersForm = ({
 
         {/* Interactive Permissions Checklist */}
         <div className='flex-column gap-4'>
-          {selectedPermissions.length > 0 && (
-            <div className='mb-2 rounded bg-gray-100 p-2 text-xs text-gray-600'>
-              <strong>Privilege keys to send:</strong> {selectedPermissions.join(', ')}
-            </div>
-          )}
           <div className='flex items-center justify-between'>
             <div className='flex-column gap-1'>
               <p className='text-sm font-semibold text-gray-800 dark:text-white'>

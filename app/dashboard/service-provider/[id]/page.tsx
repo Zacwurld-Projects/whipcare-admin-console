@@ -34,7 +34,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const contentPerPage = 10; // or whatever you want
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  const { userDetails } = useGlobalContext();
+  // const { userDetails } = useGlobalContext();
 
   // Update URL when search changes
   const updateSearchInURL = (searchValue: string) => {
@@ -85,7 +85,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
     enabled: selectedPageOption === 'orders',
   });
 
-  const { data: kycData, isLoading: isKycLoading } = useQuery({
+  const { data: kycData } = useQuery({
     queryKey: ['serviceProviderKyc', params.id],
     queryFn: () => fetchServiceProviderKyc(params.id),
   });
