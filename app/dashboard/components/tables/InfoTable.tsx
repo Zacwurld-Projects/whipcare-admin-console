@@ -132,14 +132,14 @@ const InfoTable = <T,>({
       {isFilterModalOpen && (
         <FilterModal
           onClose={() => setIsFilterModalOpen(false)}
-          onApply={({ status, startDate, endDate }) => {
+          onApply={({ status, minDate, maxDate }) => {
             setStatus(status);
-            setStartDate(startDate);
-            setEndDate(endDate);
+            setStartDate(minDate);
+            setEndDate(maxDate);
           }}
           initialStatus={status}
-          initialStartDate={startDate}
-          initialEndDate={endDate}
+          initialMaxDate={startDate}
+          initialMinDate={endDate}
         />
       )}
     </article>
