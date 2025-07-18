@@ -39,11 +39,12 @@ const CreateUserPageContent = () => {
       return verifyCreateToken(token);
     },
     onSuccess: (response) => {
-      // toast.success('You can now create an account');
+      console.log('Token verified:', response);
       setIsVerified(true);
       setUserInfo({ ...userInfo, email: response.email });
     },
     onError: (error) => {
+      console.error('Token verification failed:', error);
       toast.error(`Failed to verify token: ${error.message || 'Invalid or expired token'}`);
       setTimeout(() => router.push('/auth'), 2000);
     },
@@ -85,7 +86,9 @@ const CreateUserPageContent = () => {
       toast.error('No token provided. Please use a valid signup link.');
       setTimeout(() => router.push('/auth'), 2000);
     }
-  }, [createToken, router, useVerifyToken]);
+    // Only run on mount and when createToken/router changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createToken, router]);
 
   if (!isVerified || useVerifyToken.isPending) {
     return (
