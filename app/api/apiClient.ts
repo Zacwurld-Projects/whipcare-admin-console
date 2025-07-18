@@ -451,7 +451,28 @@ export const verifyMemberOtp = async (otp: string, token: string) => {
   }
 };
 
-// export const
+//region delete admin member
+
+export const deleteAdminMember = async (id: string) => {
+  try {
+    const response = await API.delete(`${ApiRoutes.Settings}/members/${id}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+// #region update admin member
+export const updateAdminMember = async (id: string, privileges: string[]) => {
+  try {
+    const response = await API.patch(`${ApiRoutes.Settings}/members/${id}/privileges`, {
+      privileges,
+    });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
 
 //#endregion
 

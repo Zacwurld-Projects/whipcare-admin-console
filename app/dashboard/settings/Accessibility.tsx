@@ -4,8 +4,8 @@ import NoMemberPlaceholderIcon from '../assets/noMemberPlaceholder.svg';
 import DotsIcon from '../assets/dotsIcon.svg';
 import { Dispatch, useState, useEffect, useRef } from 'react';
 import InviteMemberModal from './InviteMemberModal';
-import { useMutation } from '@tanstack/react-query';
-import { inviteMember } from '@/app/api/apiClient';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { inviteMember, deleteAdminMember, updateAdminMember } from '@/app/api/apiClient';
 import { toast } from 'sonner';
 import TitleBox from './TitleBox';
 import InviteMembersForm from './InviteMembersForm';
@@ -65,6 +65,7 @@ const Accessibility = ({
   const [editRole, setEditRole] = useState('');
   const [editPrivileges, setEditPrivileges] = useState<string[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
 
   // For update modal: use same roles and privileges as InviteMembersForm
   const roleOptions = ['admin', 'investor', 'marketer'];
@@ -126,6 +127,41 @@ const Accessibility = ({
       setIsDisplayingInviteModal(false);
     },
     onError: (error) => toast.error(error.message || 'Something went wrong.'),
+  });
+
+  const deleteMemberMutation = useMutation({
+    mutationKey: ['deleteAdminMember'],
+    mutationFn: (id: string) => deleteAdminMember(id),
+    onSuccess: () => {
+      toast.success('Member deleted successfully');
+      setDeleteModalId(null);
+      queryClient.invalidateQueries({ queryKey: ['fetchAdminMembers'] });
+    },
+    onError: (error: unknown) => {
+      const message =
+        typeof error === 'object' && error && 'message' in error
+          ? (error as { message?: string }).message
+          : undefined;
+      toast.error(message || 'Failed to delete member');
+    },
+  });
+
+  const updateMemberMutation = useMutation({
+    mutationKey: ['updateAdminMember'],
+    mutationFn: ({ id, privileges }: { id: string; privileges: string[] }) =>
+      updateAdminMember(id, privileges),
+    onSuccess: () => {
+      toast.success('Member updated successfully');
+      setUpdateModalId(null);
+      queryClient.invalidateQueries({ queryKey: ['fetchAdminMembers'] });
+    },
+    onError: (error: unknown) => {
+      const message =
+        typeof error === 'object' && error && 'message' in error
+          ? (error as { message?: string }).message
+          : undefined;
+      toast.error(message || 'Failed to update member');
+    },
   });
 
   const membersTableHeadings = ['Name', 'Date & time added', '  Role', ''];
@@ -254,7 +290,7 @@ const Accessibility = ({
                         {/* Update Modal */}
                         {updateModalId === item._id && (
                           <div
-                            className='fixed inset-0 z-50 mt-40 flex items-center justify-center bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-80'
+                            className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-80'
                             onClick={() => setUpdateModalId(null)}
                           >
                             <div
@@ -374,9 +410,15 @@ const Accessibility = ({
                                   </button>
                                   <button
                                     className='rounded bg-primary-500 px-4 py-2 text-white'
-                                    onClick={() => setUpdateModalId(null)}
+                                    onClick={() =>
+                                      updateMemberMutation.mutate({
+                                        id: item._id,
+                                        privileges: editPrivileges,
+                                      })
+                                    }
+                                    disabled={updateMemberMutation.isPending}
                                   >
-                                    Save
+                                    {updateMemberMutation.isPending ? 'Saving...' : 'Save'}
                                   </button>
                                 </div>
                               </div>
@@ -403,9 +445,10 @@ const Accessibility = ({
                                 </button>
                                 <button
                                   className='rounded bg-red-600 px-4 py-2 text-white'
-                                  onClick={() => setDeleteModalId(null)}
+                                  onClick={() => deleteMemberMutation.mutate(item._id)}
+                                  disabled={deleteMemberMutation.isPending}
                                 >
-                                  Delete
+                                  {deleteMemberMutation.isPending ? 'Deleting...' : 'Delete'}
                                 </button>
                               </div>
                             </div>
