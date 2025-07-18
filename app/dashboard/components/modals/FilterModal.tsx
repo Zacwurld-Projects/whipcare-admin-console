@@ -30,14 +30,14 @@ const FilterModal = ({
   onClose,
   onApply,
   initialStatus = 'all',
-  initialStartDate = '',
-  initialEndDate = '',
+  initialMinDate = '',
+  initialMaxDate = '',
 }: {
   onClose: () => void;
-  onApply: (filters: { status: string; startDate: string; endDate: string }) => void;
+  onApply: (filters: { status: string; minDate: string; maxDate: string }) => void;
   initialStatus?: string;
-  initialStartDate?: string;
-  initialEndDate?: string;
+  initialMinDate?: string;
+  initialMaxDate?: string;
 }) => {
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -49,17 +49,17 @@ const FilterModal = ({
   }, []);
 
   const [status, setStatus] = useState(initialStatus);
-  const [startDate, setStartDate] = useState(initialStartDate);
-  const [endDate, setEndDate] = useState(initialEndDate);
+  const [minDate, setMinDate] = useState(initialMinDate);
+  const [maxDate, setMaxDate] = useState(initialMaxDate);
 
   const handleReset = () => {
     setStatus('all');
-    setStartDate('');
-    setEndDate('');
+    setMinDate('');
+    setMaxDate('');
   };
 
   const handleApply = () => {
-    onApply({ status, startDate, endDate });
+    onApply({ status, minDate, maxDate });
     onClose();
   };
 
@@ -116,15 +116,15 @@ const FilterModal = ({
               <input
                 type='date'
                 className='w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-[#711E00] focus:outline-none dark:border-gray-700 dark:bg-dark-primary dark:text-white'
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                value={minDate}
+                onChange={(e) => setMinDate(e.target.value)}
                 placeholder='Start Date'
               />
               <input
                 type='date'
                 className='w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-[#711E00] focus:outline-none dark:border-gray-700 dark:bg-dark-primary dark:text-white'
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                value={maxDate}
+                onChange={(e) => setMaxDate(e.target.value)}
                 placeholder='End Date'
               />
             </div>

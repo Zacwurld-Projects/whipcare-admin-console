@@ -85,17 +85,11 @@ const ServiceProviderInfo = () => {
   // };
 
   // Update URL on filter/page/search change
-  const handleFilterApply = (filters: {
-    status: string;
-    startDate?: string;
-    endDate?: string;
-    minDate?: string;
-    maxDate?: string;
-  }) => {
+  const handleFilterApply = (filters: { status: string; minDate?: string; maxDate?: string }) => {
     setStatus(filters.status);
     setSelectedDates({
-      minDate: filters.minDate ?? filters.startDate ?? '',
-      maxDate: filters.maxDate ?? filters.endDate ?? '',
+      minDate: filters.minDate ?? '', // first date input is minDate
+      maxDate: filters.maxDate ?? '', // second date input is maxDate
     });
     setCurrentPage(1);
   };
@@ -199,8 +193,8 @@ const ServiceProviderInfo = () => {
           onClose={() => setShowFilter(false)}
           onApply={handleFilterApply}
           initialStatus={status}
-          initialStartDate={selectedDates.minDate}
-          initialEndDate={selectedDates.maxDate}
+          initialMinDate={selectedDates.minDate} // first date input
+          initialMaxDate={selectedDates.maxDate} // second date input
         />
       )}
       <div className='mt-6 w-full'>

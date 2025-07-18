@@ -31,13 +31,11 @@ const InviteMembersForm = ({
     { key: 'serviceBooking', label: 'Service Bookings' },
     { key: 'financials', label: 'Financial Reports' },
     { key: 'carManagement', label: 'Car Management' },
-    { key: 'activity', label: 'Activities & Analytics' },
-    { key: 'feedback', label: 'Feedback Management' },
+    { key: 'activities', label: 'Activities & Analytics' },
+    { key: 'feedbacks', label: 'Feedback Management' },
     { key: 'marketing', label: 'Marketing & Campaigns' },
     { key: 'kyc', label: 'KYC Verification' },
     { key: 'cron', label: 'Cron Jobs & Automation' },
-    { key: 'userManagementView', label: 'User Management (View Only)' },
-    { key: 'serviceProviderView', label: 'Service Provider Management (View Only)' },
   ];
 
   // Default privileges for each role
@@ -47,7 +45,7 @@ const InviteMembersForm = ({
       'overview',
       'financials',
       'serviceBooking',
-      'activity',
+      'activities',
       'userManagementView',
       'serviceProviderView',
     ],
@@ -56,8 +54,8 @@ const InviteMembersForm = ({
       'marketing',
       'userManagementView',
       'serviceProviderView',
-      'activity',
-      'feedback',
+      'activities',
+      'feedbacks',
     ],
   };
 

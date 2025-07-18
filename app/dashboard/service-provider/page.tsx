@@ -49,7 +49,7 @@ const ServiceProviderPage = () => {
       };
     }),
   );
-  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
+  // const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
   // On mount, sync state with URL params
   useEffect(() => {
@@ -102,14 +102,14 @@ const ServiceProviderPage = () => {
         totalCount: serviceProviderData.totalProviders,
       });
       // Extract unique service types
-      const types = Array.from(
-        new Set(
-          (serviceProviderData.data || [])
-            .map((item: ServiceProviderTableData) => item.serviceType)
-            .filter((t: string): t is string => Boolean(t)),
-        ),
-      ) as string[];
-      setServiceTypes(types);
+      // const types = Array.from(
+      //   new Set(
+      //     (serviceProviderData.data || [])
+      //       .map((item: ServiceProviderTableData) => item.serviceType)
+      //       .filter((t: string): t is string => Boolean(t)),
+      //   ),
+      // ) as string[];
+      // setServiceTypes(types);
     }
   }, [serviceProviderData]);
 
@@ -184,7 +184,7 @@ const ServiceProviderPage = () => {
             isLoading={useFetchOverviewKpis.isLoading}
           />
           {/* Display all unique service types */}
-          <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div>
+          {/* <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div> */}
           <RecentProviders recentServiceProviders={waitlist} />
           <TopPerformers />
           <PlainTable

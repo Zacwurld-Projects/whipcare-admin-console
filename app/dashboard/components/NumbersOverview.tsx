@@ -48,7 +48,13 @@ const NumbersOverview = ({
             </p>
             {typeof stat.growth !== 'undefined' && (
               <p
-                className={`text-medium self-end rounded-[2em] text-gray-600 [word-spacing:-3px] dark:text-dark-primary ${isLoading ? 'bg-transparent' : 'bg-[#bcf0da] px-3 py-[3px]'}`}
+                className={`text-medium self-end rounded-[2em] text-gray-600 [word-spacing:-3px] dark:text-dark-primary ${
+                  isLoading
+                    ? 'bg-transparent'
+                    : stat.growth < 0
+                      ? 'bg-[#fbeae9] px-3 py-[3px] text-[#dd524d]'
+                      : 'bg-[#bcf0da] px-3 py-[3px]'
+                }`}
               >
                 {isLoading ? (
                   <Skeleton
