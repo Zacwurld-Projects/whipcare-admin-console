@@ -11,6 +11,7 @@ import {
   fetchServiceProvidersKpis as fetchServiceProvidersKpisRaw,
   fetchServiceProviderWaitList,
   fetchServiceProviders,
+  fetchServiceProviderAvailability, // <-- Add this import
 } from '@/app/api/apiClient';
 import { useEffect, useState } from 'react';
 import TopPerformers from '../components/service-provider/TopPerformers';
@@ -171,6 +172,44 @@ const ServiceProviderPage = () => {
     fetchServiceProvidersKpis,
   );
 
+  // Fetch availability data
+  const { data: availabilityData, isLoading: isAvailabilityLoading } = useQuery({
+    queryKey: ['serviceProviderAvailability'],
+    queryFn: fetchServiceProviderAvailability,
+  });
+
+  // Debug: Log the availability data
+  console.log('Service Provider Availability Data:', availabilityData);
+
+  // Merge availability data into KPIs
+  const mergedKpiData = kpiData.map((kpi) => {
+    if (
+      kpi.id === 'activeServiceProvider' &&
+      availabilityData &&
+      availabilityData.data &&
+      availabilityData.data.counts
+    ) {
+      return {
+        ...kpi,
+        count: availabilityData.data.counts.available,
+        title: 'Available Service Providers',
+      };
+    }
+    if (
+      kpi.id === 'inActiveServiceProvider' &&
+      availabilityData &&
+      availabilityData.data &&
+      availabilityData.data.counts
+    ) {
+      return {
+        ...kpi,
+        count: availabilityData.data.counts.unavailable,
+        title: 'Unavailable Service Providers',
+      };
+    }
+    return kpi;
+  });
+
   return (
     <>
       <PageHeading page='Service Provider' setSelectedDates={setSelectedDates} pageFilters />
@@ -179,9 +218,9 @@ const ServiceProviderPage = () => {
       ) : (
         <>
           <NumbersOverview
-            stats={kpiData}
+            stats={mergedKpiData}
             className='mt-8'
-            isLoading={useFetchOverviewKpis.isLoading}
+            isLoading={useFetchOverviewKpis.isLoading || isAvailabilityLoading}
           />
           {/* Display all unique service types */}
           {/* <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div> */}

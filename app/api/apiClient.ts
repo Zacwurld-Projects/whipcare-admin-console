@@ -300,6 +300,17 @@ export const rejectServiceProviderKyc = async (id: string, rejectionReason: stri
   }
 };
 
+// #region SERVICE PROVIDER AVAILABILITY
+export const fetchServiceProviderAvailability = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceProvider}/availability`);
+    console.log('API Response:', response.data); // Log the response
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
 // #region SERVICE PROVIDER DEACTIVATION
 export const deactivateServiceProvider = async (id: string) => {
   try {

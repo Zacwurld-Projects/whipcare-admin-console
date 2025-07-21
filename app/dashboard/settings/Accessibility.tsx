@@ -11,6 +11,7 @@ import TitleBox from './TitleBox';
 import InviteMembersForm from './InviteMembersForm';
 import Image from 'next/image';
 import dayjs from 'dayjs';
+import { useGlobalContext } from '@/app/context/AppContext';
 
 const NoMembersPlaceholder = ({
   isDisplayingInviteModal,
@@ -66,6 +67,7 @@ const Accessibility = ({
   const [editPrivileges, setEditPrivileges] = useState<string[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const { userDetails, setUserDetails } = useGlobalContext();
 
   // For update modal: use same roles and privileges as InviteMembersForm
   const roleOptions = ['admin', 'investor', 'marketer'];
@@ -150,10 +152,18 @@ const Accessibility = ({
     mutationKey: ['updateAdminMember'],
     mutationFn: ({ id, privileges }: { id: string; privileges: string[] }) =>
       updateAdminMember(id, privileges),
-    onSuccess: () => {
+    onSuccess: (updatedMember) => {
       toast.success('Member updated successfully');
       setUpdateModalId(null);
       queryClient.invalidateQueries({ queryKey: ['fetchAdminMembers'] });
+      // Real-time update for current user
+      if (updatedMember && updatedMember._id === userDetails.id) {
+        const newUser = { ...userDetails, privileges: updatedMember.privileges };
+        setUserDetails(newUser);
+        // if (typeof window !== 'undefined') {
+        //   localStorage.setItem('currentUser', JSON.stringify(newUser));
+        // }
+      }
     },
     onError: (error: unknown) => {
       const message =
