@@ -137,14 +137,14 @@ const BookingDetails = () => {
             ))}
           </ul>
         </div>
-        <div className='center-grid w-full'>
+        {/* <div className='center-grid w-full'>
           <button
             className='mx-auto mt-6 w-[64%] self-center rounded-[32px] bg-primary-900 px-10 py-[14px] font-medium text-white disabled:opacity-50 dark:bg-dark-accent'
             disabled={!data.statusTimestamps.Cancelled || !data.statusTimestamps.Payment}
           >
             Track Location
           </button>
-        </div>
+        </div> */}
       </>
     </SidebarModalContainer>
   );

@@ -3,22 +3,9 @@ import ArrowDownIcon from '../../assets/arrowDown.svg';
 import SearchIcon from '../../assets/smallSearchIcon.svg';
 import Filtericon from '../../assets/smallFilterIcon.svg';
 import dayjs from 'dayjs';
+import { PaymentInfo } from '@/app/lib/mockTypes';
 
-const Payment = ({
-  paymentInfo,
-}: {
-  paymentInfo: {
-    accountName: string;
-    accountNo: string;
-    bank: string;
-    recentTransactions: {
-      title: string;
-      amount: number;
-      type: string;
-      date: number;
-    }[];
-  };
-}) => {
+const Payment = ({ paymentInfo }: { paymentInfo: PaymentInfo }) => {
   return (
     <article className='flex w-full gap-8'>
       <div className='flex-column w-[53%] gap-4 rounded-lg bg-white px-5 py-4'>

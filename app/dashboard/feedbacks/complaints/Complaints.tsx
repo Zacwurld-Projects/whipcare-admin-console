@@ -7,7 +7,7 @@ import dayjs from '@/app/dayjs';
 import { BaseTableData } from '@/app/lib/mockTypes';
 import FormButton from '@/app/auth/components/FormButton';
 import SidebarModalContainer from '../../components/modals/SidebarModalContainer';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateComplaints } from '@/app/api/apiClient';
 import { toast } from 'sonner';
 
@@ -29,7 +29,10 @@ const ComplaintModal = ({
     data: Complaints | null;
   }>;
 }) => {
-  const [status, setStatus] = useState(ComplaintData?.status);
+  const [, setStatus] = useState(ComplaintData?.status);
+
+  //could comment this out later
+  const queryClient = useQueryClient();
 
   const updateComplaintMutaion = useMutation({
     mutationKey: ['updateComplaint'],
@@ -37,6 +40,13 @@ const ComplaintModal = ({
     onSuccess: () => {
       toast.success('Marked as reviewed successfully');
       setStatus('Reviewed');
+
+      //could comment this out later
+      setIsShowingComplaintsData({
+        display: false,
+        data: null,
+      });
+      queryClient.invalidateQueries({ queryKey: ['fetchComplaints'] });
     },
     onError: () => {
       toast.error('There was an issue updating the complaint. Please try again.');
@@ -64,9 +74,9 @@ const ComplaintModal = ({
         <div className='mb-6 flex items-center gap-4 py-2'>
           <p className='dark:text-white'>Complaint</p>
           <p
-            className={`rounded-[12px] px-3 py-0.5 text-sm ${status === 'Reviewed' ? 'bg-[#e7f6ec] text-[#099137]' : 'bg-primary-50 text-[#ff915b]'}`}
+            className={`rounded-[12px] px-3 py-0.5 text-sm ${ComplaintData.status === 'Reviewed' ? 'bg-[#e7f6ec] text-[#099137]' : 'bg-primary-50 text-[#ff915b]'}`}
           >
-            {status}
+            {ComplaintData.status}
           </p>
         </div>
         <div className='flex-column relative gap-6 p-5'>
@@ -100,7 +110,7 @@ const ComplaintModal = ({
             </p>
           </div>
         </div>
-        {status !== 'Reviewed' && (
+        {ComplaintData.status !== 'Reviewed' && (
           <div className='mt-28 w-full'>
             <FormButton
               type='button'
@@ -149,6 +159,7 @@ const Complaints = ({
   return (
     <section className='mt-8'>
       <InfoTable
+        onFilterClick={() => {}}
         heading='All Complaint'
         onClickRows={(item) => {
           setIsShowingComplaintsData({

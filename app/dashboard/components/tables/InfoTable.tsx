@@ -1,20 +1,12 @@
 'use client';
-// import ChevronDownIcon from '../../assets/chevronDown.svg';
 import EmptyStateIcon from '../../assets/profileEmptyStateIcon.svg';
-import { ComponentType, Dispatch, useState } from 'react';
+import { ComponentType, Dispatch } from 'react';
 import TablePagination from './components/TablePagination';
 import FilterForm from './components/FilterForm';
 import ExportTable from './components/ExportTable';
 import SpinLoader from '../Loaders/SpinLoader';
 import { EmptyStateProps, TableData } from '@/app/types/shared';
 import TableEmptyState from '../empty-states/TableEmptyState';
-import FilterModal from '../modals/FilterModal';
-import dayjs from 'dayjs';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isSameOrBefore);
 
 interface InfoTableProps<T> {
   heading: string;
@@ -29,6 +21,7 @@ interface InfoTableProps<T> {
   ContentStructure: ComponentType<{ item: T; index: number }>;
   search: string;
   onSearch: (value: string) => void;
+  onFilterClick: () => void;
 }
 
 const InfoTable = <T,>({
@@ -48,6 +41,7 @@ const InfoTable = <T,>({
   ContentStructure,
   search,
   onSearch,
+  onFilterClick,
 }: InfoTableProps<
   T & {
     firstName?: string;
@@ -58,13 +52,6 @@ const InfoTable = <T,>({
     kycStatus?: string;
   }
 >) => {
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [status, setStatus] = useState('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-
-  // No more frontend filtering for search; use data prop directly
-
   return (
     <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4 dark:border-transparent dark:bg-dark-secondary'>
       <div className='mb-[36px] flex items-center justify-between'>
@@ -77,7 +64,7 @@ const InfoTable = <T,>({
               setCurrentPage(1);
             }}
             search={search}
-            onFilterClick={() => setIsFilterModalOpen(true)}
+            onFilterClick={onFilterClick}
           />
           <ExportTable />
         </div>
@@ -129,20 +116,8 @@ const InfoTable = <T,>({
           setCurrentPage={setCurrentPage}
         />
       )}
-      {isFilterModalOpen && (
-        <FilterModal
-          onClose={() => setIsFilterModalOpen(false)}
-          onApply={({ status, minDate, maxDate }) => {
-            setStatus(status);
-            setStartDate(minDate);
-            setEndDate(maxDate);
-          }}
-          initialStatus={status}
-          initialMaxDate={startDate}
-          initialMinDate={endDate}
-        />
-      )}
     </article>
   );
 };
+
 export default InfoTable;

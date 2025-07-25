@@ -11,6 +11,25 @@ import { getOrdersStatusStyles } from '@/app/lib/accessoryFunctions';
 import { useQuery } from '@tanstack/react-query';
 import { LucideCheck } from 'lucide-react';
 
+// Add type for order with tracking
+interface OrderTracking {
+  [key: string]: string | null;
+}
+
+interface OrderData {
+  _id: string;
+  createdAt: string;
+  carBrand: string;
+  carModel: string;
+  serviceType: string;
+  serviceTitle: string[] | string;
+  status: string;
+  firstName: string;
+  lastName: string;
+  tracking: OrderTracking;
+  [key: string]: string | string[] | OrderTracking | undefined;
+}
+
 const OrderDetails = () => {
   const {
     orderDetails: { data, isLoading, heading },
@@ -18,7 +37,22 @@ const OrderDetails = () => {
     isDark,
   } = useGlobalContext();
 
-  const [order, setOrder] = useState(data);
+  function toOrderData(obj: unknown): OrderData {
+    const o = obj as Partial<OrderData> | null | undefined;
+    return {
+      _id: o?._id ?? '',
+      createdAt: o?.createdAt ?? '',
+      carBrand: o?.carBrand ?? '',
+      carModel: o?.carModel ?? '',
+      serviceType: o?.serviceType ?? '',
+      serviceTitle: o?.serviceTitle ?? [],
+      status: o?.status ?? '',
+      firstName: o?.firstName ?? '',
+      lastName: o?.lastName ?? '',
+      tracking: o?.tracking ?? {},
+    };
+  }
+  const [order, setOrder] = useState<OrderData>(toOrderData(data));
   const [, setLoading] = useState(isLoading);
 
   // Fetch order by id when modal opens
@@ -85,15 +119,36 @@ const OrderDetails = () => {
     { title: 'Customer', value: `${order.firstName} ${order.lastName}` },
   ];
 
-  // Dummy data for track booking
-  const bookingSteps = [
-    { title: 'Order Accepted', date: '05-May-2024 / 12:43 PM', completed: true },
-    { title: 'Car Received at Mechanic Shop', date: '05-May-2024 / 1:43 PM', completed: true },
-    { title: 'Order Service In Progress', date: '05-May-2024 / 2:43 PM', completed: true },
-    { title: 'Ready For Pickup/Delivery', date: '05-May-2024 / 3:43 PM', completed: true },
-    { title: 'Delivered', date: '05-May-2024 / 4:43 PM', completed: true },
-    { title: 'Payment', date: '05-May-2024 / 4:43 PM', completed: true },
+  // Dynamic data for track booking from order.tracking
+  const trackingSteps = [
+    { key: 'Pending', title: 'Order Pending' },
+    { key: 'Accepted', title: 'Order Accepted' },
+    { key: 'Car washer arrived', title: 'Car Washer Arrived' },
+    { key: 'In Progress', title: 'Order Service In Progress' },
+    { key: 'Ready for Delivery/Pickup', title: 'Ready For Pickup/Delivery' },
+    { key: 'Delivered', title: 'Delivered' },
+    { key: 'Payment', title: 'Payment' },
+    { key: 'Cancelled', title: 'Cancelled' },
   ];
+
+  let bookingSteps = trackingSteps
+    .filter((step) => step.key in (order.tracking || {}))
+    .map((step) => ({
+      title: step.title,
+      key: step.key,
+      date: order.tracking[step.key]
+        ? dayjs(order.tracking[step.key]).format('DD-MMM-YYYY / hh:mm A')
+        : null,
+      completed: !!order.tracking[step.key],
+    }));
+
+  // If cancelled, show all steps except 'Delivered'
+  if (order.status === 'Cancelled') {
+    // bookingSteps = bookingSteps.filter((step) => step.key !== 'Delivered');
+  } else if (order.status === 'Payment') {
+    // If payment, show payment and remove cancelled
+    bookingSteps = bookingSteps.filter((step) => step.key !== 'Cancelled');
+  }
 
   return (
     <SidebarModalContainer closeModal={closeModal} exitOnOutsideClick>
@@ -130,30 +185,18 @@ const OrderDetails = () => {
             <ol className='relative border-l-[10px] border-[#711E00]'>
               {bookingSteps.map((step, idx) => (
                 <li key={idx} className='mb-10 flex items-start last:mb-0'>
-                  <span className='absolute -left-[1.6rem] flex h-10 w-10 items-center justify-center rounded-full border-[7px] border-white bg-[#711E00] text-white shadow-md dark:border-dark-secondary dark:bg-[#711E00]'>
-                    {/* <svg
-                    width='18'
-                    height='18'
-                    viewBox='0 0 20 20'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
+                  <span
+                    className={`absolute -left-[1.6rem] flex h-10 w-10 items-center justify-center rounded-full border-[7px] border-white ${step.completed ? 'bg-[#711E00] text-white' : 'bg-gray-300 text-gray-400'} shadow-md dark:border-dark-secondary`}
                   >
-                    <circle cx='10' cy='10' r='10' fill='currentColor' />
-                    <path
-                      d='M6 10.5L9 13.5L14 8.5'
-                      stroke='white'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg> */}
-                    <LucideCheck size={16} />
+                    {step.completed ? <LucideCheck size={16} /> : null}
                   </span>
                   <div className='ml-6'>
                     <div className='text-base font-semibold text-gray-800 dark:text-white'>
                       {step.title}
                     </div>
-                    <div className='mt-1 text-sm text-gray-500 dark:text-gray-300'>{step.date}</div>
+                    <div className='mt-1 text-sm text-gray-500 dark:text-gray-300'>
+                      {step.date || '-'}
+                    </div>
                   </div>
                 </li>
               ))}

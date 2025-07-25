@@ -176,7 +176,13 @@ const ServiceProviderInfo = () => {
       )
     : mappedProviders.data;
 
-  const filteredMappedProviders = { ...mappedProviders, data: filteredProviders };
+  const filteredMappedProviders = {
+    ...mappedProviders,
+    data:
+      status && status !== 'all'
+        ? filteredProviders.filter((item: { kycStatus: string }) => item.kycStatus === status)
+        : filteredProviders,
+  };
 
   return (
     <>
@@ -220,13 +226,8 @@ const ServiceProviderInfo = () => {
             data={filteredMappedProviders}
             search={search}
             onSearch={handleSearch}
-            ContentStructure={({
-              item,
-              index,
-            }: {
-              item: ServiceProviderTableData;
-              index: number;
-            }) => (
+            onFilterClick={() => setShowFilter(true)} // ✅ Add this line
+            ContentStructure={({ item, index }) => (
               <>
                 <td>{index + 1 + PAGE_SIZE * (currentPage - 1)}</td>
                 <td>

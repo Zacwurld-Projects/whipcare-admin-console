@@ -4,12 +4,12 @@ import { ReactNode, useState } from 'react';
 import Profile from './Profile';
 // import HistoryTable from '../../components/tables/HistoryTable';
 import ActivityTable from '../../components/tables/ActivityTable';
-import BasicInfo from '../../components/profile/BasicInfo';
 import ProfileOptions from '../../components/profile/ProfileOptions';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserActivity, fetchUserKpis, fetchUserProfile } from '@/app/api/apiClient';
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
+import BasicInfo from '../../components/profile/BasicInfoUser';
 
 const DisplayPageOption = ({
   isLoading,

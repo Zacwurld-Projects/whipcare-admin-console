@@ -51,6 +51,7 @@ const UserManagementInfo = () => {
         ) : (
           <>
             <InfoTable
+              onFilterClick={() => {}}
               isLoading={useFetchUser.isLoading}
               onClickRows={(item) => router.push(`/dashboard/user-management/${item._id}`)}
               currentPage={currentPage}

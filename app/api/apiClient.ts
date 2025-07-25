@@ -162,6 +162,7 @@ export const resetUserPassword = async (
 // #region OVERVIEW
 export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = '') =>
   fetchKpis(ApiRoutes.Overview, minDate, maxDate);
+
 // #endregion
 
 // #region USER MANAGEMENT
@@ -277,6 +278,14 @@ export const fetchServiceProviderKyc = async (_id: string) => {
   return response.data;
 };
 
+export const fetchServiceProvidersActivities = async (id: string) => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceProvider}/${id}/activities`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
 // #region APPROVE SERVICE PROVIDER KYC
 export const approveServiceProviderKyc = async (id: string) => {
   try {

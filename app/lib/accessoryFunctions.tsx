@@ -47,8 +47,8 @@ export const convertBookingAndOrderStatus = (status: string) => {
   if (!status) return 'pending';
   const normalized = status.toLowerCase();
   if (normalized === 'cancelled') return 'cancelled';
-  if (normalized === 'delivered') return 'completed';
-  if (normalized === 'payment') return 'pending';
+  if (normalized === 'delivered') return 'pending';
+  if (normalized === 'payment') return 'completed';
   if (normalized === 'completed') return 'completed';
   return 'pending';
 };

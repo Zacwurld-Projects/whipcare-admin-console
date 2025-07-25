@@ -47,6 +47,7 @@ const ServiceBookingInfo = () => {
           <SectionLoader height='70vh' />
         ) : (
           <InfoTable
+            onFilterClick={() => {}}
             isLoading={useFetchBookings.isLoading}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}

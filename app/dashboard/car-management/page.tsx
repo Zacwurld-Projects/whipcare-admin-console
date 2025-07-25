@@ -82,6 +82,7 @@ const CarManagementPage = () => {
         className='my-8'
       />
       <InfoTable
+        onFilterClick={() => {}}
         heading='Registered Car List'
         isLoading={useFetchCarList.isLoading}
         data={useFetchCarList.data as BaseTable<CarData>}

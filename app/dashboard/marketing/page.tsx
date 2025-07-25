@@ -32,6 +32,7 @@ const EmailListPage = () => {
   return (
     <section>
       <InfoTable
+        onFilterClick={() => {}}
         heading='Email List'
         headings={['No', 'User Name', 'User Type', 'Email address', 'Date Registered']}
         data={useFetchEmails.data as BaseTable<EmailData>}

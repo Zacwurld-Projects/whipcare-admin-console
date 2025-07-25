@@ -1,6 +1,5 @@
-import { ServiceProviderProfile } from '@/app/lib/mockTypes';
+// components/profile/Profile.tsx
 import DisplayInfo from '../../components/profile/DisplayInfo';
-// import DisplayAddress from '../../components/profile/DisplayAddress';
 import mockServiceImage from '../../assets/mockServiceImage.png';
 import LocationIcon from '../../assets/smallLocationIcon.svg';
 import NairaIcon from '../../assets/NairaIcon.svg';
@@ -8,14 +7,12 @@ import ClockIcon from '../../assets/clockIcon.svg';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import VerifyIcon from '@/app/dashboard/assets/verify.svg';
-import { MapPinIcon } from 'lucide-react';
+import { MapPinIcon, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
-import { ExternalLink } from 'lucide-react';
-// import { getDistanceFromLatLonInKm } from '@/app/lib/locator';
 import { useQuery } from '@tanstack/react-query';
 import { fetchServiceProviderKyc } from '@/app/api/apiClient';
+import { ServiceProviderProfile } from '@/app/lib/mockTypes';
 
-// Define Address type for clarity
 type Address = {
   id?: string;
   address: string;
@@ -24,10 +21,6 @@ type Address = {
   longitude?: number;
   latitude?: number;
 };
-
-// Example reference point (user's location or office)
-// const REFERENCE_LAT = 6.539284260246615;
-// const REFERENCE_LON = 3.3788054050900724;
 
 const Profile = ({
   profileInfo,
@@ -38,17 +31,15 @@ const Profile = ({
   kycStatus?: string;
   providerId: string;
 }) => {
-  // Fetch KYC details for this provider using the /kyc/:providerId/details endpoint
   const { data: kycData } = useQuery({
     queryKey: ['kycDetails', providerId],
     queryFn: () => fetchServiceProviderKyc(providerId),
   });
-  // console.log('Profile providerId', providerId);
-  // console.log('Profile kycData', kycData);
+
   const ninId = kycData?.data?.kycDocument?.nin?.docId;
   const driversLicenseId = kycData?.data?.kycDocument?.driversLicense?.docId;
 
-  // --- KYC Docs Normalization ---
+  // KYC Docs Normalization
   const kycDocumentObj = kycData?.data?.kycDocument || {};
   const kycDocs: Array<{
     label: string;
@@ -89,7 +80,7 @@ const Profile = ({
     });
   }
 
-  // --- Modal State ---
+  // Modal State
   const [modalUrl, setModalUrl] = useState<string | null>(null);
   const [modalType, setModalType] = useState<'image' | 'pdf' | null>(null);
   const handleOpenModal = (url: string) => {
@@ -103,18 +94,18 @@ const Profile = ({
 
   const reflectStatusStyle = (status: string) => {
     switch (true) {
-      case status === 'Rejected' || 'Deactivated':
+      case status === 'Rejected' || status === 'Deactivated':
         return `bg-[#fbeae9] text-[#dd524d]`;
       case status === 'Pending':
         return `bg-primary-50 text-[#ff915b]`;
-      case status === 'Approved' || 'Verified':
+      case status === 'Approved' || status === 'Verified':
         return `bg-[#e7f6ec] text-[#40b869]`;
       default:
         return '';
     }
   };
 
-  const effectiveKycStatus = kycStatus || profileInfo.kycStatus;
+  const effectiveKycStatus = kycStatus || profileInfo.user.kycStatus;
 
   return (
     <article className=''>
@@ -148,13 +139,14 @@ const Profile = ({
                 title='Last login date'
                 value={dayjs(profileInfo.lastLoginDate).format('DD/MM/YY')}
               />
-              <DisplayInfo title='Nationality' value={profileInfo.nationality} />
+              <DisplayInfo title='Nationality' value={profileInfo.user.nationality} />
+              {profileInfo.NIN && <DisplayInfo title='NIN' value={profileInfo.NIN} />}
+              <DisplayInfo title='Language' value={profileInfo.user.language} />
               {ninId && <DisplayInfo title='NIN ID' value={ninId} />}
               {driversLicenseId && (
                 <DisplayInfo title='Driver License ID' value={driversLicenseId} />
               )}
-              {profileInfo.NIN && <DisplayInfo title='NIN' value={profileInfo.NIN} />}
-              <DisplayInfo title='Language' value={profileInfo.language} />
+
               {kycDocs.length > 0 ? (
                 <div className='flex w-full flex-col gap-4'>
                   {kycDocs.map((doc) => (
@@ -200,41 +192,22 @@ const Profile = ({
                     <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>
                       Address
                     </p>
-                    {Array.isArray(profileInfo.address) && profileInfo.address.length > 0 ? (
-                      <ul className='flex flex-col gap-2'>
-                        {(profileInfo.address as Address[]).map((addr, idx) => {
-                          //   let distanceKm: string | null = null;
-                          //   if (typeof addr.latitude === 'number' && typeof addr.longitude === 'number') {
-                          //     const dist = getDistanceFromLatLonInKm(
-                          //       addr.latitude,
-                          //       addr.longitude,
-                          //       REFERENCE_LAT,
-                          //       REFERENCE_LON,
-                          //     );
-                          //     distanceKm = dist.toFixed(2);
-                          //   }
-                          return (
-                            <li key={addr.id || idx} className='flex items-center gap-3'>
-                              <div className='w-fit rounded-full bg-[#711E00] p-2'>
-                                <MapPinIcon color='white' className='' />
-                              </div>
-                              <div className='text-gray-800 dark:text-white'>
-                                <p className='text-sm font-semibold capitalize dark:text-white'>
-                                  {addr.type} Address
-                                </p>
-                                <p className='text-sm font-medium capitalize'>
-                                  {addr.address}
-                                  {/* {distanceKm && (
-                                    <span className='ml-2 text-xs text-gray-500'>
-                                      ({distanceKm} km away)
-                                    </span>
-                                  )} */}
-                                </p>
-                                {/* {addr.landmark && <p className='text-xs'>Landmark: {addr.landmark}</p>} */}
-                              </div>
-                            </li>
-                          );
-                        })}
+                    {Array.isArray(profileInfo.user.address) &&
+                    profileInfo.user.address.length > 0 ? (
+                      <ul className='flex flex-col gap-5'>
+                        {(profileInfo.user.address as Address[]).map((addr, idx) => (
+                          <li key={addr.id || idx} className='flex items-center gap-3'>
+                            <div className='w-fit rounded-full bg-[#711E00] p-2'>
+                              <MapPinIcon color='white' className='' />
+                            </div>
+                            <div className='text-gray-800 dark:text-white'>
+                              <p className='text-sm font-semibold capitalize dark:text-white'>
+                                {addr.type} Address
+                              </p>
+                              <p className='text-sm font-medium capitalize'>{addr.address}</p>
+                            </div>
+                          </li>
+                        ))}
                       </ul>
                     ) : (
                       <p className='text-sm text-gray-500'>No address available.</p>
@@ -296,48 +269,50 @@ const Profile = ({
                 </p>
                 <div className='h-[150px] overflow-y-scroll scrollbar'>
                   <ul className='flex-column gap-5'>
-                    {profileInfo.servicesProvided.map((item, index) => (
-                      <li key={index} className='flex items-start gap-6 px-5'>
-                        <Image
-                          src={item.images[0] || mockServiceImage}
-                          alt={item.serviceType + ' image'}
-                          width={105}
-                          height={77}
-                        />
-                        <div className='flex-column gap-2'>
-                          <p className='text-xsmall font-medium capitalize text-primary-900 dark:text-dark-accent'>
-                            {item.serviceType}
-                          </p>
-                          <p className='font-medium text-gray-800 dark:text-white'>
-                            {item.serviceTitle}
-                          </p>
-                          <ul className='flex flex-wrap gap-2 [&_li]:flex [&_li]:items-center [&_li]:gap-[1px]'>
-                            {item.distance && (
-                              <li>
-                                <LocationIcon />
-                                <p className='text-xsmall font-medium text-gray-400 dark:text-dark-tertiary'>
-                                  {item.distance}
+                    {profileInfo.servicesProvided.map(
+                      (item: ServiceProviderProfile['servicesProvided'][number]) => (
+                        <li key={item._id} className='flex items-start gap-6 px-5'>
+                          <Image
+                            src={item.images[0] || mockServiceImage}
+                            alt={item.serviceType + ' image'}
+                            width={105}
+                            height={77}
+                          />
+                          <div className='flex-column gap-2'>
+                            <p className='text-xsmall font-medium capitalize text-primary-900 dark:text-dark-accent'>
+                              {item.serviceType}
+                            </p>
+                            <p className='font-medium text-gray-800 dark:text-white'>
+                              {item.serviceTitle}
+                            </p>
+                            <ul className='flex flex-wrap gap-2 [&_li]:flex [&_li]:items-center [&_li]:gap-[1px]'>
+                              {item.distance && (
+                                <li>
+                                  <LocationIcon />
+                                  <p className='text-xsmall font-medium text-gray-400 dark:text-dark-tertiary'>
+                                    {item.distance}
+                                  </p>
+                                </li>
+                              )}
+                              {item.time && (
+                                <li>
+                                  <ClockIcon />
+                                  <p className='text-xsmall font-medium text-gray-400 dark:text-dark-tertiary'>
+                                    {item.time}
+                                  </p>
+                                </li>
+                              )}
+                              <li className='rounded-lg px-2 py-1 dark:bg-primary-50'>
+                                <NairaIcon className='dark:*:fill-dark-accent' />
+                                <p className='text-xsmall font-medium text-primary-900 dark:text-dark-accent'>
+                                  {item.minPrice.toLocaleString('en-US')}
                                 </p>
                               </li>
-                            )}
-                            {item.time && (
-                              <li>
-                                <ClockIcon />
-                                <p className='text-xsmall font-medium text-gray-400 dark:text-dark-tertiary'>
-                                  {item.time}
-                                </p>
-                              </li>
-                            )}
-                            <li className='rounded-lg px-2 py-1 dark:bg-primary-50'>
-                              <NairaIcon className='dark:*:fill-dark-accent' />
-                              <p className='text-xsmall font-medium text-primary-900 dark:text-dark-accent'>
-                                {item.minPrice.toLocaleString('en-US')}
-                              </p>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                    ))}
+                            </ul>
+                          </div>
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </div>
               </div>
@@ -359,7 +334,7 @@ const Profile = ({
               onClick={handleCloseModal}
               className='absolute right-2 top-2 text-gray-500 hover:text-black'
             >
-              &times;
+              ×
             </button>
             {modalType === 'image' ? (
               <Image
@@ -378,4 +353,5 @@ const Profile = ({
     </article>
   );
 };
+
 export default Profile;

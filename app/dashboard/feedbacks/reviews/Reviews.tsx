@@ -17,7 +17,10 @@ type Reviews = {
   userId: string;
   bookingId: string;
   rating: number;
+  firstName: string;
+  lastName: string;
   review: string;
+  date: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -75,16 +78,18 @@ const Reviews = ({
                 <div className='flex items-center justify-between'>
                   {renderRatingStars(review.rating)}
                   <p className='font-bold text-gray-500 dark:text-white'>
-                    {formatDate(review.createdAt)}
+                    {formatDate(review.date)}
                   </p>
                 </div>
                 <p className='text-lg font-bold text-[#475367] dark:text-white'>{review.review}</p>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center gap-[10px]'>
                     <span className='center-grid size-[30px] rounded-full bg-[#8f2802] font-semibold text-primary-50 dark:bg-dark-accent dark:text-white'>
-                      J
+                      {review.firstName.charAt(0)}
                     </span>
-                    <p className='font-semibold text-[#1d2739] dark:text-white'>John Jane</p>
+                    <p className='font-semibold text-[#1d2739] dark:text-white'>
+                      {review.firstName} {review.lastName}
+                    </p>
                   </div>
                   <button
                     onClick={() => openBookingDetailsModal(review.bookingId)}

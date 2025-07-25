@@ -95,15 +95,69 @@ export type Activity = {
   updatedAt: string;
 };
 
-export type ServiceProviderProfile = {
-  signUpDate: number;
-  status?: string;
-  kycStatus?: string;
-  lastLoginDate: number;
+// types.ts
+export type Address = {
+  id?: string;
+  address: string;
+  type?: string;
+  landmark?: string;
+  longitude?: number;
+  latitude?: number;
+};
+
+export type User = {
+  _id: string;
+  email: string;
+  password?: string;
+  servicesProvided: string;
+  image?: string | null;
+  oauthType?: string;
+  firebaseTopics?: string[];
+  firstName: string;
+  lastName: string;
+  emailVerified?: boolean;
+  phone?: string | null;
+  carIds?: string[];
+  available?: boolean;
+  serviceType?: string;
+  type?: string;
   nationality: string;
+  firebaseClientId?: string | null;
+  blockedUsers?: string[];
+  blockedMe?: string[];
   language: string;
+  referralCode?: string;
+  kyc?: string;
+  kycStatus: string;
+  pin?: string | null;
+  termsAndConditions?: boolean;
+  biometrics?: boolean;
+  businessName?: string;
+  accountDetails?: Array<{
+    id: string;
+    accountNumber: string;
+    accountName: string;
+    recipientCode: string;
+  }>;
+  address: Address[];
+  lastLogin: string;
+  // availabilityHistory?: any[];
+  createdAt: string;
+  updatedAt: string;
+  paystackCustomerId?: string;
+  waitlisted?: boolean;
+  disabled?: {
+    disabledUntil: string | null;
+    reason: string | null;
+  };
+  kycRejectionReason?: string | null;
+};
+
+export type ServiceProviderProfile = {
+  user: User;
+  signUpDate: string;
+  lastLoginDate: string;
   NIN?: string;
-  address?: [];
   servicesProvided: Array<{
     _id: string;
     serviceType: string;
@@ -138,6 +192,30 @@ export type BookingResponse = {
   serviceProviderLastName: string;
   minPrice: number;
   maxPrice: number;
+};
+
+export type PaymentInfo = {
+  accountName: string;
+  accountNo: string;
+  bank: string;
+  recentTransactions: Array<{
+    title: string;
+    amount: number;
+    type: string;
+    date: number;
+  }>;
+};
+
+export type ServiceProviderTableData = {
+  _id: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  serviceType?: string | string[];
+  createdAt?: string;
+  lastLogin?: string;
+  kycStatus?: string;
 };
 
 export type Booking = {
