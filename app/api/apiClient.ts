@@ -528,6 +528,36 @@ export const updateComplaints = async (id: string, status: string) => {
 
 export const fetchFeedbackReviews = async (pageNumber = 1, pageSize = 15) =>
   fetchTableResponse(`${ApiRoutes.Feedback}/reviews`, pageSize, pageNumber);
+
+export const publishFeedbackReviews = async (id: string, show: boolean) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Feedback}/reviews/${id}/landing-page`, {
+      show,
+    });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const getFeedbackReviewsLandingPage = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/reviews/landing-page`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+// export const publishFeedbackReviews = async (id: string, show: boolean) => {
+//   try {
+//     const response = await API.put(`${ApiRoutes.Feedback}/reviews/${id}/landing-page`, {
+//       show,
+//     });
+//     return response.data;
+//   } catch (error) {
+//     catchError(error);
+//   }
+// };
 //#endregion
 
 //#region MARKETING

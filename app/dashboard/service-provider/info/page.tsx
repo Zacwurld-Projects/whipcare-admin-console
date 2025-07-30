@@ -16,16 +16,6 @@ const PAGE_SIZE = 15;
 const ServiceProviderInfo = () => {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
-  // const searchParams =
-  //   typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-
-  // Helper to get param from URL
-  // const getParam = (key: string, fallback: string = ''): string => {
-  //   if (!searchParams) return fallback;
-  //   return searchParams.get(key) || fallback;
-  // };
-
-  // State for filters and pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState('');
   const [showFilter, setShowFilter] = useState(false);
@@ -73,38 +63,39 @@ const ServiceProviderInfo = () => {
     return () => clearTimeout(handler);
   }, [search, status, selectedDates.minDate, selectedDates.maxDate, currentPage, isClient, router]);
 
-  // Update URL when filters or page change
-  // const updateUrl = (params: Record<string, string | number | undefined>) => {
-  //   const url = new URL(window.location.href);
-  //   Object.entries(params).forEach(([key, value]) => {
-  //     if (value !== undefined && value !== '' && !(key === 'status' && value === 'all'))
-  //       url.searchParams.set(key, String(value));
-  //     else url.searchParams.delete(key);
-  //   });
-  //   router.replace(url.pathname + url.search, { scroll: false });
-  // };
-
-  // Update URL on filter/page/search change
+  // Update filters and reset page
   const handleFilterApply = (filters: { status: string; minDate?: string; maxDate?: string }) => {
+    if (filters.minDate && filters.maxDate && dayjs(filters.minDate).isAfter(filters.maxDate)) {
+      alert('Start date cannot be after end date');
+      return;
+    }
     setStatus(filters.status);
     setSelectedDates({
-      minDate: filters.minDate ?? '', // first date input is minDate
-      maxDate: filters.maxDate ?? '', // second date input is maxDate
+      minDate: filters.minDate ?? '',
+      maxDate: filters.maxDate ?? '',
     });
     setCurrentPage(1);
+    setShowFilter(false);
   };
+
   const handleSearch = (value: string) => {
     setSearch(value);
     setCurrentPage(1);
   };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
+  // Determine if filters are active
+  const isFilterActive =
+    status !== 'all' || selectedDates.minDate || selectedDates.maxDate || search;
+
+  // Fetch all data when filters are active, otherwise fetch paginated data
   const { data: serviceProviderData, isLoading: isServiceProviderLoading } = useQuery({
     queryKey: [
       'serviceProviders',
-      currentPage,
+      isFilterActive ? 'filtered' : currentPage,
       search,
       status,
       selectedDates.minDate,
@@ -112,14 +103,13 @@ const ServiceProviderInfo = () => {
     ],
     queryFn: () =>
       fetchServiceProviders(
-        currentPage,
-        PAGE_SIZE,
+        isFilterActive ? 1 : currentPage,
+        isFilterActive ? Number.MAX_SAFE_INTEGER : PAGE_SIZE, // Fetch all data when filtered
         search,
         status,
         selectedDates.minDate,
         selectedDates.maxDate,
       ),
-    enabled: isClient, // Only fetch on client
   });
 
   const serviceProviders = serviceProviderData
@@ -161,10 +151,7 @@ const ServiceProviderInfo = () => {
     return true;
   }
 
-  // Determine if a date range is selected
   const isRangeSelected = selectedDates.minDate !== '' || selectedDates.maxDate !== '';
-
-  // Filter mappedProviders by lastLogin within startDate/endDate only if a range is selected
 
   const filteredProviders = isRangeSelected
     ? mappedProviders.data.filter((item: ServiceProviderTableData) =>
@@ -176,12 +163,21 @@ const ServiceProviderInfo = () => {
       )
     : mappedProviders.data;
 
+  const filteredData =
+    status && status !== 'all'
+      ? filteredProviders.filter((item: { kycStatus: string }) => item.kycStatus === status)
+      : filteredProviders;
+
+  // Apply pagination to filtered data if it exceeds PAGE_SIZE
+  const paginatedFilteredData = isFilterActive
+    ? filteredData.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+    : filteredData;
+
   const filteredMappedProviders = {
     ...mappedProviders,
-    data:
-      status && status !== 'all'
-        ? filteredProviders.filter((item: { kycStatus: string }) => item.kycStatus === status)
-        : filteredProviders,
+    data: isFilterActive ? paginatedFilteredData : filteredData,
+    pageSize: PAGE_SIZE,
+    totalCount: isFilterActive ? filteredData.length : mappedProviders.totalCount,
   };
 
   return (
@@ -199,8 +195,8 @@ const ServiceProviderInfo = () => {
           onClose={() => setShowFilter(false)}
           onApply={handleFilterApply}
           initialStatus={status}
-          initialMinDate={selectedDates.minDate} // first date input
-          initialMaxDate={selectedDates.maxDate} // second date input
+          initialMinDate={selectedDates.minDate}
+          initialMaxDate={selectedDates.maxDate}
         />
       )}
       <div className='mt-6 w-full'>
@@ -226,10 +222,16 @@ const ServiceProviderInfo = () => {
             data={filteredMappedProviders}
             search={search}
             onSearch={handleSearch}
-            onFilterClick={() => setShowFilter(true)} // ✅ Add this line
+            onFilterClick={() => setShowFilter(true)}
             ContentStructure={({ item, index }) => (
               <>
-                <td>{index + 1 + PAGE_SIZE * (currentPage - 1)}</td>
+                <td>
+                  {index +
+                    1 +
+                    (isFilterActive
+                      ? (currentPage - 1) * PAGE_SIZE
+                      : (currentPage - 1) * PAGE_SIZE)}
+                </td>
                 <td>
                   {item.firstName} {item.lastName}
                 </td>
@@ -263,4 +265,5 @@ const ServiceProviderInfo = () => {
     </>
   );
 };
+
 export default ServiceProviderInfo;
