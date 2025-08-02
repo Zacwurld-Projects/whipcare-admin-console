@@ -218,7 +218,7 @@ const Profile = ({
                 <p className='text-sm text-gray-500'>No KYC documents available.</p>
               )}
             </div>
-            <div className='flex-column flex-1 gap-5 rounded-lg bg-gray-50 px-4 py-5 dark:bg-dark-primary'>
+            <div className='flex-column h-[40rem] flex-1 gap-5 rounded-lg bg-gray-50 px-4 py-5 dark:bg-dark-primary'>
               <div className='flex-column gap-4'>
                 <p className='text-large mb-1 font-semibold text-gray-800 dark:text-white'>
                   Service Provided
@@ -267,7 +267,7 @@ const Profile = ({
                     ({profileInfo.servicesProvided.length})
                   </span>
                 </p>
-                <div className='h-[150px] overflow-y-scroll scrollbar'>
+                <div className='h-[300px] overflow-y-scroll scrollbar'>
                   <ul className='flex-column gap-5'>
                     {profileInfo.servicesProvided.map(
                       (item: ServiceProviderProfile['servicesProvided'][number]) => (
@@ -275,8 +275,9 @@ const Profile = ({
                           <Image
                             src={item.images[0] || mockServiceImage}
                             alt={item.serviceType + ' image'}
-                            width={105}
-                            height={77}
+                            width={80}
+                            height={80}
+                            className='h-40 w-40'
                           />
                           <div className='flex-column gap-2'>
                             <p className='text-xsmall font-medium capitalize text-primary-900 dark:text-dark-accent'>
@@ -305,7 +306,8 @@ const Profile = ({
                               <li className='rounded-lg px-2 py-1 dark:bg-primary-50'>
                                 <NairaIcon className='dark:*:fill-dark-accent' />
                                 <p className='text-xsmall font-medium text-primary-900 dark:text-dark-accent'>
-                                  {item.minPrice.toLocaleString('en-US')}
+                                  {item.minPrice.toLocaleString('en-US')} -{' '}
+                                  {item.maxPrice.toLocaleString('en-US')}
                                 </p>
                               </li>
                             </ul>

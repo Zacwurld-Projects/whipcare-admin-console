@@ -5,26 +5,39 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import FallBackUI from '../FallbackUI';
+import Suggestions from './Suggestions';
 
 const SuggestionsPage = () => {
-  const [currentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const useFetchSuggestions = useQuery({
-    queryKey: ['fetchSuggestions'],
+  const {
+    data: suggestionsData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['fetchSuggestions', currentPage],
     queryFn: () => fetchFeedbackSuggestions(currentPage, 15),
   });
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    if (!useFetchSuggestions.isLoading && useFetchSuggestions.data) setIsInitialLoad(false);
-  }, [useFetchSuggestions.isLoading, useFetchSuggestions.data]);
+    if (!isLoading && suggestionsData) setIsInitialLoad(false);
+  }, [isLoading, suggestionsData]);
 
-  if (isInitialLoad) return <SectionLoader height='70vh' />;
-
-  if (!useFetchSuggestions.data || useFetchSuggestions.data.data.length < 1)
+  if (isInitialLoad && isLoading) return <SectionLoader height='70vh' />;
+  if (isError || !suggestionsData || suggestionsData.data.length < 1)
     return <FallBackUI option='suggestions' />;
 
-  return <div>SuggestionsPage</div>;
+  return (
+    <Suggestions
+      suggestionsData={suggestionsData}
+      isLoading={isLoading}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+      isInitialLoad={isInitialLoad}
+    />
+  );
 };
+
 export default SuggestionsPage;

@@ -50,6 +50,8 @@ const InfoTable = <T,>({
     phone?: string;
     createdAt?: string;
     kycStatus?: string;
+    isAnonymous?: boolean;
+    type?: string;
   }
 >) => {
   return (

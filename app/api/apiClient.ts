@@ -509,6 +509,15 @@ export const fetchFeedbackStats = async () => {
 export const fetchFeedbackSuggestions = async (pageNumber = 1, pageSize = 15) =>
   fetchTableResponse(`${ApiRoutes.Feedback}/suggestions`, pageSize, pageNumber);
 
+export const fetchFeedbackSuggestionsStats = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Feedback}/suggestions/kpis`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
 export const fetchFeedbackRatings = async (pageNumber = 1, pageSize = 15) =>
   fetchTableResponse(`${ApiRoutes.Feedback}/ratings`, pageSize, pageNumber);
 
