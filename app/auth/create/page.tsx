@@ -39,12 +39,12 @@ const CreateUserPageContent = () => {
       return verifyCreateToken(token);
     },
     onSuccess: (response) => {
-      console.log('Token verified:', response);
+      // console.log('Token verified:', response);
       setIsVerified(true);
       setUserInfo({ ...userInfo, email: response.email });
     },
     onError: (error) => {
-      console.error('Token verification failed:', error);
+      // console.error('Token verification failed:', error);
       toast.error(`Failed to verify token: ${error.message || 'Invalid or expired token'}`);
       setTimeout(() => router.push('/auth'), 2000);
     },

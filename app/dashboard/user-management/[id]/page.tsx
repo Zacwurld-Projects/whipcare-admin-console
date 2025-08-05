@@ -10,6 +10,7 @@ import { fetchUserActivity, fetchUserKpis, fetchUserProfile } from '@/app/api/ap
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import BasicInfo from '../../components/profile/BasicInfoUser';
+// import HistoryTable from '../../components/tables/HistoryTable';
 
 const DisplayPageOption = ({
   isLoading,
@@ -26,7 +27,7 @@ const DisplayPageOption = ({
 };
 
 const UserProfilePage = ({ params }: { params: { id: string } }) => {
-  const pageOptions = ['profile', 'activities']; //removed bookings
+  const pageOptions = ['profile', 'bookings', 'activities']; //removed bookings
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
   const [currentActivitypage, setCurrentActivityPage] = useState(1);
 

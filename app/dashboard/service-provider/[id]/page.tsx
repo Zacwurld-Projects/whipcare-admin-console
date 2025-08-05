@@ -10,7 +10,6 @@ import ActivityTable from '../../components/tables/ActivityTable';
 import HistoryTable from '../../components/tables/HistoryTable';
 import Profile from './Profile';
 import Payment from './Payment';
-import Reviews from './Reviews';
 import { useQuery } from '@tanstack/react-query';
 import {
   fetchServiceProviderKpis,
@@ -19,11 +18,35 @@ import {
   fetchServiceProviderKyc,
   deactivateServiceProvider,
   fetchServiceProvidersActivities,
+  fetchServiceProviderReviews,
 } from '@/app/api/apiClient';
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import VerifyIcon from '@/app/dashboard/assets/verify.svg';
 import { PaymentInfo } from '@/app/lib/mockTypes';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs';
+import ReviewsPage from './Reviews';
+
+dayjs.extend(relativeTime);
+
+type Reviews = {
+  _id: string;
+  rating: number;
+  review: string;
+  createdAt: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerImage: string | null;
+  bookingId?: string;
+};
+
+type ReviewsData = {
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  data: Reviews[];
+};
 
 const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -32,7 +55,6 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const pageOptions = ['profile', 'orders', 'payment', 'activities', 'reviews'];
   const [isDeactivating, setIsDeactivating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const contentPerPage = 10;
   const [search, setSearch] = useState(searchParams.get('search') || '');
 
   // Update URL when search changes
@@ -54,11 +76,10 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   };
 
   const { data: kpisData, isLoading: isKpisLoading } = useQuery({
-    queryKey: ['serviceProviderKpis'],
+    queryKey: ['serviceProviderKpis', params.id],
     queryFn: () => fetchServiceProviderKpis(params.id),
   });
 
-  // Map _id into userContact for KYC
   const mappedKpisData = kpisData
     ? {
         ...kpisData,
@@ -74,13 +95,13 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
     : null;
 
   const { data: profileData, isLoading: isProfileDataLoading } = useQuery({
-    queryKey: ['serviceProviderProfile'],
+    queryKey: ['serviceProviderProfile', params.id],
     queryFn: () => fetchServiceProviderProfile(params.id),
   });
 
   const { data: ordersData, isLoading: isOrdersDataLoading } = useQuery({
     queryKey: ['serviceProviderOrders', params.id, search, currentPage],
-    queryFn: () => fetchServiceProviderOrders(params.id, search, currentPage, contentPerPage),
+    queryFn: () => fetchServiceProviderOrders(params.id, search, currentPage, 10),
     enabled: selectedPageOption === 'orders',
   });
 
@@ -95,12 +116,17 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
     enabled: selectedPageOption === 'activities',
   });
 
-  // Construct paymentInfo from profileData
+  const { data: reviewsData, isLoading: isReviewsDataLoading } = useQuery({
+    queryKey: ['serviceProviderReviews', params.id, currentPage],
+    queryFn: () => fetchServiceProviderReviews(params.id),
+    enabled: selectedPageOption === 'reviews',
+  });
+
   const paymentInfo: PaymentInfo = profileData?.user?.accountDetails?.[0]
     ? {
         accountName: profileData.user.accountDetails[0].accountName,
         accountNo: profileData.user.accountDetails[0].accountNumber,
-        bank: 'Unknown', // Replace with actual bank data if available from API
+        bank: 'Unknown',
         recentTransactions: Array.from({ length: 6 }, () => ({
           title: 'Order #000085752257',
           type: 'Order Payment',
@@ -164,7 +190,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
                   totalCount={ordersData?.totalCount}
-                  contentPerPage={contentPerPage}
+                  contentPerPage={10}
                   search={search}
                   setSearch={handleSearch}
                   searchInput={search}
@@ -225,31 +251,13 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
             ))}
           {selectedPageOption === 'reviews' &&
             (kycData?.data?.kycStatus === 'Approved' ? (
-              isOrdersDataLoading ? (
+              isReviewsDataLoading ? (
                 <SectionLoader height='300px' />
               ) : (
-                <Reviews
-                  reviewData={Array.from({ length: 8 }, () => ({
-                    rating: 4,
-                    booking: {
-                      id: '12346WXYZ',
-                      bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
-                      phoneNo: '+1 356 786 3732',
-                      location: '290 m near Grand Play Lekki Lagos',
-                      status: 'completed',
-                      bookingStatus: 'completed',
-                      car: 'BMW M6',
-                      service: 'Mechanic Service',
-                      serviceType: 'Pick Up Service',
-                      serviceProvider: 'James Fox',
-                      brakeServices: '2',
-                      total: '2.49',
-                    },
-                    date: Date.now() - 2 * 24 * 60 * 60 * 1000,
-                    content:
-                      "The service provider was professional and completed the work quickly. However, they didn't explain the additional charges beforehand",
-                    user: 'Mary Smith',
-                  }))}
+                <ReviewsPage
+                  serviceProviderId={params.id}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
                 />
               )
             ) : (

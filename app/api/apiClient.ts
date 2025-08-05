@@ -181,6 +181,27 @@ export const fetchUserKpis = async (id: string) => {
   }
 };
 
+export const fetchUserMapping = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Users}/user-mapping`);
+
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchUserYearlyCount = async (year: number) => {
+  try {
+    const response = await API.get(`${ApiRoutes.Users}/user-count`, {
+      params: { year },
+    });
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
 export const fetchUserProfile = async (id: string) => {
   try {
     const response = await API.get(`${ApiRoutes.Users}/${id}/profile`);
@@ -271,6 +292,11 @@ export const fetchServiceProviderOrderById = async (id: string, orderId: string)
 export const fetchServiceProviderPayments = async (id: string) => {
   const reponse = await API.get(`${ApiRoutes.ServiceProvider}/${id}/payments`);
   return reponse.data;
+};
+
+export const fetchServiceProviderReviews = async (id: string) => {
+  const response = await API.get(`${ApiRoutes.ServiceProvider}/${id}/reviews`);
+  return response.data;
 };
 
 export const fetchServiceProviderKyc = async (_id: string) => {
@@ -512,6 +538,15 @@ export const fetchFeedbackSuggestions = async (pageNumber = 1, pageSize = 15) =>
 export const fetchFeedbackSuggestionsStats = async () => {
   try {
     const response = await API.get(`${ApiRoutes.Feedback}/suggestions/kpis`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const updateFeedbackSuggestion = async (id: string, status: string) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Feedback}/suggestions/${id}`, { status });
     return response.data;
   } catch (error) {
     catchError(error);

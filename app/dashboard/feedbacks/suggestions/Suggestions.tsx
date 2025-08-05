@@ -13,7 +13,7 @@ import NumbersOverview from '../../components/NumbersOverview';
 import BagIcon from '../../assets/bagIcon.svg';
 import AllMatchIcon from '../../assets/allMatchIcon.svg';
 import CheckCircleIcon from '../../assets/checkCircleIcon.svg';
-import { fetchFeedbackSuggestionsStats } from '@/app/api/apiClient';
+import { fetchFeedbackSuggestionsStats, updateFeedbackSuggestion } from '@/app/api/apiClient';
 
 type Suggestion = BaseTableData & {
   suggestion: string;
@@ -38,10 +38,11 @@ const SuggestionModal = ({
 
   const updateSuggestionMutation = useMutation({
     mutationKey: ['updateSuggestion'],
-    // mutationFn: ({ id, status }: { id: string; status: string }) => updateSuggestions(id, status), // Adjusted API function
-    onSuccess: () => {
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateFeedbackSuggestion(id, status), // Adjusted API function
+    onSuccess: (data) => {
       toast.success('Marked as reviewed successfully');
-      setStatus('Reviewed');
+      setStatus(data.status);
       setIsShowingSuggestionsData({
         display: false,
         data: null,
@@ -55,11 +56,11 @@ const SuggestionModal = ({
 
   if (!SuggestionData) return null;
 
-  // const markSuggestionAsReviewed = () => {
-  //   if (SuggestionData._id) {
-  //     updateSuggestionMutation.mutate({ id: SuggestionData._id, status: 'Reviewed' });
-  //   }
-  // };
+  const markSuggestionAsReviewed = () => {
+    if (SuggestionData._id) {
+      updateSuggestionMutation.mutate({ id: SuggestionData._id, status: 'Reviewed' });
+    }
+  };
 
   return (
     <SidebarModalContainer
@@ -104,7 +105,8 @@ const SuggestionModal = ({
             <li className='flex items-center justify-between'>
               <p className='text-gray-500 dark:text-dark-tertiary'>Anonymous/Not</p>
               <p className='text-gray-900 dark:text-white'>
-                {SuggestionData.isAnonymous ? 'Anonymous' : 'Not Anonymous'}
+                {/* {SuggestionData.isAnonymous ? 'Anonymous' : 'Not Anonymous'} */}
+                {SuggestionData._id}
               </p>
             </li>
             <li className='flex items-center justify-between'>
@@ -124,7 +126,7 @@ const SuggestionModal = ({
             <FormButton
               type='button'
               isLoading={updateSuggestionMutation.isPending}
-              // onClick={markSuggestionAsReviewed}
+              onClick={markSuggestionAsReviewed}
               text='Mark as Reviewed'
               className='mx-auto max-w-[380px] dark:bg-dark-accent'
             />
