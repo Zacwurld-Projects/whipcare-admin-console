@@ -19,7 +19,7 @@ type Suggestion = BaseTableData & {
   suggestion: string;
   status: string;
   date: string;
-  isAnonymous: boolean;
+  anonymous: boolean;
   type: string;
 };
 
@@ -97,7 +97,7 @@ const SuggestionModal = ({
             <li className='flex items-center justify-between'>
               <p className='text-gray-500 dark:text-dark-tertiary'>User Name</p>
               <p className='text-gray-900 dark:text-white'>
-                {SuggestionData.isAnonymous
+                {SuggestionData.anonymous
                   ? '***'
                   : `${SuggestionData.firstName} ${SuggestionData.lastName}`}
               </p>
@@ -105,8 +105,7 @@ const SuggestionModal = ({
             <li className='flex items-center justify-between'>
               <p className='text-gray-500 dark:text-dark-tertiary'>Anonymous/Not</p>
               <p className='text-gray-900 dark:text-white'>
-                {/* {SuggestionData.isAnonymous ? 'Anonymous' : 'Not Anonymous'} */}
-                {SuggestionData._id}
+                {SuggestionData.anonymous ? 'Anonymous' : 'Not Anonymous'}
               </p>
             </li>
             <li className='flex items-center justify-between'>
@@ -215,8 +214,8 @@ const Suggestions = ({
         setCurrentPage={setCurrentPage}
         ContentStructure={({ item }) => (
           <>
-            <td>{item.isAnonymous ? '***' : `${item.firstName} ${item.lastName}`}</td>
-            <td>{item.isAnonymous ? 'Anonymous' : 'Not Anonymous'}</td>
+            <td>{item.anonymous ? '***' : `${item.firstName} ${item.lastName}`}</td>
+            <td>{item.anonymous ? 'Anonymous' : 'Not Anonymous'}</td>
             <td>{item.type}</td>
             <td className='text-xs'>{item.suggestion}</td>
             <td>
