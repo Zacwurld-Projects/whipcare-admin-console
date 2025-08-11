@@ -10,6 +10,7 @@ import SidebarModalContainer from '../../components/modals/SidebarModalContainer
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateComplaints } from '@/app/api/apiClient';
 import { toast } from 'sonner';
+// import ComplaintModalScreen from '../../components/modals/ComplaintModal';
 
 type Complaints = BaseTableData & {
   complaint: string;
@@ -31,7 +32,6 @@ const ComplaintModal = ({
 }) => {
   const [, setStatus] = useState(ComplaintData?.status);
 
-  //could comment this out later
   const queryClient = useQueryClient();
 
   const updateComplaintMutaion = useMutation({
@@ -40,8 +40,6 @@ const ComplaintModal = ({
     onSuccess: () => {
       toast.success('Marked as reviewed successfully');
       setStatus('Reviewed');
-
-      //could comment this out later
       setIsShowingComplaintsData({
         display: false,
         data: null,
@@ -152,6 +150,8 @@ const Complaints = ({
     display: false,
   });
 
+  // const [showFilterModal, setShowFilterModal] = useState(false);
+
   if (isInitialLoad && isLoading) return <SectionLoader height='70vh' />;
 
   if (!complaintsData || complaintsData.data.length < 1) return <FallBackUI option='complaints' />;
@@ -159,7 +159,7 @@ const Complaints = ({
   return (
     <section className='mt-8'>
       <InfoTable
-        onFilterClick={() => {}}
+        onFilterClick={() => true}
         heading='All Complaint'
         onClickRows={(item) => {
           setIsShowingComplaintsData({
@@ -203,12 +203,18 @@ const Complaints = ({
           throw new Error('Function not implemented.');
         }}
       />
-      {isShowingComplaintsData && (
+      {isShowingComplaintsData.display && (
         <ComplaintModal
           ComplaintData={isShowingComplaintsData.data}
           setIsShowingComplaintsData={setIsShowingComplaintsData}
         />
       )}
+      {/* {showFilterModal && (
+        // <ComplaintModalScreen
+        // onApply={}
+        // onClose={}
+        />
+      )} */}
     </section>
   );
 };

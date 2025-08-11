@@ -13,7 +13,7 @@ const Payment = ({ paymentInfo }: { paymentInfo: PaymentInfo }) => {
         <div className='flex-column gap-6'>
           <DisplayInfo title='Account name' value={paymentInfo.accountName} />
           <DisplayInfo title='Account number' value={paymentInfo.accountNo} />
-          <DisplayInfo title='Bank name' value={paymentInfo.bank} />
+          <DisplayInfo title='Bank name' value={paymentInfo.bankName} />
         </div>
       </div>
       <div className='flex-column flex-1 gap-4 rounded-lg bg-white p-4'>
@@ -36,7 +36,7 @@ const Payment = ({ paymentInfo }: { paymentInfo: PaymentInfo }) => {
             <Filtericon />
           </label>
         </form>
-        <ul className='flex-column gap-6 px-5'>
+        <ul className='flex-column h-[30vh] gap-6 overflow-y-scroll px-5'>
           {paymentInfo.recentTransactions.map((item, index) => (
             <li key={index} className='flex items-center justify-between'>
               <div className='flex items-center gap-6'>

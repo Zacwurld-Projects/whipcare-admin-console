@@ -220,7 +220,7 @@ export const fetchServiceProvidersKpis = async (maxDate: string = '', minDate: s
   fetchKpis(ApiRoutes.ServiceProvider, minDate, maxDate);
 
 export const fetchServiceProviderWaitList = async () => {
-  const reponse = await API.get(`${ApiRoutes.ServiceProvider}/waitlist`);
+  const reponse = await API.get(`${ApiRoutes.Waitlist}`);
   return reponse.data;
 };
 

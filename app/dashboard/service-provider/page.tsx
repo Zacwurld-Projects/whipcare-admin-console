@@ -24,6 +24,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { TableData } from '@/app/types/shared';
 import { ServiceProviderTableData } from '@/app/types/service-provider';
 import { useRouter } from 'next/navigation';
+import { WaitlistData } from '@/app/lib/mockTypes';
 
 dayjs.extend(advancedFormat);
 
@@ -39,17 +40,7 @@ const ServiceProviderPage = () => {
     pageSize: 0,
     totalCount: 0,
   });
-  const [waitlist, setWaitList] = useState(
-    Array.from({ length: 7 }, () => {
-      return {
-        _id: '5656566',
-        firstName: 'Ariana',
-        lastName: 'Bush',
-        image: null,
-        email: 'arianabush@gmail.com',
-      };
-    }),
-  );
+  const [waitlist, setWaitList] = useState<WaitlistData[]>([]);
   // const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
   // On mount, sync state with URL params

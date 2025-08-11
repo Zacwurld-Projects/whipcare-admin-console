@@ -15,6 +15,7 @@ interface PlainTableProps<T> {
   data: TableData<T>;
   headings: Array<string>;
   ContentStructure: ComponentType<{ item: T; index: number }>;
+  viewAllLink?: string; // ✅ New optional prop
 }
 
 const PlainTable = <T,>({
@@ -30,6 +31,7 @@ const PlainTable = <T,>({
   },
   headings,
   ContentStructure,
+  viewAllLink, // ✅ Destructure
 }: PlainTableProps<T>) => {
   return (
     <article className='w-full rounded-lg border border-[#e0ddd9] bg-white px-6 py-4 dark:border-transparent dark:bg-dark-secondary'>
@@ -37,7 +39,7 @@ const PlainTable = <T,>({
         <h6 className='heading-h6 font-semibold dark:text-white'>{heading}</h6>
         {data?.data?.length > 1 && (
           <Link
-            href={`/dashboard/${page}/info`}
+            href={viewAllLink || `/dashboard/${page}/info`} // ✅ Use passed link if provided
             className='text-small font-medium text-gray-500 dark:text-white'
           >
             View all
@@ -84,4 +86,5 @@ const PlainTable = <T,>({
     </article>
   );
 };
+
 export default PlainTable;

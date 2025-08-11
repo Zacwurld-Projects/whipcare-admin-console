@@ -28,6 +28,21 @@ export type UserProfileData = {
   }>;
 };
 
+export type WaitlistData = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  serviceType: string;
+  phone: string;
+  fullName: string;
+  companyName: string;
+  country: string;
+  city: string;
+  address: string;
+  role: boolean;
+};
+
 export interface BaseData {
   _id: string;
   createdAt?: string | undefined;
@@ -197,7 +212,7 @@ export type BookingResponse = {
 export type PaymentInfo = {
   accountName: string;
   accountNo: string;
-  bank: string;
+  bankName: string;
   recentTransactions: Array<{
     title: string;
     amount: number;

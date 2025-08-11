@@ -1,17 +1,19 @@
 'use client';
-// import mockUserImage from '../../assets/mockUserImg.png';
 import BookingsIcon from '../../assets/bookingsIcon.svg';
 import SpendingsIcon from '../../assets/spendingsIcon.svg';
 import Image from 'next/image';
 import KycVerification from './KycVerification';
-import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchServiceProviderKyc } from '@/app/api/apiClient';
-// import PageLoader from '../Loaders/PageLoader';
-import { Loader } from 'lucide-react';
+import {
+  fetchServiceProviderKyc,
+  fetchServiceProviderPayments,
+  fetchServiceProviderOrders,
+} from '@/app/api/apiClient';
+import { InfoIcon, Loader } from 'lucide-react';
+import { useState } from 'react';
 
 const BasicInfo = ({
-  data: { userContact, totalBookings, transactions, totalSpendings },
+  data: { userContact, totalBookings },
 }: {
   data: {
     status: boolean;
@@ -25,24 +27,60 @@ const BasicInfo = ({
       kycStatus?: string;
     };
     totalBookings: number;
-    transactions?: { totalAmount: number; type: 'DEBIT' | 'CREDIT' }[];
     totalSpendings?: number;
   };
 }) => {
-  const {
-    data: kycData,
-    isLoading,
-    // error,
-  } = useQuery({
+  const { data: kycData, isLoading: isKycLoading } = useQuery({
     queryKey: ['serviceProviderKyc', userContact._id],
     queryFn: () => fetchServiceProviderKyc(userContact._id),
   });
 
-  useEffect(() => {
-    // console.log('userContact._id:', userContact._id);
-    // console.log('userContact:', userContact);
-    // console.log('KYC Status:', userContact.kycStatus);
-  }, [userContact]);
+  // Fetch payment data to calculate total profit from CREDIT transactions
+  const { data: paymentsData, isLoading: isPaymentsLoading } = useQuery({
+    queryKey: ['serviceProviderPayments', userContact._id],
+    queryFn: () => fetchServiceProviderPayments(userContact._id),
+  });
+
+  // Fetch orders data to calculate booking statistics
+  const { data: ordersData, isLoading: isOrdersLoading } = useQuery({
+    queryKey: ['serviceProviderOrders', userContact._id],
+    queryFn: () => fetchServiceProviderOrders(userContact._id, '', 1, 100), // Fetch up to 100 orders
+  });
+
+  // Calculate total profit from CREDIT transactions
+  const totalProfit = paymentsData?.data
+    ? paymentsData.data
+        .filter((transaction: { type: string }) => transaction.type === 'CREDIT')
+        .reduce((sum: number, transaction: { amount: number }) => sum + transaction.amount, 0)
+    : 0;
+
+  // Calculate booking statistics
+  const bookingsData = [
+    {
+      title: 'Accepted Bookings',
+      count: ordersData?.data
+        ? ordersData.data.filter((order: { status: string }) => order.status === 'Payment').length
+        : 0,
+    },
+    {
+      title: 'Declined Bookings',
+      count: ordersData?.data
+        ? ordersData.data.filter((order: { status: string }) => order.status === 'Cancelled').length
+        : 0,
+    },
+    {
+      title: 'Ignored Bookings',
+      count: ordersData?.data
+        ? ordersData.data.filter((order: { status: string }) => order.status === 'Delivered').length
+        : 0,
+    },
+  ];
+
+  const [bookings, setBookings] = useState(false);
+
+  const handleShowTotalBookings = () => {
+    setBookings((prev) => !prev);
+  };
 
   return (
     <div className='mt-6 flex w-full items-stretch gap-[18px] *:rounded-[5px] *:bg-white dark:*:bg-dark-primary'>
@@ -75,7 +113,7 @@ const BasicInfo = ({
           )}
         </div>
       </div>
-      {isLoading ? (
+      {isKycLoading || isPaymentsLoading || isOrdersLoading ? (
         <div className='flex flex-1 items-center justify-center'>
           <span className='animate-spin'>
             <Loader />
@@ -85,7 +123,7 @@ const BasicInfo = ({
         <KycVerification serviceProviderId={userContact._id} />
       ) : (
         <div className='flex flex-1 flex-col justify-between gap-2 px-6 py-[50px] pr-[66px] lg:flex-row'>
-          <div className='flex gap-3'>
+          <div className='relative flex gap-3'>
             <BookingsIcon />
             <div>
               <p className='text-large text-[#342f2a] dark:text-white'>Total Bookings</p>
@@ -93,19 +131,31 @@ const BasicInfo = ({
                 {totalBookings}
               </p>
             </div>
+            <InfoIcon
+              onClick={handleShowTotalBookings}
+              className='text-[#711E00] dark:text-white'
+            />
+            {bookings && (
+              <div className='absolute right-10 top-10 w-[250px] rounded-md border bg-white py-1 shadow-sm dark:bg-dark-primary'>
+                {bookingsData.map((data) => (
+                  <div
+                    key={data.title}
+                    className='flex items-center justify-between gap-10 px-5 py-2 text-sm'
+                  >
+                    <h1 className='text-gray-400'>{data.title}</h1>
+                    <p className='text-[#711E00] dark:text-dark-accent'>{data.count}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className='hidden h-full border-r border-[#eceae8] dark:border-gray-200 lg:block'></div>
           <div className='flex gap-3'>
             <SpendingsIcon />
             <div>
-              <p className='text-large text-gray-700 dark:text-white'>
-                {transactions && !totalSpendings ? 'Total Profit' : 'Total Spendings'}
-              </p>
+              <p className='text-large text-gray-700 dark:text-white'>Total Profit</p>
               <p className='heading-h4 font-semibold text-gray-700 dark:text-dark-tertiary'>
-                ₦
-                {transactions && !totalSpendings
-                  ? transactions[0]?.totalAmount?.toLocaleString('en-US') || 0
-                  : totalSpendings?.toLocaleString('en-US') || 0}
+                ₦{totalProfit.toLocaleString('en-NG')}
               </p>
             </div>
           </div>

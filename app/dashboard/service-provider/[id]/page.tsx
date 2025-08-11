@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// Update the ServiceProviderProfilePage component
 'use client';
 import Link from 'next/link';
 import PageHeading from '../../components/PageHeading';
@@ -19,6 +20,7 @@ import {
   deactivateServiceProvider,
   fetchServiceProvidersActivities,
   fetchServiceProviderReviews,
+  fetchServiceProviderPayments,
 } from '@/app/api/apiClient';
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
@@ -29,24 +31,6 @@ import dayjs from 'dayjs';
 import ReviewsPage from './Reviews';
 
 dayjs.extend(relativeTime);
-
-type Reviews = {
-  _id: string;
-  rating: number;
-  review: string;
-  createdAt: string;
-  customerFirstName: string;
-  customerLastName: string;
-  customerImage: string | null;
-  bookingId?: string;
-};
-
-type ReviewsData = {
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  data: Reviews[];
-};
 
 const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -122,22 +106,38 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
     enabled: selectedPageOption === 'reviews',
   });
 
+  // Fetch payment data
+  const { data: paymentsData, isLoading: isPaymentsDataLoading } = useQuery({
+    queryKey: ['serviceProviderPayments', params.id, currentPage],
+    queryFn: () => fetchServiceProviderPayments(params.id),
+    enabled: selectedPageOption === 'payment',
+  });
+
+  // Map payment data to PaymentInfo format
   const paymentInfo: PaymentInfo = profileData?.user?.accountDetails?.[0]
     ? {
         accountName: profileData.user.accountDetails[0].accountName,
         accountNo: profileData.user.accountDetails[0].accountNumber,
-        bank: 'Unknown',
-        recentTransactions: Array.from({ length: 6 }, () => ({
-          title: 'Order #000085752257',
-          type: 'Order Payment',
-          amount: 326.8,
-          date: Date.now() - 30 * 24 * 60 * 60 * 1000,
-        })),
+        bankName: profileData.user.accountDetails[0].bankName,
+        recentTransactions:
+          paymentsData?.data?.map(
+            (transaction: {
+              reference: string;
+              type: string;
+              amount: number;
+              createdAt: string;
+            }) => ({
+              title: `Order #${transaction.reference}`,
+              type: transaction.type === 'CREDIT' ? 'Order Payment Received' : 'Order Payment Sent',
+              amount: transaction.amount,
+              date: transaction.createdAt,
+            }),
+          ) || [],
       }
     : {
         accountName: 'N/A',
         accountNo: 'N/A',
-        bank: 'N/A',
+        bankName: 'N/A',
         recentTransactions: [],
       };
 
@@ -207,7 +207,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
             ))}
           {selectedPageOption === 'payment' &&
             (kycData?.data?.kycStatus === 'Approved' ? (
-              isOrdersDataLoading ? (
+              isPaymentsDataLoading ? (
                 <SectionLoader height='300px' />
               ) : (
                 <Payment paymentInfo={paymentInfo} />

@@ -26,4 +26,6 @@ export default class ApiRoutes {
   static Cron: string = '/cron';
 
   static Kyc: string = '/kyc';
+
+  static Waitlist: string = '/waitlist';
 }
