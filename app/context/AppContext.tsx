@@ -4,8 +4,24 @@ import { BookingResponse } from '../lib/mockTypes';
 import { registerUnauthorizedSetter } from '../api/apiClient';
 import { usePathname } from 'next/navigation';
 
+interface BookingDetails {
+  _id: string;
+  statusTimestamps: {
+    [key: string]: string | null;
+  };
+  bookingDate: string;
+  carBrand: string;
+  carModel: string;
+  serviceMode: string[];
+  serviceType: string;
+  serviceProviderFirstName: string;
+  serviceProviderLastName: string;
+  minPrice: number;
+  maxPrice: number;
+}
+
 // Define proper types for order details
-interface OrderData {
+export interface OrderData {
   _id: string;
   userId: string;
   createdAt: string;
@@ -16,10 +32,21 @@ interface OrderData {
   status: string;
   firstName: string;
   lastName: string;
-  location?: string;
 }
 
 type AppContextType = {
+  bookDetails: {
+    display: boolean;
+    data: BookingDetails | null;
+    isLoading: boolean;
+    heading: string;
+  };
+  setBookDetails: Dispatch<{
+    display: boolean;
+    data: BookingDetails | null;
+    isLoading: boolean;
+    heading: string;
+  }>;
   isSidebarOpen: boolean;
   setIsSidebarOpen: Dispatch<boolean>;
   userDetails: {
@@ -36,6 +63,7 @@ type AppContextType = {
     name: string | null | undefined;
     email: string | null | undefined;
     image: string | null | undefined;
+    privileges?: string[];
   }>;
   defaultUserDetails: {
     id: string;
@@ -158,13 +186,25 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     } else if (JSON.stringify(userDetails) === JSON.stringify(defaultUserDetails)) {
       localStorage.removeItem('currentUser');
     }
-  }, [userDetails]);
+  }, [userDetails, defaultUserDetails]);
 
   const pathname = usePathname();
 
   useEffect(() => {
     setUnauthorized(false);
   }, [pathname]);
+
+  const [bookDetails, setBookDetails] = useState<{
+    display: boolean;
+    data: BookingDetails | null;
+    isLoading: boolean;
+    heading: string;
+  }>({
+    display: false,
+    data: null,
+    isLoading: false,
+    heading: '',
+  });
 
   const resetContext = () => {
     setUserDetails(defaultUserDetails);
@@ -203,6 +243,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         bookingDetails,
         setBookingDetails,
         orderDetails,
+        bookDetails, // Add this
+        setBookDetails,
         setOrderDetails,
         unauthorized,
         setUnauthorized,

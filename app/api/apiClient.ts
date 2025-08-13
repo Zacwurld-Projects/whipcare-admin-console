@@ -211,6 +211,24 @@ export const fetchUserProfile = async (id: string) => {
   }
 };
 
+export const fetchUserBookings = async (id: string) => {
+  try {
+    const response = await API.get(`${ApiRoutes.Users}/${id}/bookings`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+
+export const fetchUserBookingsById = async (id: string, bookingId: string) => {
+  try {
+    const response = await API.get(`${ApiRoutes.Users}/${id}/booking/${bookingId}`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+
 export const fetchUserActivity = (id: string, pageSize: number = 6, pageNumber: number = 1) =>
   fetchTableResponse(`/activity/${id}`, pageSize, pageNumber);
 //  #endregion

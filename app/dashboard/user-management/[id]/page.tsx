@@ -1,16 +1,25 @@
 'use client';
 import Link from 'next/link';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import Profile from './Profile';
-// import HistoryTable from '../../components/tables/HistoryTable';
 import ActivityTable from '../../components/tables/ActivityTable';
 import ProfileOptions from '../../components/profile/ProfileOptions';
 import { useQuery } from '@tanstack/react-query';
-import { fetchUserActivity, fetchUserKpis, fetchUserProfile } from '@/app/api/apiClient';
+import {
+  fetchUserActivity,
+  fetchUserKpis,
+  fetchUserProfile,
+  fetchUserBookings,
+} from '@/app/api/apiClient';
 import PageLoader from '../../components/Loaders/PageLoader';
 import SectionLoader from '../../components/Loaders/SectionLoader';
 import BasicInfo from '../../components/profile/BasicInfoUser';
-// import HistoryTable from '../../components/tables/HistoryTable';
+import { useRouter } from 'next/navigation';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import BookingsTable from '../../components/tables/components/BookingsTable';
+
+dayjs.extend(advancedFormat);
 
 const DisplayPageOption = ({
   isLoading,
@@ -27,9 +36,39 @@ const DisplayPageOption = ({
 };
 
 const UserProfilePage = ({ params }: { params: { id: string } }) => {
-  const pageOptions = ['profile', 'bookings', 'activities']; //removed bookings
+  const router = useRouter();
+  const pageOptions = ['profile', 'bookings', 'activities'];
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
-  const [currentActivitypage, setCurrentActivityPage] = useState(1);
+  const [currentActivityPage, setCurrentActivityPage] = useState(1);
+  const [currentBookingsPage, setCurrentBookingsPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDates, setSelectedDates] = useState<{ minDate: string; maxDate: string }>({
+    minDate: '',
+    maxDate: '',
+  });
+
+  // Sync selectedDates with URL params on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setSelectedDates({
+        minDate: params.get('minDate') || '',
+        maxDate: params.get('maxDate') || '',
+      });
+    }
+  }, []);
+
+  // Update URL when selectedDates changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (selectedDates.minDate) url.searchParams.set('minDate', selectedDates.minDate);
+      else url.searchParams.delete('minDate');
+      if (selectedDates.maxDate) url.searchParams.set('maxDate', selectedDates.maxDate);
+      else url.searchParams.delete('maxDate');
+      router.replace(url.pathname + url.search, { scroll: false });
+    }
+  }, [selectedDates, router]);
 
   const useFetchUserKpis = useQuery({
     queryKey: ['fetchUserKpis', params.id],
@@ -43,9 +82,15 @@ const UserProfilePage = ({ params }: { params: { id: string } }) => {
   });
 
   const useFetchUserActivity = useQuery({
-    queryKey: ['fetchUserActivity', params.id, currentActivitypage],
-    queryFn: () => fetchUserActivity(params.id, 6, currentActivitypage),
+    queryKey: ['fetchUserActivity', params.id, currentActivityPage],
+    queryFn: () => fetchUserActivity(params.id, 6, currentActivityPage),
     enabled: selectedPageOption === 'activities',
+  });
+
+  const useFetchUserBookings = useQuery({
+    queryKey: ['fetchUserBookings', params.id, selectedDates.minDate, selectedDates.maxDate],
+    queryFn: () => fetchUserBookings(params.id),
+    enabled: selectedPageOption === 'bookings',
   });
 
   if (useFetchUserKpis.isLoading) {
@@ -64,7 +109,8 @@ const UserProfilePage = ({ params }: { params: { id: string } }) => {
         </Link>
         <p className='text-medium font-medium text-[#27231f] dark:text-dark-tertiary'>{'>'}</p>
         <p className='heading-h5 font-medium text-[#27231f] dark:text-dark-tertiary'>
-          {useFetchUserKpis.data.userContact.firstName} {useFetchUserKpis.data.userContact.lastName}
+          {useFetchUserKpis.data?.userContact.firstName}{' '}
+          {useFetchUserKpis.data?.userContact.lastName}
         </p>
       </div>
       <BasicInfo data={useFetchUserKpis.data} />
@@ -79,42 +125,39 @@ const UserProfilePage = ({ params }: { params: { id: string } }) => {
           PageOption={<Profile userProfile={useFetchUserProfile.data} />}
         />
       )}
-      {/* {selectedPageOption === 'bookings' && (
-        <HistoryTable
-          type='users'
-          heading='Bookings History'
-          tableHeadings={[
-            'Booking ID',
-            'Booking Date',
-            'Phone Number',
-            'Location',
-            'Service Fee',
-            'Status',
-          ]}
-          tableContent={Array.from({ length: 12 }, (_, i) => {
-            return {
-              id: '12346WXYZ',
-              bookingDate: Date.now() - 20 * 30 * 60 * 60 * 1000,
-              phoneNo: '+1 356 786 3732',
-              location: '290 m near Grand Play Lekki Lagos',
-              status: i > 2 ? 'completed' : 'pending',
-              bookingStatus: i > 2 ? 'completed' : '',
-              car: 'BMW M6',
-              service: 'Mechanic Service',
-              serviceType: 'Pick Up Service',
-              serviceProvider: 'James Fox',
-              brakeServices: '2',
-              total: '2.49',
-            };
-          })}
+      {selectedPageOption === 'bookings' && (
+        <DisplayPageOption
+          isLoading={useFetchUserBookings.isLoading}
+          PageOption={
+            <BookingsTable
+              heading='Bookings History'
+              tableHeadings={[
+                'Booking ID',
+                'Booking Date',
+                'Phone Number',
+                'Location',
+                'Service Fee',
+                'Status',
+              ]}
+              tableContent={useFetchUserBookings.data?.data || []}
+              currentPage={currentBookingsPage}
+              setCurrentPage={setCurrentBookingsPage}
+              totalCount={useFetchUserBookings.data?.totalCount || 0}
+              contentPerPage={useFetchUserBookings.data?.pageSize || 10}
+              userId={params.id}
+              search={searchTerm}
+              setSearch={setSearchTerm}
+              onSearch={(value) => setSearchTerm(value)}
+            />
+          }
         />
-      )} */}
+      )}
       {selectedPageOption === 'activities' && (
         <DisplayPageOption
           isLoading={useFetchUserActivity.isLoading}
           PageOption={
             <ActivityTable
-              currentPage={currentActivitypage}
+              currentPage={currentActivityPage}
               setCurrentPage={setCurrentActivityPage}
               tableHeadings={['Activity Type', 'Description', 'Date & time added', 'Status', '']}
               tableContent={useFetchUserActivity.data}
@@ -125,4 +168,5 @@ const UserProfilePage = ({ params }: { params: { id: string } }) => {
     </>
   );
 };
+
 export default UserProfilePage;

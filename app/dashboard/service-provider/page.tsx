@@ -184,6 +184,7 @@ const ServiceProviderPage = () => {
         ...kpi,
         count: availabilityData.data.counts.available,
         title: 'Available Service Providers',
+        growth: kpi.growth,
       };
     }
     if (
@@ -196,10 +197,22 @@ const ServiceProviderPage = () => {
         ...kpi,
         count: availabilityData.data.counts.unavailable,
         title: 'Unavailable Service Providers',
+        growth: kpi.growth,
       };
     }
     return kpi;
   });
+  // const mergedKpiData = kpiData.map((kpi) => {
+  //   if (availabilityData?.data?.counts) {
+  //     if (kpi.id === 'activeServiceProvider') {
+  //       return { ...kpi, count: availabilityData.data.counts.available, growth: kpi.growth };
+  //     }
+  //     if (kpi.id === 'inActiveServiceProvider') {
+  //       return { ...kpi, count: availabilityData.data.counts.unavailable, growth: kpi.growth };
+  //     }
+  //   }
+  //   return kpi;
+  // });
 
   return (
     <>
