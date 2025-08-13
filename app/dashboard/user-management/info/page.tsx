@@ -5,7 +5,7 @@ import InfoTable from '../../components/tables/InfoTable';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import SectionLoader from '../../components/Loaders/SectionLoader';
-// import OpenLinkIcon from '../../assets/openLinkIcon.svg';
+import OpenLinkIcon from '../../assets/openLinkIcon.svg';
 import Link from 'next/link';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
@@ -101,7 +101,7 @@ const UserManagementInfo = () => {
                     <td className='capitalize'>{dayjs(item.lastLogin).format('MMM Do, YYYY')}</td>
                     <td>
                       <Link href={`/dashboard/user-management/${item._id}`}>
-                        {/* <OpenLinkIcon /> */}
+                        <OpenLinkIcon />
                       </Link>
                     </td>
                   </>
