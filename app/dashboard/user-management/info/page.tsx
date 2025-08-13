@@ -10,24 +10,22 @@ import Link from 'next/link';
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { BaseData } from '@/app/lib/mockTypes';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { TableData } from '@/app/types/shared';
 
 dayjs.extend(advancedFormat);
 
 const UserManagementInfo = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
-  const [userData, setUserData] = useState<TableData<BaseData>>({
-    data: [],
-    pageNumber: 0,
-    pageSize: 0,
-    totalCount: 0,
-  });
+  const [search, setSearch] = useState(searchParams.get('search') || '');
+  const [error, setError] = useState<string | null>(null);
 
   const useFetchUser = useQuery({
-    queryKey: ['fetchFullUsers', currentPage],
-    queryFn: async () => fetchUsers(15, currentPage),
+    queryKey: ['fetchFullUsers', currentPage, search],
+    queryFn: async () => fetchUsers(15, currentPage, search),
   });
 
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -36,11 +34,33 @@ const UserManagementInfo = () => {
     if (!useFetchUser.isLoading && useFetchUser.data) setIsInitialLoad(false);
   }, [useFetchUser.isLoading, useFetchUser.data]);
 
+  const [userData, setUserData] = useState<TableData<BaseData>>({
+    data: [],
+    pageNumber: 0,
+    pageSize: 0,
+    totalCount: 0,
+  });
+
   useEffect(() => {
     if (useFetchUser.data) {
       setUserData(useFetchUser.data);
+      setError(null);
     }
   }, [useFetchUser.data]);
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+
+    // Update the URL with the search query
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set('search', value);
+    } else {
+      params.delete('search');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <>
@@ -50,6 +70,7 @@ const UserManagementInfo = () => {
           <SectionLoader height='70vh' />
         ) : (
           <>
+            {error && <div className='mb-4 text-red-500'>{error}</div>}
             <InfoTable
               onFilterClick={() => {}}
               isLoading={useFetchUser.isLoading}
@@ -86,10 +107,8 @@ const UserManagementInfo = () => {
                   </>
                 );
               }}
-              search={''}
-              onSearch={function (): void {
-                throw new Error('Function not implemented.');
-              }}
+              search={search}
+              onSearch={handleSearch}
             />
           </>
         )}

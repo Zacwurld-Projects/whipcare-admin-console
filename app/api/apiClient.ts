@@ -67,11 +67,17 @@ const fetchKpis = async (url: string, minDate: string = '', maxDate: string = ''
   }
 };
 
-const fetchTableResponse = async (url: string, pageSize: number, pageNumber: number) => {
+const fetchTableResponse = async (
+  url: string,
+  pageSize: number,
+  pageNumber: number,
+  search?: string,
+) => {
   try {
     const params = new URLSearchParams();
     if (pageSize) params.append('pageSize', pageSize.toString());
     if (pageNumber) params.append('pageNumber', pageNumber.toString());
+    if (search) params.append('search', search);
 
     const response = await API.get(`${url}${params ? `?${params}` : ''}`);
     return response.data;
@@ -169,9 +175,24 @@ export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = 
 export const fetchUserManagementKpis = async (maxDate: string = '', minDate: string = '') =>
   fetchKpis(ApiRoutes.Users, minDate, maxDate);
 
-export const fetchUsers = async (pageSize: number = 15, pageNumber: number = 1) =>
-  fetchTableResponse(`${ApiRoutes.Users}`, pageSize, pageNumber);
-
+export const fetchUsers = async (
+  pageSize: number = 15,
+  pageNumber: number = 1,
+  search: string = '',
+) => {
+  try {
+    const response = await fetchTableResponse(`${ApiRoutes.Users}`, pageSize, pageNumber, search);
+    if (!response || !response.data || response.data.length === 0) {
+      console.warn('No users returned from API:', {
+        response,
+        url: `${ApiRoutes.Users}?pageSize=${pageSize}&pageNumber=${pageNumber}${search ? `&search=${search}` : ''}`,
+      });
+    }
+    return response;
+  } catch (error) {
+    catchError(error);
+  }
+};
 export const fetchUserKpis = async (id: string) => {
   try {
     const response = await API.get(`${ApiRoutes.Users}/${id}/kpis`);
