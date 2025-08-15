@@ -121,7 +121,7 @@ const UserManagementInfo = () => {
 
 const UserManagementInfoWithSuspense = () => {
   return (
-    <Suspense fallback={<SpinLoader size={30} color='#4A5568' thickness={3} />}>
+    <Suspense fallback={<SpinLoader size={30} color='#4A558' thickness={3} />}>
       <UserManagementInfo />
     </Suspense>
   );
