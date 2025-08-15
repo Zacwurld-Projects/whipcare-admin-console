@@ -12,6 +12,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { BaseData } from '@/app/lib/mockTypes';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { TableData } from '@/app/types/shared';
+import { Suspense } from 'react';
+import SpinLoader from '../../components/Loaders/SpinLoader';
 
 dayjs.extend(advancedFormat);
 
@@ -116,4 +118,13 @@ const UserManagementInfo = () => {
     </>
   );
 };
-export default UserManagementInfo;
+
+const UserManagementInfoWithSuspense = () => {
+  return (
+    <Suspense fallback={<SpinLoader size={30} color='#4A5568' thickness={3} />}>
+      <UserManagementInfo />
+    </Suspense>
+  );
+};
+
+export default UserManagementInfoWithSuspense;
