@@ -421,6 +421,23 @@ export const fetchServiceBookingDetails = async (bookingId: string) => {
     catchError(err);
   }
 };
+
+export const fetchServiceBookingsSummary = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceBooking}/booking-data`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
+export const fetchServiceBookingsRevenueSummary = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceBooking}/revenue-data`);
+    return response.data;
+  } catch (err) {
+    catchError(err);
+  }
+};
 // #endregion
 
 // #region CAR MANGEMENT

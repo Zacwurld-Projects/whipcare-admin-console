@@ -14,9 +14,10 @@ import { useQuery } from '@tanstack/react-query';
 import PageLoader from '../components/Loaders/PageLoader';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import useGetBookingDetails from './useGetBookingDetails';
-import LineChart from '../components/charts/LineChart';
 import { TableData } from '@/app/types/shared';
 import { ServiceBookingData } from '@/app/types/service-bookings';
+import BookingsChart from '../components/charts/BookingsChart';
+import BookingsRevenueChart from '../components/charts/BookingsRevenueChart';
 
 dayjs.extend(advancedFormat);
 
@@ -83,8 +84,8 @@ const ServiceBookingsPage = () => {
         isLoading={useFetchOverviewKpis.isLoading}
       />
       <div className='mb-12 flex w-full flex-col items-center gap-[18px] *:flex-1 min-[850px]:flex-row'>
-        <LineChart heading='Revenue' className='w-full min-[850px]:w-1/2' />
-        <LineChart className='w-full min-[850px]:w-1/2' filter heading='Booking Summary' />
+        <BookingsRevenueChart heading='Revenue' className='w-full min-[850px]:w-1/2' />
+        <BookingsChart className='w-full min-[850px]:w-1/2' filter heading='Booking Summary' />
       </div>
       <PlainTable
         page='service-bookings'
