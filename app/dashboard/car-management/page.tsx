@@ -7,7 +7,7 @@ import NumbersOverview from '../components/NumbersOverview';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import useGetOverviewKpis from '@/app/hooks/useGetOverviewKpis';
-import { fetchCarMangemntKpis, fetchCars } from '@/app/api/apiClient';
+import { fetchCarManagementKpis, fetchCars } from '@/app/api/apiClient';
 import PageLoader from '../components/Loaders/PageLoader';
 import InfoTable from '../components/tables/InfoTable';
 import dayjs from 'dayjs';
@@ -28,7 +28,7 @@ const carManagementStats = [
   {
     icon: BagIcon,
     title: 'Number of Registered Cars',
-    id: 'registeredCarsr',
+    id: 'registeredCars',
     count: 0,
     growth: 0,
   },
@@ -57,7 +57,7 @@ const CarManagementPage = () => {
   const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(
     carManagementStats,
     selectedDates,
-    fetchCarMangemntKpis,
+    fetchCarManagementKpis,
   );
 
   const useFetchCarList = useQuery({

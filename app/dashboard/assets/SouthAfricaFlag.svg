@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" role="img" aria-label="Flag of South Africa">
+  <!-- Base fields: red (top) and blue (bottom) -->
+  <rect width="60" height="20" y="0" fill="#de3831"/>
+  <rect width="60" height="20" y="20" fill="#002395"/>
+
+  <!-- Black triangle at the hoist -->
+  <polygon points="0,0 18,20 0,40" fill="#000000"/>
+
+  <!-- White fimbriation for the Y-shape -->
+  <polygon points="0,0 27,20 0,40 0,30 15,20 0,10" fill="#ffffff" opacity="1"/>
+  <polygon points="27,16 60,16 60,24 27,24" fill="#ffffff"/>
+
+  <!-- Gold fimbriation inside white -->
+  <polygon points="0,4 23,20 0,36 0,28 13,20 0,12" fill="#ffb612"/>
+  <polygon points="23,18 60,18 60,22 23,22" fill="#ffb612"/>
+
+  <!-- Green Y-shape -->
+  <polygon points="0,6 21,20 0,34 0,26 12,20 0,14" fill="#007a4d"/>
+  <polygon points="21,19 60,19 60,21 21,21" fill="#007a4d"/>
+</svg>

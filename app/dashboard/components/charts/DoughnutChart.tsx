@@ -2,6 +2,7 @@
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
+import ChartEmptyState from '../empty-states/ChartEmptyState';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,6 +21,8 @@ const DoughnutChart = ({
   xLabels: string[];
   yLabel: string;
 }) => {
+  const hasData = Array.isArray(data) && data.some((v) => typeof v === 'number' && v > 0);
+
   return (
     <div className='rounded-lg bg-white p-4 dark:bg-dark-primary'>
       <div className='mb-3 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-white'>
@@ -28,26 +31,30 @@ const DoughnutChart = ({
           Last updated: {timeAgo(timestamp)}
         </p>
       </div>
-      <div className='relative h-[300px]'>
-        <Doughnut
-          options={{
-            responsive: true,
-            radius: 120,
-            maintainAspectRatio: false,
-          }}
-          data={{
-            labels: xLabels,
-            datasets: [
-              {
-                label: yLabel,
-                data,
-                backgroundColor: colors,
-                borderWidth: 0,
-              },
-            ],
-          }}
-        />
-      </div>
+      {!hasData ? (
+        <ChartEmptyState subText='Try adjusting filters or check back later.' />
+      ) : (
+        <div className='relative h-[300px]'>
+          <Doughnut
+            options={{
+              responsive: true,
+              radius: 120,
+              maintainAspectRatio: false,
+            }}
+            data={{
+              labels: xLabels,
+              datasets: [
+                {
+                  label: yLabel,
+                  data,
+                  backgroundColor: colors,
+                  borderWidth: 0,
+                },
+              ],
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

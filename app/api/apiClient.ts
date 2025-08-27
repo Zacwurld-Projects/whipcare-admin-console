@@ -72,12 +72,14 @@ const fetchTableResponse = async (
   pageSize: number,
   pageNumber: number,
   search?: string,
+  sort?: string,
 ) => {
   try {
     const params = new URLSearchParams();
     if (pageSize) params.append('pageSize', pageSize.toString());
     if (pageNumber) params.append('pageNumber', pageNumber.toString());
     if (search) params.append('search', search);
+    if (sort) params.append('sort', sort);
 
     const response = await API.get(`${url}${params ? `?${params}` : ''}`);
     return response.data;
@@ -169,6 +171,32 @@ export const resetUserPassword = async (
 export const fetchOverViewKpis = async (maxDate: string = '', minDate: string = '') =>
   fetchKpis(ApiRoutes.Overview, minDate, maxDate);
 
+export const fetchOverviewRevenue = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Overview}/service-revenue`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchOverviewServiceType = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Overview}/service-users`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const fetchOverviewPaymentMethod = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Overview}/payment-method`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
 // #endregion
 
 // #region USER MANAGEMENT
@@ -205,7 +233,6 @@ export const fetchUserKpis = async (id: string) => {
 export const fetchUserMapping = async () => {
   try {
     const response = await API.get(`${ApiRoutes.Users}/user-mapping`);
-
     return response.data;
   } catch (error) {
     catchError(error);
@@ -441,7 +468,7 @@ export const fetchServiceBookingsRevenueSummary = async () => {
 // #endregion
 
 // #region CAR MANGEMENT
-export const fetchCarMangemntKpis = (minDate = '', maxDate = '') =>
+export const fetchCarManagementKpis = (minDate = '', maxDate = '') =>
   fetchKpis(`${ApiRoutes.Car}`, minDate, maxDate);
 
 export const fetchCars = (pageSize = 15, pageNumber = 1) =>

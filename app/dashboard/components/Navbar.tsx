@@ -1,7 +1,8 @@
 'use client';
 import LightModeIcon from '../assets/lightModeIcon.svg';
 import ChevronDownIcon from '../assets/chevronDown.svg';
-import FlagIcon from '../assets/FlagIcon.svg';
+import NigeriaFlag from '../assets/NigeriaFlag.svg';
+import SouthAfricaFlag from '../assets/SouthAfricaFlag.svg';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
@@ -40,6 +41,8 @@ const Navbar = () => {
     defaultUserDetails,
     isDark,
     toggleTheme,
+    selectedCountry,
+    setSelectedCountry,
   } = useGlobalContext();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -54,6 +57,14 @@ const Navbar = () => {
   const notificationsMenuBtnRef = useRef<HTMLButtonElement>(null);
   const { isMenuOpen: isNotificationsMenuOpen, setIsMenuOpen: setIsNotificationsMenuOpen } =
     useMenu(notificationsMenuBtnRef, notificationsMenuRef);
+
+  // Country selector dropdown
+  const countryMenuRef = useRef<HTMLDivElement>(null);
+  const countryMenuBtnRef = useRef<HTMLButtonElement>(null);
+  const { isMenuOpen: isCountryMenuOpen, setIsMenuOpen: setIsCountryMenuOpen } = useMenu(
+    countryMenuBtnRef,
+    countryMenuRef,
+  );
 
   const useLogUserOut = useMutation({
     mutationKey: ['logUserOut'],
@@ -89,11 +100,52 @@ const Navbar = () => {
           </div>
         </div>
         <div className='flex items-center gap-4 pr-[25px]'>
-          <div>
-            <button className='flex items-center gap-2'>
-              <FlagIcon />
+          <div className='relative'>
+            <button
+              className='flex items-center gap-2'
+              aria-label='country selector'
+              ref={countryMenuBtnRef}
+              onClick={() => {
+                setIsUserMenuOpen(false);
+                setIsNotificationsMenuOpen(false);
+                setIsCountryMenuOpen(!isCountryMenuOpen);
+              }}
+            >
+              {selectedCountry === 'Nigeria' ? (
+                <NigeriaFlag className='size-[20px]' />
+              ) : (
+                <SouthAfricaFlag className='size-[20px]' />
+              )}
               <ChevronDownIcon className='dark:*:stroke-white' />
             </button>
+            {/* Country dropdown */}
+            {isCountryMenuOpen && (
+              <div
+                className='absolute left-0 mt-2 w-[180px] rounded-lg bg-white shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)] dark:bg-dark-secondary'
+                ref={countryMenuRef}
+              >
+                <button
+                  className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${selectedCountry === 'Nigeria' ? 'bg-gray-100 dark:bg-dark-primary' : ''}`}
+                  onClick={() => {
+                    setSelectedCountry('Nigeria');
+                    setIsCountryMenuOpen(false);
+                  }}
+                >
+                  <NigeriaFlag className='size-[20px]' />
+                  <span className='text-small dark:text-white'>Nigeria</span>
+                </button>
+                <button
+                  className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${selectedCountry === 'South Africa' ? 'bg-gray-100 dark:bg-dark-primary' : ''}`}
+                  onClick={() => {
+                    setSelectedCountry('South Africa');
+                    setIsCountryMenuOpen(false);
+                  }}
+                >
+                  <SouthAfricaFlag className='size-[20px]' />
+                  <span className='text-small dark:text-white'>South Africa</span>
+                </button>
+              </div>
+            )}
           </div>
           <div className='relative'>
             <button

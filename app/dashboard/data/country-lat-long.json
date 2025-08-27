@@ -1273,6 +1273,79 @@
       "longitude": 8
     },
     {
+      "country": "Nigeria",
+      "state": "Anambra",
+      "latitude": 6.2088,
+      "longitude": 6.7734
+    },
+    {
+      "country": "Nigeria",
+      "state": "Delta",
+      "latitude": 5.9926,
+      "longitude": 5.9238
+    },
+    {
+      "country": "Nigeria",
+      "state": "Edo",
+      "latitude": 6.6366,
+      "longitude": 6.1362
+    },
+    {
+      "country": "Nigeria",
+      "state": "Ekiti",
+      "latitude": 7.6291,
+      "longitude": 5.2974
+    },
+    {
+      "country": "Nigeria",
+      "state": "Enugu",
+      "latitude": 6.4446,
+      "longitude": 7.5147
+    },
+    {
+      "country": "Nigeria",
+      "state": "Federal Capital Territory",
+      "city": "Abuja",
+      "latitude": 9.0765,
+      "longitude": 7.3986
+    },
+    {
+      "country": "Nigeria",
+      "state": "Imo",
+      "latitude": 5.4833,
+      "longitude": 7.0333
+    },
+    {
+      "country": "Nigeria",
+      "state": "Lagos",
+      "latitude": 6.5244,
+      "longitude": 3.3792
+    },
+    {
+      "country": "Nigeria",
+      "state": "Nasarawa",
+      "latitude": 8.5,
+      "longitude": 8.0
+    },
+    {
+      "country": "Nigeria",
+      "state": "Ogun",
+      "latitude": 6.9638,
+      "longitude": 3.4687
+    },
+    {
+      "country": "Nigeria",
+      "state": "Osun",
+      "latitude": 7.5,
+      "longitude": 4.5
+    },
+    {
+      "country": "Nigeria",
+      "state": "Rivers",
+      "latitude": 4.7214,
+      "longitude": 6.8045
+    },
+    {
       "country": "Niue",
       "alpha2": "NU",
       "alpha3": "NIU",

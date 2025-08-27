@@ -5,6 +5,8 @@ import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps
 import dayjs from 'dayjs';
 import countryLatLong from '../../data/country-lat-long.json';
 import { fetchUserMapping } from '@/app/api/apiClient';
+import PageLoader from '../Loaders/PageLoader'; // Import PageLoader
+import { useGlobalContext } from '@/app/context/AppContext';
 
 const COLORS = ['#0f973d', '#f3a218', '#f56630', '#6a1b9a', '#00838f'];
 
@@ -29,6 +31,7 @@ const normalizeCountry = (country: string) => {
 };
 
 const CustomerMapping = () => {
+  const { selectedCountry } = useGlobalContext();
   const [markers, setMarkers] = useState<
     Array<{
       location: string;
@@ -37,81 +40,134 @@ const CustomerMapping = () => {
       coordinates: [number, number];
     }>
   >([]);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const loadMapping = async () => {
       try {
         const response = await fetchUserMapping();
-        const userData = response?.data ?? [];
+        const userData = response?.data ?? {}; // Changed to object
 
-        const enrichedMarkers = userData
-          .map((item: { country: string; count: number }) => {
-            const normalized = normalizeCountry(item.country);
+        const entries = Object.entries(userData) as [string, { count: number; country: string }][];
 
+        // Filter to selected country only
+        const enrichedMarkers = entries
+          .filter(
+            ([, stateData]) =>
+              normalizeCountry(stateData.country).toLowerCase() === selectedCountry.toLowerCase(),
+          )
+          .map(([stateName, stateData]) => {
+            const normalizedCountry = normalizeCountry(stateData.country);
+
+            // Try to find state-level coordinates, fall back to country if not found
             const match = countryLatLong.ref_country_codes.find(
-              (country) => country.country.toLowerCase() === normalized.toLowerCase(),
+              (item) =>
+                item.country.toLowerCase() === normalizedCountry.toLowerCase() &&
+                (item.state?.toLowerCase() === stateName.toLowerCase() ||
+                  item.city?.toLowerCase() === stateName.toLowerCase()), // Check for state or city match
             );
 
-            if (!match) return null;
+            // Fallback to country-level coordinates if state/city specific are not found
+            const countryMatch = countryLatLong.ref_country_codes.find(
+              (item) => item.country.toLowerCase() === normalizedCountry.toLowerCase(),
+            );
+
+            let coordinates: [number, number] | undefined = match
+              ? [match.longitude, match.latitude]
+              : countryMatch
+                ? [countryMatch.longitude, countryMatch.latitude]
+                : undefined;
+
+            // Apply a small random offset if coordinates are from a country-level fallback
+            if (coordinates && !match && countryMatch) {
+              const offsetMagnitude = 0.5; // Adjust as needed for visual spread
+              coordinates = [
+                coordinates[0] + (Math.random() - 0.5) * offsetMagnitude,
+                coordinates[1] + (Math.random() - 0.5) * offsetMagnitude,
+              ];
+            }
+
+            if (!coordinates) return null;
 
             return {
-              location: normalized,
-              users: item.count,
-              color: getColorForCountry(normalized),
-              coordinates: [match.longitude, match.latitude] as [number, number],
+              location: `${stateName}, ${normalizedCountry}`,
+              users: stateData.count,
+              color: getColorForCountry(normalizedCountry),
+              coordinates: coordinates,
             };
           })
-          .filter(Boolean); // remove nulls
+          .filter(Boolean) as Array<{
+          location: string;
+          users: number;
+          color: string;
+          coordinates: [number, number];
+        }>; // remove nulls and assert type
 
         setMarkers(enrichedMarkers);
+        console.log('Enriched markers:', enrichedMarkers); // Re-add this line to log the processed data
       } catch (error) {
         console.error('Error fetching user mapping:', error);
+      } finally {
+        setIsLoading(false); // Set loading to false after fetch attempt
       }
     };
 
     loadMapping();
-  }, []);
+  }, [selectedCountry]);
+
+  if (isLoading) {
+    return <PageLoader />; // Display loader while loading
+  }
 
   return (
-    <div className='relative h-[calc(100%-10px)] rounded-lg bg-white p-4 pb-0 dark:bg-dark-primary'>
-      <div className='mb-0 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-gray-500'>
-        <p className='text-medium font-semibold text-gray-800 dark:text-white'>Customer Mapping</p>
-        <p className='text-xsmall text-gray-600 dark:text-[#a0a0b2]'>
-          Last updated: {dayjs(Date.now()).format('MMMM DD, YYYY')}
-        </p>
-      </div>
+    <div className='flex h-full w-full flex-col justify-between rounded-lg bg-white p-4 dark:bg-dark-primary'>
+      <div className='h-[70%] w-full'>
+        <div className='mb-0 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-gray-500'>
+          <p className='text-medium font-semibold text-gray-800 dark:text-white'>
+            Customer Mapping
+          </p>
+          <p className='text-xsmall text-gray-600 dark:text-[#a0a0b2]'>
+            Last updated: {dayjs(Date.now()).format('MMMM DD, YYYY')}
+          </p>
+        </div>
 
-      <div>
-        <ComposableMap>
-          <Geographies geography='/LandTopos.json'>
-            {({ geographies }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  style={{
-                    default: { fill: '#ffece5' },
-                    hover: { fill: '#ffece5' },
-                    pressed: { fill: '#ffece5' },
-                  }}
+        <div>
+          <ComposableMap>
+            <Geographies geography='/LandTopos.json'>
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    style={{
+                      default: { fill: '#ffece5' },
+                      hover: { fill: '#ffece5' },
+                      pressed: { fill: '#ffece5' },
+                    }}
+                  />
+                ))
+              }
+            </Geographies>
+
+            {markers.map(({ location, coordinates, color, users }) => (
+              <Marker key={location} coordinates={coordinates}>
+                <circle
+                  r={Math.max(4, Math.sqrt(users) * 0.7)}
+                  fill={color}
+                  stroke='#fff'
+                  strokeWidth={1}
                 />
-              ))
-            }
-          </Geographies>
-
-          {markers.map(({ location, coordinates, color }) => (
-            <Marker key={location} coordinates={coordinates}>
-              <rect x={-6} y={-6} width={12} height={12} rx={2} ry={2} fill={color} />
-            </Marker>
-          ))}
-        </ComposableMap>
+                <title>{`${location}: ${users} users`}</title>
+              </Marker>
+            ))}
+          </ComposableMap>
+        </div>
       </div>
-
-      <div className='flex-column absolute bottom-[16px] left-[50%] w-[180px] -translate-x-[50%] gap-2'>
+      <div className='flex w-full flex-wrap items-center justify-end gap-x-[20px] gap-y-[10px]'>
         {markers
           .sort((a, b) => b.users - a.users)
           .map((item) => (
-            <div key={item.location} className='flex items-center justify-between'>
+            <div key={item.location} className='flex items-center justify-between gap-5'>
               <div className='flex items-center gap-[20px]'>
                 <div style={{ background: item.color }} className='h-[12px] w-[20px] rounded'></div>
                 <p className='text-xsmall text-gray-800 dark:text-white'>{item.location}</p>

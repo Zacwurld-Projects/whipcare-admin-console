@@ -10,6 +10,7 @@ import ProgressBarChart from './components/charts/ProgressBarChart';
 import { fetchOverViewKpis } from '../api/apiClient';
 import { useState } from 'react';
 import useGetOverviewKpis from '../hooks/useGetOverviewKpis';
+import useGetOverviewCharts from '../hooks/useGetOverviewCharts';
 
 const Overview = () => {
   const [selectedDates, setSelectedDates] = useState({
@@ -45,6 +46,8 @@ const Overview = () => {
     fetchOverViewKpis,
   );
 
+  const { revenue, serviceType, paymentMethod } = useGetOverviewCharts();
+
   return (
     <>
       <PageHeading page='overview' pageFilters setSelectedDates={setSelectedDates} />
@@ -55,10 +58,10 @@ const Overview = () => {
       />
       <div className='mt-6 grid grid-cols-1 gap-6 min-[750px]:grid-cols-2'>
         <BarChart
-          yLabel='Amount(Thousands)'
-          xLabels={['Mech/Tech', 'Wash', 'Hauling', 'Detailing']}
+          yLabel='Amount'
+          xLabels={revenue.labels}
           heading='Revenue'
-          data={[850, 950, 600, 600]}
+          data={revenue.values}
         />
         <ProgressBarChart
           heading='Service Efficiency'
@@ -66,17 +69,17 @@ const Overview = () => {
         />
         <BarChart
           yLabel='Users'
-          xLabels={['Mech/Tech', 'Wash', 'Hauling', 'Detailing']}
+          xLabels={serviceType.labels}
           heading='Service Type'
-          data={[830, 980, 670, 600]}
+          data={serviceType.values}
         />
         <DoughnutChart
           heading='Payment method'
-          colors={['#f56630', '#0f973d']}
-          data={[4000000, 2000000]}
-          xLabels={['Transfer', 'Card']}
+          colors={paymentMethod.colors}
+          data={paymentMethod.values}
+          xLabels={paymentMethod.labels}
           yLabel='Amount Paid'
-          timestamp={Date.now() - 30 * 24 * 60 * 60 * 1000}
+          timestamp={paymentMethod.timestamp}
         />
       </div>
     </>
