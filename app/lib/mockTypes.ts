@@ -43,6 +43,14 @@ export type WaitlistData = {
   role: boolean;
 };
 
+// export interface Address {
+//   id?: string;
+//   address?: string;
+//   type?: string;
+//   landmark?: string;
+//   longitude?: number;
+//   latitude?: number;
+// }
 export interface BaseData {
   _id: string;
   createdAt?: string | undefined;
@@ -65,6 +73,7 @@ export interface BaseData {
   colour?: string;
   lastService?: string | null;
   lastServiceDate?: string | null;
+  address?: Address[];
 }
 
 export type BaseTable<T> = {

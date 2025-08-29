@@ -1,8 +1,8 @@
 'use client';
 import { timeAgo } from '@/app/lib/accessoryFunctions';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-const data = [
+const fallbackData = [
   {
     title: 'Service completion time',
     value: 8000,
@@ -21,14 +21,21 @@ const data = [
   },
 ];
 
+type ProgressItem = { title: string; value: number };
+
 const ProgressBarChart = ({
   heading,
   timestamp,
+  data,
+  isLoading,
 }: {
   heading: string;
   timestamp: number | string;
+  data?: ProgressItem[];
+  isLoading?: boolean;
 }) => {
-  const orderedData = data.sort((a, b) => b.value - a.value);
+  const items = useMemo<ProgressItem[]>(() => (data && data.length ? data : fallbackData), [data]);
+  const orderedData = useMemo(() => [...items].sort((a, b) => b.value - a.value), [items]);
 
   // Hydration fix: Only show formatted date on client
   const [clientDate, setClientDate] = useState<string | null>(null);
@@ -45,15 +52,31 @@ const ProgressBarChart = ({
         </p>
       </div>
       <ul className='flex-column mb-6 mt-8 w-[80%] gap-8'>
-        {orderedData.map((data) => (
-          <li key={data.title} className='flex justify-between px-1'>
-            <p className='text-small text-gray-800 dark:text-white'>{data.title}</p>
+        {orderedData.map((row) => (
+          <li key={row.title} className='flex justify-between px-1'>
+            <p className='text-small text-gray-800 dark:text-white'>
+              {isLoading ? (
+                <span className='inline-block h-[12px] w-[180px] animate-pulse rounded bg-gray-200 dark:bg-gray-700' />
+              ) : (
+                row.title
+              )}
+            </p>
             <div className='flex items-center gap-3'>
-              <div
-                style={{ width: `${data.value / 100}px` }}
-                className={`w-[${data.value / 100}px] block h-[6px] rounded-md bg-[#983504]`}
-              ></div>
-              <p className='text-medium font-bold text-gray-900 dark:text-white'>{data.value}</p>
+              {isLoading ? (
+                <span className='inline-block h-[8px] w-[120px] animate-pulse rounded bg-[#f0d2c2] dark:bg-[#3a2419]' />
+              ) : (
+                <div
+                  style={{ width: `${row.value / 100}px` }}
+                  className={`w-[${row.value / 100}px] block h-[6px] rounded-md bg-[#983504]`}
+                ></div>
+              )}
+              <p className='text-medium font-bold text-gray-900 dark:text-white'>
+                {isLoading ? (
+                  <span className='inline-block h-[14px] w-[40px] animate-pulse rounded bg-gray-200 dark:bg-gray-700' />
+                ) : (
+                  row.value
+                )}
+              </p>
             </div>
           </li>
         ))}

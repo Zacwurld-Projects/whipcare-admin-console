@@ -81,7 +81,7 @@ const ServiceBookingsPage = () => {
       <NumbersOverview
         stats={kpiData}
         className='my-8'
-        isLoading={useFetchOverviewKpis.isLoading}
+        isLoading={useFetchOverviewKpis.isLoading || useFetchOverviewKpis.isFetching}
       />
       <div className='mb-12 flex w-full flex-col items-center gap-[18px] *:flex-1 min-[850px]:flex-row'>
         <BookingsRevenueChart heading='Revenue' className='w-full min-[850px]:w-1/2' />

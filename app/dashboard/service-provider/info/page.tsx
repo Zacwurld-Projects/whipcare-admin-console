@@ -214,6 +214,7 @@ const ServiceProviderInfo = () => {
               'Name',
               'Email address',
               'Phone',
+              'Address',
               'Service Type',
               'Sign up Date',
               'Last Login Date',
@@ -237,6 +238,9 @@ const ServiceProviderInfo = () => {
                 </td>
                 <td>{item.email}</td>
                 <td>{item.phone}</td>
+                <td>
+                  {item.address && item.address.length > 0 ? item.address[0]?.landmark : 'N/A'}
+                </td>
                 <td className='capitalize'>{item.serviceType || ''}</td>
                 <td className='capitalize'>
                   {item.createdAt ? dayjs(item.createdAt).format('MMM DD, YYYY') : ''}

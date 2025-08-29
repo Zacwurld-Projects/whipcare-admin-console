@@ -12,4 +12,14 @@ export type ServiceProviderTableData = {
   kycStatus?: string | null;
   nationality?: string | null;
   serviceType: string[];
+  address?: Address[];
+};
+
+export type Address = {
+  id?: string;
+  address?: string;
+  type?: string;
+  landmark?: string;
+  longitude?: number;
+  latitude?: number;
 };

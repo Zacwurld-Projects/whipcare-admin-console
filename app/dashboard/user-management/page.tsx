@@ -88,7 +88,7 @@ const UserManagementPage = () => {
       <NumbersOverview
         stats={kpiData}
         className='mt-8'
-        isLoading={useFetchOverviewKpis.isLoading}
+        isLoading={useFetchOverviewKpis.isLoading || useFetchOverviewKpis.isFetching}
       />
       <div className='mb-8 mt-6 grid grid-cols-1 gap-6 min-[850px]:grid-cols-2'>
         <div className='grid grid-flow-row grid-cols-2 gap-x-4 gap-y-8'>
@@ -109,6 +109,7 @@ const UserManagementPage = () => {
           'User name',
           'Email address',
           'Phone',
+          'Address',
           'Sign up Date',
           'Last Login Date',
           'Action',
@@ -121,6 +122,7 @@ const UserManagementPage = () => {
             </td>
             <td>{item.email}</td>
             <td>{item.phone}</td>
+            <td>{item.address && item.address.length > 0 ? item.address[0]?.landmark : 'N/A'}</td>
 
             <td className='capitalize'>{dayjs(item.createdAt).format('MMM Do, YYYY')}</td>
             <td className='capitalize'>{dayjs(item.lastLogin).format('MMM Do, YYYY')}</td>

@@ -30,9 +30,30 @@ const NumbersOverview = ({
           className={`flex-column mt-0 items-stretch justify-between rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:bg-dark-primary`}
         >
           <div className='center-grid mb-[10px] size-[40px] rounded-full bg-primary-50'>
-            <stat.icon className='dark:*:*:fill-dark-accent' />
+            {isLoading ? (
+              <Skeleton
+                circle
+                width={28}
+                height={28}
+                baseColor={`${isDark ? '#a0a0b2' : '#e4e7ec'}`}
+                highlightColor={`${isDark ? '#e4e7ec' : '#fff'}`}
+              />
+            ) : (
+              <stat.icon className='dark:*:*:fill-dark-accent' />
+            )}
           </div>
-          <p className='text-large text-gray-500 dark:text-white'>{stat.title}</p>
+          <p className='text-large text-gray-500 dark:text-white'>
+            {isLoading ? (
+              <Skeleton
+                width={160}
+                height={18}
+                baseColor={`${isDark ? '#a0a0b2' : '#e4e7ec'}`}
+                highlightColor={`${isDark ? '#e4e7ec' : '#fff'}`}
+              />
+            ) : (
+              stat.title
+            )}
+          </p>
           <div className='flex w-full justify-between'>
             <p className='heading-h2 mt-[2px] font-semibold text-gray-600 dark:text-[#a0a0b2]'>
               {isLoading ? (

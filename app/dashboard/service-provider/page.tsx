@@ -224,7 +224,11 @@ const ServiceProviderPage = () => {
           <NumbersOverview
             stats={mergedKpiData}
             className='mt-8'
-            isLoading={useFetchOverviewKpis.isLoading || isAvailabilityLoading}
+            isLoading={
+              useFetchOverviewKpis.isLoading ||
+              useFetchOverviewKpis.isFetching ||
+              isAvailabilityLoading
+            }
           />
           {/* Display all unique service types */}
           {/* <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div> */}
@@ -239,6 +243,7 @@ const ServiceProviderPage = () => {
               'Name',
               'Email address',
               'Phone',
+              'Address',
               'Service Type',
               'Sign up Date',
               'Last Login Date',
@@ -253,6 +258,9 @@ const ServiceProviderPage = () => {
                 </td>
                 <td>{item.email}</td>
                 <td>{item.phone}</td>
+                <td>
+                  {item.address && item.address.length > 0 ? item.address[0]?.landmark : 'N/A'}
+                </td>
                 {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}
                 <td className='capitalize'>{dayjs(item.createdAt).format('MMM DD, YYYY')}</td>
                 <td className='capitalize'>{dayjs(item.lastLogin).format('MMM DD, YYYY')}</td>

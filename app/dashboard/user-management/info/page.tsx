@@ -85,6 +85,7 @@ const UserManagementInfo = () => {
                 'User name',
                 'Email address',
                 'Phone',
+                'Address',
                 'Sign up Date',
                 'Last Login Date',
                 'Action',
@@ -99,6 +100,9 @@ const UserManagementInfo = () => {
                     </td>
                     <td>{item.email}</td>
                     <td>{item.phone}</td>
+                    <td>
+                      {item.address && item.address.length > 0 ? item.address[0]?.landmark : 'N/A'}
+                    </td>
                     <td className='capitalize'>{dayjs(item.createdAt).format('MMM Do, YYYY')}</td>
                     <td className='capitalize'>{dayjs(item.lastLogin).format('MMM Do, YYYY')}</td>
                     <td>

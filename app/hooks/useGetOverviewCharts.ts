@@ -4,6 +4,7 @@ import {
   fetchOverviewPaymentMethod,
   fetchOverviewRevenue,
   fetchOverviewServiceType,
+  fetchOverviewServiceEfficiency,
 } from '@/app/api/apiClient';
 
 type ChartDataNormalized = { labels: string[]; values: number[]; timestamp?: number };
@@ -89,10 +90,38 @@ const useGetOverviewCharts = () => {
   const revenueQuery = useAutoQuery(['overview-revenue'], fetchOverviewRevenue);
   const serviceTypeQuery = useAutoQuery(['overview-service-type'], fetchOverviewServiceType);
   const paymentMethodQuery = useAutoQuery(['overview-payment-method'], fetchOverviewPaymentMethod);
+  const serviceEfficiencyQuery = useAutoQuery(
+    ['overview-service-efficiency'],
+    fetchOverviewServiceEfficiency,
+  );
 
   const revenue = normalizeToLabelsValues(revenueQuery.data);
   const serviceType = normalizeToLabelsValues(serviceTypeQuery.data);
   const paymentMethod = normalizeToLabelsValues(paymentMethodQuery.data);
+
+  // Normalize service efficiency into ProgressBar items
+  type ProgressItem = { title: string; value: number };
+  const normalizeEfficiency = (input: unknown): { items: ProgressItem[]; timestamp: number } => {
+    const now = Date.now();
+    // If input is a record and has a 'data' property, use input.data, otherwise use input itself.
+    // Cast input to Record<string, unknown> before accessing 'data' to satisfy the linter.
+    const base: unknown =
+      isRecord(input) && 'data' in input ? (input as Record<string, unknown>).data : input;
+
+    let entry: Record<string, unknown> = {};
+    if (Array.isArray(base)) entry = (base[0] ?? {}) as Record<string, unknown>;
+    else if (isRecord(base)) entry = base as Record<string, unknown>;
+
+    const num = (v: unknown) => (typeof v === 'number' ? v : Number(v) || 0);
+    const items: ProgressItem[] = [
+      { title: 'Service completion time', value: num(entry.avgCompletionTime) },
+      { title: 'Repeat service rate', value: num(entry.repeatRate) },
+      { title: 'Service cancellation rate', value: num(entry.cancellationRate) },
+      { title: 'Customer satisfaction score', value: num(entry.avgRating) },
+    ];
+    return { items, timestamp: now };
+  };
+  const efficiency = normalizeEfficiency(serviceEfficiencyQuery.data);
 
   // Fit colors count to labels length for Doughnut chart
   const paymentColors = paymentMethod.labels.length
@@ -116,6 +145,11 @@ const useGetOverviewCharts = () => {
       colors: paymentColors,
       timestamp: paymentMethod.timestamp ?? Date.now(),
       isLoading: paymentMethodQuery.isLoading,
+    },
+    serviceEfficiency: {
+      items: efficiency.items,
+      timestamp: efficiency.timestamp,
+      isLoading: serviceEfficiencyQuery.isLoading,
     },
   };
 };

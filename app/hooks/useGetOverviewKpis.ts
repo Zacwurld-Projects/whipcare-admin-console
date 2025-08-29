@@ -29,6 +29,9 @@ const useGetOverviewKpis = (
   const useFetchOverviewKpis = useQuery({
     queryKey: ['fetchPageKpis', selectedDates.maxDate, selectedDates.minDate],
     queryFn: () => fetchKpiData(selectedDates.maxDate, selectedDates.minDate),
+    // staleTime: 60_000,            // cache considered fresh for 60s
+    refetchOnWindowFocus: false, // don’t refetch on tab focus
+    refetchOnReconnect: false, // optional
   });
 
   useEffect(() => {

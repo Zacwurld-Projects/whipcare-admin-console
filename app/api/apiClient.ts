@@ -196,6 +196,14 @@ export const fetchOverviewPaymentMethod = async () => {
     catchError(error);
   }
 };
+export const fetchOverviewServiceEfficiency = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.Overview}/service-efficiency`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
 
 // #endregion
 

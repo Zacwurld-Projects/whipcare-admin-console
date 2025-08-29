@@ -46,7 +46,7 @@ const Overview = () => {
     fetchOverViewKpis,
   );
 
-  const { revenue, serviceType, paymentMethod } = useGetOverviewCharts();
+  const { revenue, serviceType, paymentMethod, serviceEfficiency } = useGetOverviewCharts();
 
   return (
     <>
@@ -54,7 +54,7 @@ const Overview = () => {
       <NumbersOverview
         stats={kpiData}
         className='mt-8'
-        isLoading={useFetchOverviewKpis.isLoading}
+        isLoading={useFetchOverviewKpis.isLoading || useFetchOverviewKpis.isFetching}
       />
       <div className='mt-6 grid grid-cols-1 gap-6 min-[750px]:grid-cols-2'>
         <BarChart
@@ -66,6 +66,8 @@ const Overview = () => {
         <ProgressBarChart
           heading='Service Efficiency'
           timestamp={Date.now() - 30 * 24 * 60 * 60 * 1000}
+          data={serviceEfficiency.items}
+          isLoading={serviceEfficiency.isLoading}
         />
         <BarChart
           yLabel='Users'
