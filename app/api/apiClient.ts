@@ -208,8 +208,31 @@ export const fetchOverviewServiceEfficiency = async () => {
 // #endregion
 
 // #region USER MANAGEMENT
-export const fetchUserManagementKpis = async (maxDate: string = '', minDate: string = '') =>
-  fetchKpis(ApiRoutes.Users, minDate, maxDate);
+export const fetchUserManagementKpis = async (maxDate: string = '', minDate: string = '') => {
+  const response = await fetchKpis(ApiRoutes.Users, minDate, maxDate);
+  const transformedResponse: Record<string, { count: number; growth: number }> = {};
+
+  for (const key in response) {
+    if (key.endsWith('Count')) {
+      const baseKey = key.replace('Count', '');
+      transformedResponse[key] = {
+        count: response[key],
+        growth: response[`${baseKey}Growth`] ?? 0,
+      };
+    } else if (
+      key.endsWith('Growth') ||
+      key === 'userGrowth' ||
+      key === 'churnRate' ||
+      key === 'churnPercentage'
+    ) {
+      // If a growth value exists and hasn't been handled with its corresponding count
+      if (!Object.prototype.hasOwnProperty.call(transformedResponse, key)) {
+        transformedResponse[key] = { count: response[key] ?? 0, growth: response[key] ?? 0 };
+      }
+    }
+  }
+  return transformedResponse;
+};
 
 export const fetchUsers = async (
   pageSize: number = 15,
@@ -238,9 +261,13 @@ export const fetchUserKpis = async (id: string) => {
   }
 };
 
-export const fetchUserMapping = async () => {
+export const fetchUserMapping = async (countryCode?: string) => {
   try {
-    const response = await API.get(`${ApiRoutes.Users}/user-mapping`);
+    const response = await API.get(`${ApiRoutes.Users}/user-mapping`, {
+      params: {
+        countryCode,
+      },
+    });
     return response.data;
   } catch (error) {
     catchError(error);

@@ -130,9 +130,9 @@ const ServiceProviderPage = () => {
       )
     : serviceProviders.data;
 
-  // Wrapper to ensure correct date order for KPIs
-  const fetchServiceProvidersKpis = (minDate?: string, maxDate?: string) =>
-    fetchServiceProvidersKpisRaw(minDate, maxDate);
+  // Wrapper to ensure correct date order for KPIs (expects maxDate, minDate)
+  const fetchServiceProvidersKpis = (maxDate?: string, minDate?: string) =>
+    fetchServiceProvidersKpisRaw(maxDate, minDate);
 
   // KPIs
   const { kpiData, useFetchOverviewKpis } = useGetOverviewKpis(

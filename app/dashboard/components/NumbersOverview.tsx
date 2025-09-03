@@ -86,7 +86,7 @@ const NumbersOverview = ({
                     highlightColor='#bcf0da'
                   />
                 ) : (
-                  `${stat.growth >= 0 ? '+ ' : ''}${Math.round(stat.growth)}%`
+                  `${stat.growth >= 0 ? '+ ' : ''}${Math.round(stat.growth * 100)}%`
                 )}
               </p>
             )}

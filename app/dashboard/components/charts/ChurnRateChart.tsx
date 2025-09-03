@@ -1,22 +1,28 @@
 'use client';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-// import { timeAgo } from '@/app/accessoryFunctions';
+// import { timeAgo } from '@/app/lib/accessoryFunctions';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const ChurnRateChart = () => {
+const ChurnRateChart = ({
+  churnRate = 0,
+  churnPercentage = 0,
+}: {
+  churnRate?: number;
+  churnPercentage?: number;
+}) => {
   return (
     <div
-      className={`mb-[10px] rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:border-transparent dark:bg-dark-primary`}
+      className={`mb-[10px] h-[20vh] rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:border-transparent dark:bg-dark-primary`}
     >
       <div className='flex justify-between'>
         <p className='text-large text-gray-500 dark:text-white'>Churn Rate</p>
         <p className='text-medium self-end rounded-[2em] bg-[#bcf0da] px-3 py-[3px] text-gray-600'>
-          +{Math.round(((4.26 - 4.25) / 4.25) * 100 * 100) / 100}%
+          +{churnPercentage}%
         </p>
       </div>
-      <p className='text-2xl font-semibold text-gray-600 dark:text-[#a0a0b2]'>4.26%</p>
+      <p className='text-2xl font-semibold text-gray-600 dark:text-[#a0a0b2]'>{churnRate}%</p>
       <div className='mx-auto h-[80px] w-[200px]'>
         <Doughnut
           options={{
@@ -33,7 +39,7 @@ const ChurnRateChart = () => {
           data={{
             datasets: [
               {
-                data: [75, 25],
+                data: [churnRate, 100 - churnRate],
                 backgroundColor: ['#f56630', '#ffece5'],
                 borderWidth: 0,
                 // cutout: '50%', // Create a donut shape

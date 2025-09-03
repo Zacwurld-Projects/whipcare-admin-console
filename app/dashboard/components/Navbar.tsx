@@ -42,7 +42,6 @@ const Navbar = () => {
     isDark,
     toggleTheme,
     selectedCountry,
-    setSelectedCountry,
   } = useGlobalContext();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -127,7 +126,7 @@ const Navbar = () => {
                 <button
                   className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${selectedCountry === 'Nigeria' ? 'bg-gray-100 dark:bg-dark-primary' : ''}`}
                   onClick={() => {
-                    setSelectedCountry('Nigeria');
+                    // setSelectedCountry('Nigeria'); // No effect: this will not change anything as selectedCountry is hardcoded
                     setIsCountryMenuOpen(false);
                   }}
                 >
@@ -137,7 +136,7 @@ const Navbar = () => {
                 <button
                   className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${selectedCountry === 'South Africa' ? 'bg-gray-100 dark:bg-dark-primary' : ''}`}
                   onClick={() => {
-                    setSelectedCountry('South Africa');
+                    // setSelectedCountry('South Africa'); // No effect: this will not change anything as selectedCountry is hardcoded
                     setIsCountryMenuOpen(false);
                   }}
                 >

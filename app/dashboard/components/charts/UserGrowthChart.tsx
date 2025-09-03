@@ -13,18 +13,24 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
 
-const UserGrowthChart = ({ className = '' }: { className?: string }) => {
+const UserGrowthChart = ({
+  className = '',
+  userGrowth = 0,
+}: {
+  className?: string;
+  userGrowth?: number;
+}) => {
   return (
     <div
-      className={`mb-[10px] rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:border-transparent dark:bg-dark-primary ${className}`}
+      className={`mb-[10px] h-[20vh] rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:border-transparent dark:bg-dark-primary ${className}`}
     >
       <div className='flex justify-between'>
         <p className='text-large text-gray-500 dark:text-white'>User Growth</p>
         <p className='text-medium self-end rounded-[2em] bg-[#bcf0da] px-3 py-[3px] text-gray-600'>
-          +{Math.floor(((200 - 190) / 190) * 100)}%
+          +{Math.floor(userGrowth)}%
         </p>
       </div>
-      <p className='text-2xl font-semibold text-gray-600 dark:text-[#a0a0b2]'>200</p>
+      <p className='text-2xl font-semibold text-gray-600 dark:text-[#a0a0b2]'>{userGrowth}</p>
       <div className='ml-[30px] mt-1 h-[80px] w-[141px]'>
         <Line
           data={{

@@ -97,7 +97,6 @@ type AppContextType = {
   setUnauthorized: Dispatch<boolean>;
   resetContext: () => void;
   selectedCountry: string;
-  setSelectedCountry: Dispatch<string>;
 };
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -151,15 +150,12 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [isDark, setIsDark] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<string>('Nigeria');
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.documentElement.classList.toggle('dark', saved ? saved === 'dark' : systemDark);
     setIsDark(saved ? saved === 'dark' : systemDark);
-    const savedCountry = localStorage.getItem('selectedCountry');
-    if (savedCountry) setSelectedCountry(savedCountry);
   }, []);
 
   useEffect(() => {
@@ -172,12 +168,6 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem('theme', newTheme);
     setIsDark(!isDark);
   };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && selectedCountry) {
-      localStorage.setItem('selectedCountry', selectedCountry);
-    }
-  }, [selectedCountry]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -260,8 +250,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         unauthorized,
         setUnauthorized,
         resetContext,
-        selectedCountry,
-        setSelectedCountry,
+        selectedCountry: 'Nigeria',
       }}
     >
       {children}

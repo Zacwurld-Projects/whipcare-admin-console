@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import countryLatLong from '../../data/country-lat-long.json';
 import { fetchUserMapping } from '@/app/api/apiClient';
 import PageLoader from '../Loaders/PageLoader'; // Import PageLoader
-import { useGlobalContext } from '@/app/context/AppContext';
 
 const COLORS = ['#0f973d', '#f3a218', '#f56630', '#6a1b9a', '#00838f'];
 
@@ -31,7 +30,6 @@ const normalizeCountry = (country: string) => {
 };
 
 const CustomerMapping = () => {
-  const { selectedCountry } = useGlobalContext();
   const [markers, setMarkers] = useState<
     Array<{
       location: string;
@@ -45,17 +43,12 @@ const CustomerMapping = () => {
   useEffect(() => {
     const loadMapping = async () => {
       try {
-        const response = await fetchUserMapping();
+        const response = await fetchUserMapping('ng');
         const userData = response?.data ?? {}; // Changed to object
 
         const entries = Object.entries(userData) as [string, { count: number; country: string }][];
 
-        // Filter to selected country only
         const enrichedMarkers = entries
-          .filter(
-            ([, stateData]) =>
-              normalizeCountry(stateData.country).toLowerCase() === selectedCountry.toLowerCase(),
-          )
           .map(([stateName, stateData]) => {
             const normalizedCountry = normalizeCountry(stateData.country);
 
@@ -104,7 +97,6 @@ const CustomerMapping = () => {
         }>; // remove nulls and assert type
 
         setMarkers(enrichedMarkers);
-        console.log('Enriched markers:', enrichedMarkers); // Re-add this line to log the processed data
       } catch (error) {
         console.error('Error fetching user mapping:', error);
       } finally {
@@ -113,15 +105,15 @@ const CustomerMapping = () => {
     };
 
     loadMapping();
-  }, [selectedCountry]);
+  }, []);
 
   if (isLoading) {
     return <PageLoader />; // Display loader while loading
   }
 
   return (
-    <div className='flex h-full w-full flex-col justify-between rounded-lg bg-white p-4 dark:bg-dark-primary'>
-      <div className='h-[70%] w-full'>
+    <div className='flex w-full flex-col justify-between rounded-lg bg-white p-4 dark:bg-dark-primary'>
+      <div className='w-full'>
         <div className='mb-0 flex w-full items-center justify-between border-b border-gray-800 pb-3 dark:border-gray-500'>
           <p className='text-medium font-semibold text-gray-800 dark:text-white'>
             Customer Mapping
@@ -172,7 +164,7 @@ const CustomerMapping = () => {
                 <div style={{ background: item.color }} className='h-[12px] w-[20px] rounded'></div>
                 <p className='text-xsmall text-gray-800 dark:text-white'>{item.location}</p>
               </div>
-              <p className='text-xsmall text-gray-800 text-opacity-80 dark:text-white'>
+              <p className='text-xsmall text-center text-gray-800 text-opacity-80 dark:text-white'>
                 {item.users} users
               </p>
             </div>

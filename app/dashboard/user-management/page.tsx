@@ -28,21 +28,21 @@ const userManagementStats = [
   {
     icon: BagIcon,
     title: 'Number of Users',
-    id: 'user',
+    id: 'userCount',
     count: 0,
     growth: 0,
   },
   {
     icon: AllMatchIcon,
     title: 'Number of Active Users',
-    id: 'activeUser',
+    id: 'activeUsersCount',
     count: 0,
     growth: 0,
   },
   {
     icon: CheckCircleIcon,
     title: 'Number of Inactive Users',
-    id: 'inActiveUser',
+    id: 'inactiveUsersCount',
     count: 0,
     growth: 0,
   },
@@ -72,6 +72,10 @@ const UserManagementPage = () => {
     queryFn: async () => fetchUsers(15, 1),
   });
 
+  const userGrowthValue = kpiData.find((item) => item.id === 'userGrowth')?.growth ?? 0;
+  const churnRateValue = kpiData.find((item) => item.id === 'churnRate')?.count ?? 0;
+  const churnPercentageValue = kpiData.find((item) => item.id === 'churnPercentage')?.growth ?? 0;
+
   useEffect(() => {
     if (useFetchUser.data) {
       setUserData(useFetchUser.data);
@@ -94,8 +98,8 @@ const UserManagementPage = () => {
         <div className='grid grid-flow-row grid-cols-2 gap-x-4 gap-y-8'>
           <LineChart filter className='col-span-2' />
           <div className='col-span-2 flex w-full flex-wrap items-stretch justify-between gap-x-4 *:flex-1 min-[1300px]:*:max-w-[271px]'>
-            <UserGrowthChart />
-            <ChurnRateChart />
+            <UserGrowthChart userGrowth={userGrowthValue} />
+            <ChurnRateChart churnRate={churnRateValue} churnPercentage={churnPercentageValue} />
           </div>
         </div>
         <CustomerMapping />
