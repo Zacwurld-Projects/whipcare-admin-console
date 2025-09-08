@@ -22,6 +22,8 @@ interface InfoTableProps<T> {
   search: string;
   onSearch: (value: string) => void;
   onFilterClick: () => void;
+  hidePagination?: boolean;
+  showEmptyTableStructure?: boolean;
 }
 
 const InfoTable = <T,>({
@@ -42,6 +44,8 @@ const InfoTable = <T,>({
   search,
   onSearch,
   onFilterClick,
+  hidePagination,
+  showEmptyTableStructure,
 }: InfoTableProps<
   T & {
     firstName?: string;
@@ -76,7 +80,7 @@ const InfoTable = <T,>({
           <div className='center-grid h-[60vh] w-full'>
             <SpinLoader thickness={2} size={80} color='#983504' />
           </div>
-        ) : data?.data?.length ? (
+        ) : (
           <table className='w-full'>
             <thead>
               <tr>
@@ -91,25 +95,40 @@ const InfoTable = <T,>({
               </tr>
             </thead>
             <tbody>
-              {data.data.map((item, index) => (
-                <tr
-                  className={`border-y border-y-gray-75 dark:border-dark-primary [&_:first-child]:rounded-l-lg [&_:last-child]:rounded-r-lg [&_td]:px-[14px] [&_td]:py-3 [&_td]:text-xs [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white ${onClickRows ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-primary' : ''}`}
-                  key={index}
-                  onClick={() => {
-                    if (onClickRows) onClickRows(item);
-                  }}
-                >
-                  {showItemNumber && <td>{index + 1 + data.pageSize * (currentPage - 1)}</td>}
-                  <ContentStructure index={index} item={item} />
+              {data?.data?.length ? (
+                data.data.map((item, index) => (
+                  <tr
+                    className={`border-y border-y-gray-75 dark:border-dark-primary [&_:first-child]:rounded-l-lg [&_:last-child]:rounded-r-lg [&_td]:px-[14px] [&_td]:py-3 [&_td]:text-xs [&_td]:font-medium [&_td]:text-gray-800 dark:[&_td]:text-white ${onClickRows ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-primary' : ''}`}
+                    key={index}
+                    onClick={() => {
+                      if (onClickRows) onClickRows(item);
+                    }}
+                  >
+                    {showItemNumber && <td>{index + 1 + data.pageSize * (currentPage - 1)}</td>}
+                    <ContentStructure index={index} item={item} />
+                  </tr>
+                ))
+              ) : showEmptyTableStructure ? (
+                <tr>
+                  <td
+                    colSpan={headings.length}
+                    className='px-[14px] py-6 text-center text-xs text-gray-500 dark:text-dark-tertiary'
+                  >
+                    {emptyStateProps?.title || 'No available data'}
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                <tr>
+                  <td colSpan={headings.length}>
+                    <TableEmptyState {...emptyStateProps} />
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-        ) : (
-          <TableEmptyState {...emptyStateProps} />
         )}
       </div>
-      {data && (
+      {data && !hidePagination && (
         <TablePagination
           contentPerPage={data.pageSize}
           contentLength={data.totalCount}

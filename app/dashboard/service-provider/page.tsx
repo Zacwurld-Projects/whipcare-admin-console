@@ -11,7 +11,9 @@ import {
   fetchServiceProvidersKpis as fetchServiceProvidersKpisRaw,
   fetchServiceProviderWaitList,
   fetchServiceProviders,
-  fetchServiceProviderAvailability, // <-- Add this import
+  fetchServiceProviderAvailability,
+  fetchServiceProviderLeaderboard,
+  fetchServiceProviderTopEarners,
 } from '@/app/api/apiClient';
 import { useEffect, useState } from 'react';
 import TopPerformers from '../components/service-provider/TopPerformers';
@@ -25,6 +27,7 @@ import { TableData } from '@/app/types/shared';
 import { ServiceProviderTableData } from '@/app/types/service-provider';
 import { useRouter } from 'next/navigation';
 import { WaitlistData } from '@/app/lib/mockTypes';
+import TopEarners from '../components/service-provider/TopEarners';
 
 dayjs.extend(advancedFormat);
 
@@ -169,6 +172,17 @@ const ServiceProviderPage = () => {
     queryFn: fetchServiceProviderAvailability,
   });
 
+  // Fetch leaderboard
+  const { data: leaderboard, isLoading: isLeaderboardLoading } = useQuery({
+    queryKey: ['serviceProviderLeaderboard'],
+    queryFn: fetchServiceProviderLeaderboard,
+  });
+
+  const { data: topEarners, isLoading: isTopEarnersLoading } = useQuery({
+    queryKey: ['serviceProviderTopEarners'],
+    queryFn: fetchServiceProviderTopEarners,
+  });
+
   // Debug: Log the availability data
   console.log('Service Provider Availability Data:', availabilityData);
 
@@ -233,7 +247,8 @@ const ServiceProviderPage = () => {
           {/* Display all unique service types */}
           {/* <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div> */}
           <RecentProviders recentServiceProviders={waitlist} />
-          <TopPerformers />
+          <TopPerformers items={leaderboard?.data ?? []} isLoading={isLeaderboardLoading} />
+          <TopEarners items={topEarners?.data ?? []} isLoading={isTopEarnersLoading} />
           <PlainTable
             onClickRows={(item) => router.push(`/dashboard/service-provider/${item._id}`)}
             page='service-provider'
@@ -264,21 +279,21 @@ const ServiceProviderPage = () => {
                 {item.serviceType && <td className='capitalize'>{item.serviceType}</td>}
                 <td className='capitalize'>{dayjs(item.createdAt).format('MMM DD, YYYY')}</td>
                 <td className='capitalize'>{dayjs(item.lastLogin).format('MMM DD, YYYY')}</td>
-                {item.kycStatus ? (
-                  <td>
-                    <Link href={`/dashboard/service-provider/${item._id}`}>
-                      <p
-                        className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${getKycStatusStyles(
-                          item.kycStatus,
-                        )}`}
-                      >
-                        {item.kycStatus || 'Not Verified'}
-                      </p>
-                    </Link>
-                  </td>
-                ) : (
-                  <td></td>
-                )}
+                <td>
+                  <Link href={`/dashboard/service-provider/${item._id}`}>
+                    <p
+                      className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${getKycStatusStyles(
+                        item.disabled && item.disabled.disabledUntil !== null
+                          ? 'disabled'
+                          : (item.kycStatus ?? undefined),
+                      )}`}
+                    >
+                      {item.disabled && item.disabled.disabledUntil !== null
+                        ? 'Disabled'
+                        : item.kycStatus || 'Not Verified'}
+                    </p>
+                  </Link>
+                </td>
               </>
             )}
           />

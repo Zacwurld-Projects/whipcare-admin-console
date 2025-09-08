@@ -1,8 +1,8 @@
 'use client';
 import Image from 'next/image';
 import topPerformerImage from '../../assets/topPerformerImage.png';
-import InfoTable from '../../components/tables/InfoTable';
 import { useMemo, useState } from 'react';
+import InfoTable from '../../components/tables/InfoTable';
 
 type LeaderboardItem = {
   _id?: string;
@@ -15,14 +15,13 @@ type LeaderboardItem = {
 
 const PAGE_SIZE = 10;
 
-const TopPerformers = ({
+const TopEarners = ({
   items = [],
   isLoading = false,
 }: {
   items: LeaderboardItem[];
   isLoading?: boolean;
 }) => {
-  // Search + show up to 10 items, hide pagination
   const [search, setSearch] = useState('');
   const filtered = useMemo(() => {
     if (!search) return items;
@@ -47,7 +46,7 @@ const TopPerformers = ({
   return (
     <div className='my-8'>
       <InfoTable
-        heading='Top Performers'
+        heading='Top earners'
         isLoading={isLoading}
         data={tableData}
         currentPage={1}
@@ -55,8 +54,8 @@ const TopPerformers = ({
         search={search}
         onSearch={(v) => setSearch(v)}
         onFilterClick={() => {}}
-        hidePagination
         showEmptyTableStructure
+        hidePagination
         headings={['No', 'Name', 'Service Type', 'Amount', 'Avatar']}
         ContentStructure={({ item, index }) => (
           <>
@@ -80,12 +79,12 @@ const TopPerformers = ({
         onClickRows={undefined}
         showItemNumber={false}
         emptyStateProps={{
-          title: 'No top performers',
-          subText: 'There are no performers to display for the selected period.',
+          title: 'No top earners',
+          subText: 'There are no earnings to display for the selected period.',
           icon: undefined,
         }}
       />
     </div>
   );
 };
-export default TopPerformers;
+export default TopEarners;

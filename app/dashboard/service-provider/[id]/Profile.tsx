@@ -100,22 +100,34 @@ const Profile = ({
         return `bg-primary-50 text-[#ff915b]`;
       case status === 'Approved' || status === 'Verified':
         return `bg-[#e7f6ec] text-[#40b869]`;
+      case status === 'Disabled':
+        return `bg-gray-200 text-gray-700`;
       default:
         return '';
     }
   };
 
-  const effectiveKycStatus = kycStatus || profileInfo.user.kycStatus;
+  const isUserDisabled = profileInfo.user.disabled?.disabledUntil != null;
+  const effectiveKycStatus = isUserDisabled ? 'Disabled' : kycStatus || profileInfo.user.kycStatus;
 
   return (
     <article className=''>
-      {effectiveKycStatus !== 'Approved' ? (
-        <div className='flex min-h-[300px] flex-col items-center justify-center gap-2'>
-          <VerifyIcon />
-          <h1 className='text-xl dark:text-white'>No info yet</h1>
-          <p className='text-base text-gray-500 dark:text-white'>The user has to be verified</p>
+      {isUserDisabled ? (
+        <div className='mb-4 flex min-h-[100px] flex-col items-center justify-center gap-2 rounded-lg bg-gray-50 px-5 py-4 dark:bg-dark-primary'>
+          <h1 className='text-xl dark:text-white'>User Account Disabled</h1>
+          <p className='text-base text-gray-500 dark:text-white'>
+            Reason: {profileInfo.user.disabled?.reason || 'N/A'}
+          </p>
+          <p className='text-base text-gray-500 dark:text-white'>
+            Disabled Until:{' '}
+            {profileInfo.user.disabled?.disabledUntil
+              ? dayjs(profileInfo.user.disabled.disabledUntil).format('MMM DD, YYYY')
+              : 'N/A'}
+          </p>
         </div>
-      ) : (
+      ) : null}
+
+      {profileInfo.user.kycStatus === 'Approved' || isUserDisabled ? (
         <div>
           <div className='flex w-full gap-10'>
             <div className='flex-column w-[53%] gap-4 rounded-lg bg-gray-50 px-5 py-4 dark:bg-dark-primary'>
@@ -320,6 +332,12 @@ const Profile = ({
               </div>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className='flex min-h-[300px] flex-col items-center justify-center gap-2'>
+          <VerifyIcon />
+          <h1 className='text-xl dark:text-white'>No info yet</h1>
+          <p className='text-base text-gray-500 dark:text-white'>The user has to be verified</p>
         </div>
       )}
 

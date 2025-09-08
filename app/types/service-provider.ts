@@ -13,6 +13,10 @@ export type ServiceProviderTableData = {
   nationality?: string | null;
   serviceType: string[];
   address?: Address[];
+  disabled?: {
+    disabledUntil: string;
+    reason: string;
+  } | null;
 };
 
 export type Address = {

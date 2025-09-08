@@ -11,13 +11,14 @@ import ActivityTable from '../../components/tables/ActivityTable';
 import HistoryTable from '../../components/tables/HistoryTable';
 import Profile from './Profile';
 import Payment from './Payment';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchServiceProviderKpis,
   fetchServiceProviderOrders,
   fetchServiceProviderProfile,
   fetchServiceProviderKyc,
   deactivateServiceProvider,
+  activateServiceProvider,
   fetchServiceProvidersActivities,
   fetchServiceProviderReviews,
   fetchServiceProviderPayments,
@@ -29,6 +30,7 @@ import { PaymentInfo } from '@/app/lib/mockTypes';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 import ReviewsPage from './Reviews';
+import { toast } from 'sonner';
 
 dayjs.extend(relativeTime);
 
@@ -37,7 +39,7 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
   const searchParams = useSearchParams();
   const [selectedPageOption, setSelectedPageOption] = useState('profile');
   const pageOptions = ['profile', 'orders', 'payment', 'activities', 'reviews'];
-  const [isDeactivating, setIsDeactivating] = useState(false);
+  const [isDisabling, setIsDisabling] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState(searchParams.get('search') || '');
 
@@ -83,6 +85,8 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
     queryFn: () => fetchServiceProviderProfile(params.id),
   });
 
+  const queryClient = useQueryClient();
+
   const { data: ordersData, isLoading: isOrdersDataLoading } = useQuery({
     queryKey: ['serviceProviderOrders', params.id, search, currentPage],
     queryFn: () => fetchServiceProviderOrders(params.id, search, currentPage, 10),
@@ -112,6 +116,34 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
     queryFn: () => fetchServiceProviderPayments(params.id),
     enabled: selectedPageOption === 'payment',
   });
+
+  // Toggle enable/disable handler (moved to top-level)
+  const handleToggleDisable = async () => {
+    setIsDisabling(true);
+    try {
+      const isCurrentlyDisabled = profileData?.user?.disabled?.disabledUntil != null;
+      if (isCurrentlyDisabled) {
+        await activateServiceProvider(params.id);
+        toast.success('Account enabled successfully');
+      } else {
+        await deactivateServiceProvider(params.id);
+        toast.success('Account disabled successfully');
+      }
+      // Refresh relevant queries to reflect the new status
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['serviceProviderProfile', params.id],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['serviceProviderKpis', params.id],
+        }),
+      ]);
+    } catch (error) {
+      toast.error('Failed to update account status');
+    } finally {
+      setIsDisabling(false);
+    }
+  };
 
   // Map payment data to PaymentInfo format
   const paymentInfo: PaymentInfo = profileData?.user?.accountDetails?.[0]
@@ -276,20 +308,16 @@ const ServiceProviderProfilePage = ({ params }: { params: { id: string } }) => {
               </button>
               <button
                 className='text-small w-fit self-end rounded-[32px] bg-[#983504] px-8 py-[10px] font-medium text-[#f9f8f7] dark:bg-dark-accent'
-                onClick={async () => {
-                  setIsDeactivating(true);
-                  try {
-                    await deactivateServiceProvider(params.id);
-                    alert('Account deactivated successfully');
-                  } catch (error) {
-                    alert('Failed to deactivate account');
-                  } finally {
-                    setIsDeactivating(false);
-                  }
-                }}
-                disabled={isDeactivating}
+                onClick={handleToggleDisable}
+                disabled={isDisabling}
               >
-                {isDeactivating ? 'Deactivating...' : 'Deactivate'}
+                {isDisabling
+                  ? profileData?.user?.disabled?.disabledUntil != null
+                    ? 'Enabling...'
+                    : 'Disabling...'
+                  : profileData?.user?.disabled?.disabledUntil != null
+                    ? 'Enable'
+                    : 'Disable'}
               </button>
             </div>
           )}

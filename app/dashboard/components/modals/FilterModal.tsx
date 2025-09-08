@@ -10,6 +10,7 @@ const STATUS_OPTIONS = [
   { label: 'Approved', value: 'Approved', color: 'border text-red-700 dark:text-red-400' },
   { label: 'Not Verified', value: 'notverified', color: 'border text-gray-500 dark:text-gray-400' },
   { label: 'Rejected', value: 'Rejected', color: 'border text-red-700 dark:text-red-400' },
+  { label: 'Disabled', value: 'disabled', color: 'border text-gray-700 dark:text-gray-400' },
 ];
 
 interface FilterModalProps {

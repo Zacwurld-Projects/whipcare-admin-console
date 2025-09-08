@@ -466,6 +466,24 @@ export const activateServiceProvider = async (id: string) => {
     catchError(error);
   }
 };
+
+//#region SERVICE PROVIDER LEADERBOARD
+export const fetchServiceProviderLeaderboard = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceProvider}/leaderboard`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const fetchServiceProviderTopEarners = async () => {
+  try {
+    const response = await API.get(`${ApiRoutes.ServiceProvider}/earnings-leaderboard`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
 // #endregion
 
 // #region SERVICE BOOKINGS

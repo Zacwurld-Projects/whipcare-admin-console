@@ -126,18 +126,22 @@ const ServiceProviderInfo = () => {
 
   const mappedProviders = {
     ...serviceProviders,
-    data: serviceProviders.data.map((item: ServiceProviderTableData) => ({
-      ...item,
-      phone: item.phone ?? undefined,
-      firstName: item.firstName ?? undefined,
-      lastName: item.lastName ?? undefined,
-      email: item.email ?? undefined,
-      createdAt: item.createdAt ?? undefined,
-      serviceType: item.serviceType ?? [],
-      _id: item._id,
-      lastLogin: item.lastLogin ?? undefined,
-      kycStatus: item.kycStatus ?? undefined,
-    })),
+    data: serviceProviders.data.map((item: ServiceProviderTableData) => {
+      console.log('Service Provider Item:', item);
+      return {
+        ...item,
+        disabled: item.disabled?.disabledUntil != null,
+        phone: item.phone ?? undefined,
+        firstName: item.firstName ?? undefined,
+        lastName: item.lastName ?? undefined,
+        email: item.email ?? undefined,
+        createdAt: item.createdAt ?? undefined,
+        serviceType: item.serviceType ?? [],
+        _id: item._id,
+        lastLogin: item.lastLogin ?? undefined,
+        kycStatus: item.kycStatus ?? undefined,
+      };
+    }),
   };
 
   // Helper to filter by lastLogin within a date range
@@ -165,7 +169,10 @@ const ServiceProviderInfo = () => {
 
   const filteredData =
     status && status !== 'all'
-      ? filteredProviders.filter((item: { kycStatus: string }) => item.kycStatus === status)
+      ? filteredProviders.filter((item: ServiceProviderTableData) => {
+          const effectiveStatus = item.disabled ? 'disabled' : item.kycStatus?.toLowerCase();
+          return effectiveStatus === status.toLowerCase();
+        })
       : filteredProviders;
 
   // Apply pagination to filtered data if it exceeds PAGE_SIZE
@@ -248,19 +255,19 @@ const ServiceProviderInfo = () => {
                 <td className='capitalize'>
                   {item.lastLogin ? dayjs(item.lastLogin).format('MMM DD, YYYY') : ''}
                 </td>
-                {item.kycStatus ? (
-                  <td>
-                    <Link href={`/dashboard/service-provider/${item._id}`}>
-                      <p
-                        className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${getKycStatusStyles(item.kycStatus)}`}
-                      >
-                        {item.kycStatus}
-                      </p>
-                    </Link>
-                  </td>
-                ) : (
-                  <td></td>
-                )}
+                <td>
+                  <Link href={`/dashboard/service-provider/${item._id}`}>
+                    <p
+                      className={`text-xsmall rounded-[6px] px-[6px] py-[2px] text-center font-medium capitalize ${getKycStatusStyles(
+                        item.disabled?.disabledUntil
+                          ? 'disabled'
+                          : (item.kycStatus ?? 'Not Verified'),
+                      )}`}
+                    >
+                      {item.disabled?.disabledUntil ? 'Disabled' : item.kycStatus || 'Not Verified'}
+                    </p>
+                  </Link>
+                </td>
               </>
             )}
           />
