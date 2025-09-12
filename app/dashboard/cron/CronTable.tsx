@@ -17,17 +17,18 @@ const CronTable = <T,>({
 }: {
   tableHeadings: string[];
   heading: string;
-  tableResponse: CronResponse<T>;
+  tableResponse?: CronResponse<T>;
   isLoading?: boolean;
   onClickRows?: (item: T) => void;
   currentPage: number;
   setCurrentPage: Dispatch<number>;
-  ContentStructure: ComponentType<{ item: (typeof tableResponse.data)[0]; index: number }>;
+  ContentStructure: ComponentType<{ item: T; index: number }>;
 }) => {
   const contentPerPage = 8;
-  const totalPages = Math.ceil(tableResponse.totalCount / contentPerPage);
+  const totalCount = tableResponse?.totalCount ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / contentPerPage));
 
-  if (tableResponse.totalCount < 1) {
+  if (!isLoading && totalCount < 1) {
     return (
       <div>
         <p className='text-xl dark:text-white'>No Activity Yet</p>
@@ -61,15 +62,15 @@ const CronTable = <T,>({
               </tr>
             </thead>
             <tbody>
-              {tableResponse.data.map((item, index) => (
+              {(tableResponse?.data ?? []).map((item, index) => (
                 <tr
                   key={index}
                   onClick={() => {
-                    if (onClickRows) onClickRows(item);
+                    if (onClickRows) onClickRows(item as T);
                   }}
                   className={`[&_td]:text-small [&_:first-child]:rounded-l-lg [&_:last-child]:rounded-r-lg [&_td]:px-6 [&_td]:py-4 [&_td]:text-gray-700 dark:[&_td]:text-white ${onClickRows ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-primary' : ''}`}
                 >
-                  <ContentStructure item={item} index={index} />
+                  <ContentStructure item={item as T} index={index} />
                 </tr>
               ))}
             </tbody>
@@ -82,7 +83,7 @@ const CronTable = <T,>({
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           totalPages={totalPages}
-          contentLength={tableResponse.totalCount}
+          contentLength={totalCount}
         />
       </div>
     </article>

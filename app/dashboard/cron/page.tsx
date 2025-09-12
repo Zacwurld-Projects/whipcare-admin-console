@@ -45,7 +45,7 @@ const CronPage = () => {
           <>
             <td className='max-w-[350px] cursor-pointer flex-col'>
               <p className='text-sm font-medium text-gray-900 dark:text-white'>{item.subject}</p>
-              <p className='w-full text-ellipsis text-nowrap'>{item.message}</p>
+              <p className='w-full text-ellipsis text-wrap'>{item.message}</p>
             </td>
             <td>{item.audience}</td>
             <td>{item.frequency}</td>

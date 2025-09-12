@@ -4,10 +4,14 @@ const CronForm = ({
   children,
   title,
   subText,
+  onSaveDraft,
+  onPublish,
 }: {
   children: ReactNode;
   title: string;
   subText: string;
+  onSaveDraft?: () => void;
+  onPublish?: () => void;
 }) => {
   return (
     <form onSubmit={(e) => e.preventDefault()} className='mb-32'>
@@ -17,10 +21,14 @@ const CronForm = ({
       </div>
       <div className='flex-column w-full gap-8'>{children}</div>
       <div className='mt-10 flex w-full gap-[6%] *:rounded-lg *:px-6 *:py-4 *:font-semibold'>
-        <button className='w-[38%] border-[1.5px] border-[#f56630] text-[#f56630]' type='button'>
+        <button
+          className='w-[38%] border-[1.5px] border-[#f56630] text-[#f56630]'
+          type='button'
+          onClick={onSaveDraft}
+        >
           Save Draft
         </button>
-        <button type='button' className='w-[56%] bg-[#eb5017] text-white'>
+        <button type='button' className='w-[56%] bg-[#eb5017] text-white' onClick={onPublish}>
           Publish
         </button>
       </div>

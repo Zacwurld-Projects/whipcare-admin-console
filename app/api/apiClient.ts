@@ -746,11 +746,102 @@ export const fetchMarketingEmailList = (pageNumber = 15, pageSize = 1) =>
 //#endregion
 
 // #region CRON
+
+//#region Push Notifications
 export const fetchPushNotifications = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/push-notification`, pageSize, pageNumber);
 
+export type CreatePushNotificationPayload = {
+  subject: string;
+  message: string;
+  audience: string; // e.g., 'Car Owners'
+  frequency: string; // e.g., 'Once'
+  status: string; // e.g., 'Published'
+};
+
+export const createPushNotification = async (payload: CreatePushNotificationPayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Cron}/push-notification`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const createPushNotificationNow = async (payload: CreatePushNotificationPayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Cron}/push-notification-now`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const updatePushNotification = async (
+  id: string,
+  payload: CreatePushNotificationPayload,
+) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Cron}/push-notification/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const deletePushNotification = async (id: string) => {
+  try {
+    const response = await API.delete(`${ApiRoutes.Cron}/push-notification/${id}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+//#endregion
+
+//#region Rewards
+export type CreateRewardPayload = {
+  rewardName: string;
+  rewardType: string;
+  audience: string;
+  message: string;
+  frequency: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+};
+
 export const fetchCronRewards = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/reward`, pageSize, pageNumber);
+
+export const createReward = async (payload: CreateRewardPayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Cron}/reward`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const updateReward = async (id: string, payload: CreateRewardPayload) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Cron}/reward/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const deleteReward = async (id: string) => {
+  try {
+    const response = await API.delete(`${ApiRoutes.Cron}/reward/${id}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+// #endRegion
 
 export const fetchCronServiceProviderActivities = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/service-provider`, pageSize, pageNumber);

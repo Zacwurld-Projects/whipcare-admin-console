@@ -28,7 +28,7 @@ const TemplateModal = () => {
   };
 
   return (
-    <SidebarModalContainer closeModal={closeModal}>
+    <SidebarModalContainer closeModal={closeModal} exitOnOutsideClick>
       {templateDetails.type === 'notification' && (
         <NotificationTemplate
           templateDetails={templateDetails as TemplateDetailsType<CronNotification>}

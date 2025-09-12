@@ -8,10 +8,10 @@ import TemplateModal from './templates/TemplateModal';
 
 const pages = [
   { page: '', title: 'Push Notifications' },
-  { page: 'rewards', title: 'Reward Center' },
-  { page: 'service-providers', title: 'Service Provider Activities' },
-  { page: 'campaign', title: 'Customer Retargeting' },
-  { page: 'maintenance', title: 'App Maintenance' },
+  // { page: 'rewards', title: 'Reward Center' },
+  // { page: 'service-providers', title: 'Service Provider Activities' },
+  // { page: 'campaign', title: 'Customer Retargeting' },
+  // { page: 'maintenance', title: 'App Maintenance' },
 ];
 
 const CronTemplate = ({ children }: { children: React.ReactNode }) => {

@@ -173,12 +173,18 @@ const ServiceProviderPage = () => {
   });
 
   // Fetch leaderboard
-  const { data: leaderboard, isLoading: isLeaderboardLoading } = useQuery({
+  const {
+    data: leaderboard,
+    // isLoading:isLeaderboardLoading
+  } = useQuery({
     queryKey: ['serviceProviderLeaderboard'],
     queryFn: fetchServiceProviderLeaderboard,
   });
 
-  const { data: topEarners, isLoading: isTopEarnersLoading } = useQuery({
+  const {
+    data: topEarners,
+    // isLoading: isTopEarnersLoading
+  } = useQuery({
     queryKey: ['serviceProviderTopEarners'],
     queryFn: fetchServiceProviderTopEarners,
   });
@@ -247,8 +253,8 @@ const ServiceProviderPage = () => {
           {/* Display all unique service types */}
           {/* <div className='mb-4 text-sm text-gray-500'>Service Types: {serviceTypes.join(', ')}</div> */}
           <RecentProviders recentServiceProviders={waitlist} />
-          <TopPerformers items={leaderboard?.data ?? []} isLoading={isLeaderboardLoading} />
-          <TopEarners items={topEarners?.data ?? []} isLoading={isTopEarnersLoading} />
+          <TopPerformers items={leaderboard?.data ?? []} />
+          <TopEarners items={topEarners?.data ?? []} />
           <PlainTable
             onClickRows={(item) => router.push(`/dashboard/service-provider/${item._id}`)}
             page='service-provider'

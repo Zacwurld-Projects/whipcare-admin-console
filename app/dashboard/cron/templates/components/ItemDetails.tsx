@@ -2,6 +2,11 @@ const ItemDetails = ({
   dataPreview,
   status,
   editItem,
+  onPublish,
+  isPublishing,
+  onDelete,
+  isDeleting,
+  showPublishAction,
 }: {
   dataPreview: {
     title: string;
@@ -9,6 +14,11 @@ const ItemDetails = ({
   }[];
   status?: string;
   editItem: () => void;
+  onPublish?: () => void;
+  isPublishing?: boolean;
+  onDelete?: () => void;
+  isDeleting?: boolean;
+  showPublishAction?: boolean;
 }) => {
   return (
     <div className='mb-20'>
@@ -20,7 +30,7 @@ const ItemDetails = ({
           >
             <p className='text-gray-500 dark:text-dark-tertiary'>{item.title}</p>
             <p className='max-w-[75%] text-left font-medium text-gray-700 dark:text-white'>
-              {item.value}
+              {item.value && item.value.trim() !== '' ? item.value : '—'}
             </p>
           </div>
         ))}
@@ -33,13 +43,32 @@ const ItemDetails = ({
         >
           Edit
         </button>
-        {status === 'Published' ? (
-          <button type='button' className='w-[56%] bg-[#eb5017] text-white'>
-            Delete/Remove
+        {showPublishAction ? (
+          <button
+            type='button'
+            className={`w-[56%] bg-[#eb5017] text-white ${isPublishing ? 'opacity-70' : ''}`}
+            disabled={isPublishing}
+            onClick={onPublish}
+          >
+            {isPublishing ? 'Publishing...' : 'Publish'}
+          </button>
+        ) : status === 'Published' ? (
+          <button
+            type='button'
+            className={`w-[56%] bg-[#eb5017] text-white ${isDeleting ? 'opacity-70' : ''}`}
+            disabled={isDeleting}
+            onClick={onDelete}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete/Remove'}
           </button>
         ) : (
-          <button type='button' className='w-[56%] bg-[#eb5017] text-white'>
-            Publish
+          <button
+            type='button'
+            className={`w-[56%] bg-[#eb5017] text-white ${isPublishing ? 'opacity-70' : ''}`}
+            disabled={isPublishing}
+            onClick={onPublish}
+          >
+            {isPublishing ? 'Publishing...' : 'Publish'}
           </button>
         )}
       </div>
