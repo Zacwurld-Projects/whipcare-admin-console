@@ -22,7 +22,7 @@ const UserGrowthChart = ({
 }) => {
   return (
     <div
-      className={`mb-[10px] h-[20vh] rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:border-transparent dark:bg-dark-primary ${className}`}
+      className={`mb-[10px] rounded-lg border border-gray-200 bg-white px-[22px] py-[15px] dark:border-transparent dark:bg-dark-primary ${className}`}
     >
       <div className='flex justify-between'>
         <p className='text-large text-gray-500 dark:text-white'>User Growth</p>
