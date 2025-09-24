@@ -11,7 +11,7 @@ const pages = [
   // { page: 'rewards', title: 'Reward Center' },
   // { page: 'service-providers', title: 'Service Provider Activities' },
   // { page: 'campaign', title: 'Customer Retargeting' },
-  // { page: 'maintenance', title: 'App Maintenance' },
+  { page: 'maintenance', title: 'App Maintenance' },
 ];
 
 const CronTemplate = ({ children }: { children: React.ReactNode }) => {

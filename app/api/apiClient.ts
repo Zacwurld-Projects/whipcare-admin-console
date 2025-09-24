@@ -846,8 +846,41 @@ export const deleteReward = async (id: string) => {
 export const fetchCronServiceProviderActivities = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/service-provider`, pageSize, pageNumber);
 
+//#region Maintenance
 export const fetchCronMaintenance = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/maintenance`, pageSize, pageNumber);
+
+export type CreateMaintenancePayload = {
+  maintenanceDate: string;
+  purpose: string;
+  postUpdateMessage: string;
+  status: string;
+};
+export const createMaintenance = async (payload: CreateMaintenancePayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Cron}/maintenance`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const updateMaintenance = async (id: string, payload: CreateMaintenancePayload) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Cron}/maintenance/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+export const deleteMaintenance = async (id: string) => {
+  try {
+    const response = await API.delete(`${ApiRoutes.Cron}/maintenance/${id}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+//#endregion
 
 export const fetchCronCampaigns = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/campaign`, pageSize, pageNumber);
