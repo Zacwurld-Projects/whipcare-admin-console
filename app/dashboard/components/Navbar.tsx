@@ -2,7 +2,13 @@
 import LightModeIcon from '../assets/lightModeIcon.svg';
 import ChevronDownIcon from '../assets/chevronDown.svg';
 import NigeriaFlag from '../assets/NigeriaFlag.svg';
-import SouthAfricaFlag from '../assets/SouthAfricaFlag.svg';
+import southAfricanFlag from '../assets/southafrica.png';
+import kenyanFlag from '../assets/kenya.png';
+import germanFlag from '../assets/germany.png';
+import ghanianFlag from '../assets/ghana.png';
+import UkFlag from '../assets/uk.png';
+import UsaFlag from '../assets/usa.png';
+import UaeFlag from '../assets/uae.png';
 import NotificationsIcon from '../assets/notificationIcon.svg';
 import SettingsIcon from '../assets/settingsIcon.svg';
 import LogoutIcon from '../assets/LogoutIcon.svg';
@@ -30,6 +36,48 @@ const mockNotifications: {
   //   timeStamp: Date.now() - 2 * 60 * 1000,
   //   status: 'unread',
   // },
+];
+const countries = [
+  {
+    name: 'Nigeria',
+    flag: '',
+    state: 'Lagos',
+  },
+  {
+    name: 'South Africa',
+    flag: southAfricanFlag,
+    state: 'Cape Town',
+  },
+  {
+    name: 'Kenya',
+    flag: kenyanFlag,
+    state: 'Nairobi',
+  },
+  {
+    name: 'Germany',
+    flag: germanFlag,
+    state: 'Berlin',
+  },
+  {
+    name: 'Ghana',
+    flag: ghanianFlag,
+    state: 'Accra',
+  },
+  {
+    name: 'USA',
+    flag: UsaFlag,
+    state: 'New York',
+  },
+  {
+    name: 'UK',
+    flag: UkFlag,
+    state: 'London',
+  },
+  {
+    name: 'UAE',
+    flag: UaeFlag,
+    state: 'Dubai',
+  },
 ];
 
 const Navbar = () => {
@@ -110,11 +158,21 @@ const Navbar = () => {
                 setIsCountryMenuOpen(!isCountryMenuOpen);
               }}
             >
-              {selectedCountry === 'Nigeria' ? (
-                <NigeriaFlag className='size-[20px]' />
-              ) : (
-                <SouthAfricaFlag className='size-[20px]' />
-              )}
+              {(() => {
+                const current = countries.find((c) => c.name === selectedCountry) ?? countries[0];
+                if (current.name === 'Nigeria') {
+                  return <NigeriaFlag className='size-[20px]' />;
+                }
+                return (
+                  <Image
+                    src={current.flag}
+                    alt={`${current.name} flag`}
+                    width={20}
+                    height={20}
+                    className='size-[20px] rounded-full object-cover'
+                  />
+                );
+              })()}
               <ChevronDownIcon className='dark:*:stroke-white' />
             </button>
             {/* Country dropdown */}
@@ -123,26 +181,31 @@ const Navbar = () => {
                 className='absolute left-0 mt-2 w-[180px] rounded-lg bg-white shadow-[0px_2px_20px_0px_rgba(0,0,0,0.13)] dark:bg-dark-secondary'
                 ref={countryMenuRef}
               >
-                <button
-                  className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${selectedCountry === 'Nigeria' ? 'bg-gray-100 dark:bg-dark-primary' : ''}`}
-                  onClick={() => {
-                    // setSelectedCountry('Nigeria'); // No effect: this will not change anything as selectedCountry is hardcoded
-                    setIsCountryMenuOpen(false);
-                  }}
-                >
-                  <NigeriaFlag className='size-[20px]' />
-                  <span className='text-small dark:text-white'>Nigeria</span>
-                </button>
-                <button
-                  className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${selectedCountry === 'South Africa' ? 'bg-gray-100 dark:bg-dark-primary' : ''}`}
-                  onClick={() => {
-                    // setSelectedCountry('South Africa'); // No effect: this will not change anything as selectedCountry is hardcoded
-                    setIsCountryMenuOpen(false);
-                  }}
-                >
-                  <SouthAfricaFlag className='size-[20px]' />
-                  <span className='text-small dark:text-white'>South Africa</span>
-                </button>
+                {countries.map((country) => (
+                  <button
+                    key={country.name}
+                    className={`flex w-full items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-dark-primary ${
+                      selectedCountry === country.name ? 'bg-gray-100 dark:bg-dark-primary' : ''
+                    }`}
+                    onClick={() => {
+                      // selectedCountry comes from context and is currently read-only
+                      setIsCountryMenuOpen(false);
+                    }}
+                  >
+                    {country.name === 'Nigeria' ? (
+                      <NigeriaFlag className='size-[20px]' />
+                    ) : (
+                      <Image
+                        src={country.flag}
+                        alt={`${country.name} flag`}
+                        width={20}
+                        height={20}
+                        className='size-[20px] rounded-full object-cover'
+                      />
+                    )}
+                    <span className='text-small dark:text-white'>{country.name}</span>
+                  </button>
+                ))}
               </div>
             )}
           </div>

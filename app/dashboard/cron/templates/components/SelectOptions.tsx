@@ -28,6 +28,7 @@ const SelectOptions = ({
       <p className='text-sm font-medium text-[#475367] dark:text-white'>{title}</p>
       <div className='relative w-full'>
         <button
+          type='button'
           ref={selectButton}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={`flex w-full items-center justify-between rounded-lg border border-[#d0d5dd] p-4 text-sm text-gray-600 dark:border-dark-tertiary dark:bg-dark-primary dark:text-white ${isMenuOpen ? 'border-[#fa9874]' : ''}`}
@@ -75,6 +76,7 @@ const SelectOptions = ({
                 </label>
               ) : (
                 <button
+                  type='button'
                   onClick={() => {
                     if (changeValue) {
                       changeValue(item);

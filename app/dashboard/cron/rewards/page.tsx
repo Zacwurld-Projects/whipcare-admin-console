@@ -8,6 +8,7 @@ import dayjs from '@/app/dayjs';
 import DotsIcon from '@/app/dashboard/assets/dotsIcon.svg';
 import { CronResponse, CronReward } from '@/app/lib/mockTypes';
 import { useCronContext } from '../CronContext';
+// import RewardCenterForm from '../RewardCenterForm';
 
 const RewardsPage = () => {
   const { setTemplateDetails } = useCronContext();
@@ -22,6 +23,7 @@ const RewardsPage = () => {
 
   return (
     <>
+      {/* <RewardCenterForm /> */}
       <CronTable
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

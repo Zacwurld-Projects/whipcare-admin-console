@@ -28,4 +28,6 @@ export default class ApiRoutes {
   static Kyc: string = '/kyc';
 
   static Waitlist: string = '/waitlist';
+
+  static RewardCenter: string = '/rewards';
 }

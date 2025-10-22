@@ -63,11 +63,15 @@ const MaintenanceTemplate = ({
 
   const editMaintenance = () => {
     setIsEditing(true);
+    // Hydrate form with whatever is currently shown in preview
     setMaintenanceData({
-      status: templateDetails.data?.status || '',
-      maintenanceDate: templateDetails.data?.maintenanceDate || '',
-      purpose: templateDetails.data?.purpose || '',
-      postUpdateMessage: templateDetails.data?.postUpdateMessage || '',
+      status:
+        (previewSource as CreateMaintenancePayload & { status?: string }).status ||
+        templateDetails.data?.status ||
+        '',
+      maintenanceDate: (previewSource.maintenanceDate as string) || '',
+      purpose: (previewSource.purpose as string) || '',
+      postUpdateMessage: (previewSource.postUpdateMessage as string) || '',
     });
   };
 

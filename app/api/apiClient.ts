@@ -841,7 +841,7 @@ export const deleteReward = async (id: string) => {
   }
 };
 
-// #endRegion
+// #endregion
 
 export const fetchCronServiceProviderActivities = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/service-provider`, pageSize, pageNumber);
@@ -882,6 +882,43 @@ export const deleteMaintenance = async (id: string) => {
 };
 //#endregion
 
+//#region Campaigns
+export type CreateCampaignPayload = {
+  title: string;
+  campaignName: string;
+  inactivityDuration: string;
+  message: string;
+  deliveryChannel: string;
+  status: string;
+};
+
+export const createCampaign = async (payload: CreateCampaignPayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.Cron}/campaign`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const updateCampaign = async (id: string, payload: CreateCampaignPayload) => {
+  try {
+    const response = await API.put(`${ApiRoutes.Cron}/campaign/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const deleteCampaign = async (id: string) => {
+  try {
+    const response = await API.delete(`${ApiRoutes.Cron}/campaign/${id}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
 export const fetchCronCampaigns = async (pageNumber = 1, pageSize = 8) =>
   fetchTableResponse(`${ApiRoutes.Cron}/campaign`, pageSize, pageNumber);
 // #endregion
@@ -902,3 +939,52 @@ export const fetchKycDetails = async (id: string) => {
 //   // @ts-ignore
 //   window.clearApiClientSession = clearCachedSession;
 // }
+
+//#region REWARD CENTER
+export interface CreateRewardCenterPayload {
+  name: string;
+  description: string;
+  audience: string;
+  category: string;
+  action: string;
+  value: number;
+  valueType: string;
+  trigger: string;
+  triggerCondition: {
+    count?: number;
+    rating?: number;
+    durationInDays?: number;
+  };
+  status: string;
+}
+
+export const createRewardCenter = async (payload: CreateRewardCenterPayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.RewardCenter}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const fetchRewardCenters = async (pageNumber = 1, pageSize = 8) =>
+  fetchTableResponse(`${ApiRoutes.RewardCenter}`, pageSize, pageNumber);
+
+export const updateRewardCenter = async (id: string, payload: CreateRewardCenterPayload) => {
+  try {
+    const response = await API.put(`${ApiRoutes.RewardCenter}/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+
+export const deleteRewardCenter = async (id: string) => {
+  try {
+    const response = await API.delete(`${ApiRoutes.RewardCenter}/${id}`);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
+// #endregion
