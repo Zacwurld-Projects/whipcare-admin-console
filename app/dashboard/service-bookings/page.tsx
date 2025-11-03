@@ -18,6 +18,8 @@ import { TableData } from '@/app/types/shared';
 import { ServiceBookingData } from '@/app/types/service-bookings';
 import BookingsChart from '../components/charts/BookingsChart';
 import BookingsRevenueChart from '../components/charts/BookingsRevenueChart';
+import SidebarModalContainer from '../components/modals/SidebarModalContainer';
+import ManualBooking from './ManualBooking';
 
 dayjs.extend(advancedFormat);
 
@@ -56,6 +58,7 @@ const ServiceBookingsPage = () => {
     pageSize: 0,
     totalCount: 0,
   });
+  const [showManualBookingModal, setShowManualBookingModal] = useState(false);
 
   const useFetchBookings = useQuery({
     queryKey: ['fetchServiceBookings'],
@@ -78,6 +81,12 @@ const ServiceBookingsPage = () => {
   return (
     <>
       <PageHeading page='Service Bookings' pageFilters setSelectedDates={setSelectedDates} />
+      <button
+        onClick={() => setShowManualBookingModal(true)}
+        className='my-4 mb-4 rounded-md bg-primary px-4 py-2 text-white'
+      >
+        Create Manual Booking
+      </button>
       <NumbersOverview
         stats={kpiData}
         className='my-8'
@@ -121,6 +130,12 @@ const ServiceBookingsPage = () => {
           </>
         )}
       />
+
+      {showManualBookingModal && (
+        <SidebarModalContainer closeModal={() => setShowManualBookingModal(false)}>
+          <ManualBooking />
+        </SidebarModalContainer>
+      )}
     </>
   );
 };

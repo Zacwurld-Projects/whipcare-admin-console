@@ -30,4 +30,6 @@ export default class ApiRoutes {
   static Waitlist: string = '/waitlist';
 
   static RewardCenter: string = '/rewards';
+
+  static ManualBooking: string = '/manual-booking';
 }

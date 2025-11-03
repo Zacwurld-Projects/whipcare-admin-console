@@ -82,6 +82,7 @@ const Accessibility = ({
     { key: 'feedbacks', label: 'Feedback Management' },
     { key: 'marketing', label: 'Marketing & Campaigns' },
     { key: 'kyc', label: 'KYC Verification' },
+    { key: 'rewards', label: 'Rewards' },
     { key: 'cron', label: 'Cron Jobs & Automation' },
   ];
 

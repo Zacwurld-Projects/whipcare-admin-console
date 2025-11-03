@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import LogoIcon from '../assets/logo.svg';
 import OverviewIcon from '../assets/overviewIcon.svg';
 import CronIcon from '../assets/cronIcon.svg';
@@ -15,7 +14,7 @@ import ServiceProIcon from '../assets/serviceProIcon.svg';
 import UserMgtIcon from '../assets/userMgtIcon.svg';
 import AlternateMarketIcon from '../assets/alternateMarketing.svg';
 import AlternateServiceBookIcon from '../assets/alternateServiceIcon.svg';
-import RewardIcon from '../assets/reward.png';
+// import RewardIcon from '../assets/rewards.svg';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useGlobalContext } from '@/app/context/AppContext';
@@ -79,10 +78,10 @@ const links = [
     privilege: 'financials',
   },
   {
-    icon: RewardIcon,
+    icon: ServiceBookIcon,
     title: 'Rewards',
     link: '/rewards',
-    privilege: '',
+    privilege: 'rewards',
   },
   {
     icon: CronIcon,
@@ -134,9 +133,7 @@ const Sidebar = () => {
                 key={index}
                 className={`group flex w-full items-center gap-[10px] rounded-l-[8px] px-6 py-3 text-gray-500 ${checkCurrentPage(item.link) ? 'bg-primary-900 text-primary-50 dark:bg-dark-accent dark:text-white' : 'hover:bg-gray-200 dark:hover:bg-[#3d3d4a]'}`}
               >
-                {item.title === 'Rewards' ? (
-                  <Image src={item.icon} alt={item.title} width={24} height={24} />
-                ) : item.alternateIcon ? (
+                {item.alternateIcon ? (
                   checkCurrentPage(item.link) ? (
                     <item.alternateIcon />
                   ) : (

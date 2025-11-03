@@ -967,7 +967,7 @@ export const createRewardCenter = async (payload: CreateRewardCenterPayload) => 
   }
 };
 
-export const fetchRewardCenters = async (pageNumber = 1, pageSize = 8) =>
+export const fetchRewardCenters = async (pageNumber = 1, pageSize = 18) =>
   fetchTableResponse(`${ApiRoutes.RewardCenter}`, pageSize, pageNumber);
 
 export const updateRewardCenter = async (id: string, payload: CreateRewardCenterPayload) => {
@@ -988,3 +988,33 @@ export const deleteRewardCenter = async (id: string) => {
   }
 };
 // #endregion
+
+//#region MANUAL BOOKING
+export type ManualBookingStatus =
+  | 'pending'
+  | 'assigned'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
+
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
+
+export interface CreateManualBookingPayload {
+  carOwnerEmail: string;
+  carIds: string[];
+  serviceProviderEmail: string;
+  manualPrice: number;
+  currency: string;
+  scheduledAt: string;
+  notes?: string;
+  paymentStatus: PaymentStatus;
+}
+
+export const createManualBooking = async (payload: CreateManualBookingPayload) => {
+  try {
+    const response = await API.post(`${ApiRoutes.ManualBooking}`, payload);
+    return response.data;
+  } catch (error) {
+    catchError(error);
+  }
+};
