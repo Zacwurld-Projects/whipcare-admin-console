@@ -1,4 +1,5 @@
 import { WhipcareLogo } from "@/app/components/auth/WhipcareLogo";
+import { AuthGuard } from "@/app/components/auth/AuthGuard";
 import { Sidebar } from "@/app/components/dashboard/Sidebar";
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader";
 
@@ -11,7 +12,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F8F9FB]">
+    <AuthGuard>
+      <div className="min-h-screen bg-[#F8F9FB]">
       <header
         className="fixed inset-x-0 top-0 z-40 flex bg-white"
         style={{ height: HEADER_HEIGHT }}
@@ -40,6 +42,7 @@ export default function DashboardLayout({
       <div style={{ paddingLeft: SIDEBAR_WIDTH, paddingTop: HEADER_HEIGHT }}>
         <main className="p-6">{children}</main>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

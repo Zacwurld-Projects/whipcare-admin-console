@@ -57,7 +57,7 @@ function ProfileDropdown() {
   function handleLogout() {
     setOpen(false);
     clearSession();
-    router.push("/login");
+    router.replace("/login");
   }
 
   return (

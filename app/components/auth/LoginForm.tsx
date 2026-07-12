@@ -8,12 +8,14 @@ import { AuthInput } from "./AuthInput";
 import { PasswordInput } from "./PasswordInput";
 import { IOSSpinner } from "./IOSSpinner";
 import { isAuthenticated, login, persistSession } from "@/app/lib/auth";
+import { validateLoginInput } from "@/app/lib/validation";
 
 export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -21,16 +23,23 @@ export function LoginForm() {
     }
   }, [router]);
 
-  const isValid = email.trim().length > 0 && password.trim().length > 0;
+  function validateFields(nextEmail = email, nextPassword = password) {
+    const result = validateLoginInput(nextEmail, nextPassword);
+    setErrors(result.errors);
+    return result.valid;
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!isValid) return;
+    if (!validateFields()) {
+      toast.error("Please fix the highlighted fields");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
-      const res = await login(email.trim(), password);
+      const res = await login(email, password);
       persistSession(res.data);
       toast.success(res.message || "Login successful");
       router.replace("/dashboard");
@@ -59,29 +68,47 @@ export function LoginForm() {
             <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <AuthInput
-              label="Email Address"
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+            <div>
+              <AuthInput
+                label="Email Address"
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email) validateFields(e.target.value, password);
+                }}
+                onBlur={() => validateFields()}
+                autoComplete="email"
+                required
+              />
+              {errors.email ? (
+                <p className="mt-1.5 text-sm font-medium text-red-600">{errors.email}</p>
+              ) : null}
+            </div>
 
-            <PasswordInput
-              label="Password"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
+            <div>
+              <PasswordInput
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) validateFields(email, e.target.value);
+                }}
+                onBlur={() => validateFields()}
+                autoComplete="current-password"
+                required
+              />
+              {errors.password ? (
+                <p className="mt-1.5 text-sm font-medium text-red-600">{errors.password}</p>
+              ) : null}
+            </div>
 
             <button
               type="submit"
-              disabled={!isValid || isLoading}
+              disabled={isLoading}
               className={`mt-2 flex h-12 w-full cursor-pointer items-center justify-center rounded-xl text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed ${isLoading
                 ? "bg-primary"
                 : "bg-primary disabled:bg-slate-100 disabled:text-slate-400"

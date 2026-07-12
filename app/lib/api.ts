@@ -1,6 +1,49 @@
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ??
-  "https://whipcare-admin-dev-954606804258.europe-west1.run.app";
+import {
+  getAuthHeaders,
+  handleUnauthorized,
+  isSessionValid,
+} from "@/app/lib/auth";
+import { API_BASE } from "@/app/lib/config";
+import { normalizeEmail, validateInviteInput } from "@/app/lib/validation";
+
+type ApiEnvelope = {
+  status?: boolean;
+  message?: string;
+};
+
+async function apiRequest<T>(
+  path: string,
+  options: RequestInit & { auth?: boolean } = {},
+): Promise<T> {
+  const { auth = true, headers, ...rest } = options;
+
+  if (auth && !isSessionValid()) {
+    handleUnauthorized();
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...rest,
+    headers: {
+      "Content-Type": "application/json",
+      ...(auth ? getAuthHeaders() : {}),
+      ...headers,
+    },
+  });
+
+  const data = (await res.json()) as T & ApiEnvelope;
+
+  if (res.status === 401) {
+    handleUnauthorized();
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  if (!res.ok || data.status === false) {
+    throw new Error(data.message || "Request failed");
+  }
+
+  return data;
+}
 
 export type AdminPermission = {
   name: string;
@@ -33,28 +76,8 @@ export type AdminsResponse = {
   };
 };
 
-function getBearerToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("whipcare_access_token");
-}
-
 export async function fetchAdmins(): Promise<AdminsResponse> {
-  const token = getBearerToken();
-  const res = await fetch(`${API_BASE}/api/v1/admin`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-
-  const data = (await res.json()) as AdminsResponse;
-
-  if (!res.ok || !data.status) {
-    throw new Error(data.message || "Failed to fetch admins");
-  }
-
-  return data;
+  return apiRequest<AdminsResponse>("/api/v1/admin", { method: "GET" });
 }
 
 export type InviteAdminPayload = {
@@ -73,23 +96,25 @@ export type InviteAdminResponse = {
 export async function inviteAdmin(
   payload: InviteAdminPayload,
 ): Promise<InviteAdminResponse> {
-  const token = getBearerToken();
-  const res = await fetch(`${API_BASE}/api/v1/auth/invite`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify(payload),
-  });
+  const validation = validateInviteInput(
+    payload.email,
+    payload.fullname,
+    payload.roleId,
+  );
 
-  const data = (await res.json()) as InviteAdminResponse;
-
-  if (!res.ok || !data.status) {
-    throw new Error(data.message || "Failed to invite admin");
+  if (!validation.valid) {
+    const firstError = Object.values(validation.errors)[0];
+    throw new Error(firstError || "Invalid invite details");
   }
 
-  return data;
+  return apiRequest<InviteAdminResponse>("/api/v1/auth/invite", {
+    method: "POST",
+    body: JSON.stringify({
+      email: normalizeEmail(payload.email),
+      fullname: payload.fullname.trim(),
+      roleId: payload.roleId.trim(),
+    }),
+  });
 }
 
 export type User = {
@@ -152,26 +177,11 @@ export function formatUserDate(value: string | null): string {
 
 export async function fetchUsers(params: FetchUsersParams = {}): Promise<UsersResponse> {
   const { page = 1, limit = 10, type = "Service Provider" } = params;
-  const token = getBearerToken();
   const query = new URLSearchParams({
     page: String(page),
     limit: String(limit),
     type,
   });
 
-  const res = await fetch(`${API_BASE}/api/v1/user?${query}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-
-  const data = (await res.json()) as UsersResponse;
-
-  if (!res.ok || !data.status) {
-    throw new Error(data.message || "Failed to fetch users");
-  }
-
-  return data;
+  return apiRequest<UsersResponse>(`/api/v1/user?${query}`, { method: "GET" });
 }
