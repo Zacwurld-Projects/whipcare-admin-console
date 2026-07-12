@@ -20,6 +20,7 @@ type NavItem = {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string; active?: boolean }>;
+  available?: boolean;
 };
 
 type NavGroup = NavItem[] | "divider";
@@ -27,11 +28,16 @@ type NavGroup = NavItem[] | "divider";
 const navGroups: NavGroup[] = [
   [
     { label: "Overview", href: "/dashboard", icon: OverviewIcon },
-    { label: "Vehicle Owners", href: "/dashboard/vehicle-owners", icon: CarFrontIcon },
   ],
   "divider",
   [
-    { label: "Service Providers", href: "/dashboard/service-providers", icon: ServiceProviderIcon },
+    { label: "Vehicle Owners", href: "/dashboard/vehicle-owners", icon: CarFrontIcon },
+    {
+      label: "Service Providers",
+      href: "/dashboard/service-providers",
+      icon: ServiceProviderIcon,
+      available: true,
+    },
     { label: "Fleets Managers", href: "/dashboard/fleet-managers", icon: FleetIcon },
     { label: "Service Bookings", href: "/dashboard/service-bookings", icon: BookingIcon },
     { label: "Vehicle Management", href: "/dashboard/vehicle-management", icon: VehicleManagementIcon },
@@ -80,25 +86,35 @@ export function Sidebar({ headerHeight = 72, sidebarWidth = 248 }: SidebarProps)
           return (
             <ul key={gi} className="flex flex-col">
               {group.map((item) => {
-                const active = isActive(pathname, item.href);
+                const active = item.available ? isActive(pathname, item.href) : false;
                 const Icon = item.icon;
+                const className = `relative flex items-center gap-3 px-5 py-3 text-[14px] transition-colors ${
+                  active
+                    ? "bg-[#FDF3F0] font-medium text-[#711E00]"
+                    : item.available
+                      ? "font-normal text-[#4B5563] hover:bg-slate-50"
+                      : "cursor-not-allowed font-normal text-[#9CA3AF]"
+                }`;
 
                 return (
                   <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={`relative flex items-center gap-3 px-5 py-3 text-[14px] transition-colors ${
-                        active
-                          ? "bg-[#FDF3F0] font-medium text-[#711E00]"
-                          : "font-normal text-[#4B5563] hover:bg-slate-50"
-                      }`}
-                    >
-                      {active && (
-                        <span className="absolute left-0 top-0 h-full w-[3px] bg-[#711E00]" />
-                      )}
-                      <Icon className="shrink-0" active={active} />
-                      {item.label}
-                    </Link>
+                    {item.available ? (
+                      <Link href={item.href} className={className}>
+                        {active && (
+                          <span className="absolute left-0 top-0 h-full w-[3px] bg-[#711E00]" />
+                        )}
+                        <Icon className="shrink-0" active={active} />
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <div className={className} aria-disabled="true">
+                        <Icon className="shrink-0" active={false} />
+                        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                        <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-[#D1D5DB]">
+                          Soon
+                        </span>
+                      </div>
+                    )}
                   </li>
                 );
               })}

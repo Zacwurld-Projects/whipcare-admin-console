@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SearchIcon, CalendarIcon, MoreVerticalIcon, TierShield } from "./icons";
 
@@ -27,6 +29,7 @@ const users = [
 ];
 
 export function UserInfoTable() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("Active Users");
 
   return (
@@ -55,14 +58,17 @@ export function UserInfoTable() {
 
             <div className="flex items-center gap-2 text-xs text-slate-500">
               {[1, 2, 3].map((tier) => (
-                <span key={tier} className="flex items-center gap-1 rounded-md border border-slate-200 px-2 py-1">
+                <span key={tier} className="flex items-center gap-1 rounded-[18px] pr-2 bg-[#F3F4F6]">
                   <TierShield tier={tier as 1 | 2 | 3} />
-                  <span>50</span>
+                  <span className="text-xs font-medium text-primary">50</span>
                 </span>
               ))}
-              <button type="button" className="font-semibold text-[#FE915D] hover:text-[#711E00]">
+              <Link
+                href="/dashboard/service-providers/user-info"
+                className="font-semibold text-xs text-primary hover:text-primary-dark underline"
+              >
                 View All
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -101,7 +107,11 @@ export function UserInfoTable() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.no} className="border-b border-slate-50 hover:bg-slate-50/50">
+              <tr
+                key={user.no}
+                onClick={() => router.push(`/dashboard/service-providers/users/${user.no}`)}
+                className="cursor-pointer border-b border-slate-50 hover:bg-slate-50/50"
+              >
                 <td className="px-5 py-4 text-slate-500">{user.no}</td>
                 <td className="px-5 py-4 font-medium text-slate-900">{user.name}</td>
                 <td className="px-5 py-4 text-slate-600">{user.email}</td>
@@ -109,12 +119,12 @@ export function UserInfoTable() {
                 <td className="px-5 py-4 text-slate-600">{user.signUp}</td>
                 <td className="px-5 py-4 text-slate-600">{user.lastLogin}</td>
                 <td className="px-5 py-4">
-                  <div className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-[18px] bg-[#F3F4F6] pr-2">
                     <TierShield tier={user.tier} />
-                    <span className="text-slate-600">Tier {user.tier}</span>
-                  </div>
+                    <span className="text-xs font-medium text-primary">Tier {user.tier}</span>
+                  </span>
                 </td>
-                <td className="px-5 py-4">
+                <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
                   <button
                     type="button"
                     className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"

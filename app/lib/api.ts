@@ -1,0 +1,3 @@
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  "https://whipcare-admin-dev-954606804258.europe-west1.run.app";

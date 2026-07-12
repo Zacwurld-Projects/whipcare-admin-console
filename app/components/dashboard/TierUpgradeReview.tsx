@@ -1,36 +1,150 @@
-import { TierShield } from "./icons";
-
 export function TierUpgradeReview() {
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-100 bg-white p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-slate-900">Tier upgrade review</h3>
+        <h3 className="text-[14px] font-semibold text-[#364153]">Tier upgrade review</h3>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-full bg-[#711E00] px-3 py-1 text-xs font-semibold text-white"
+          className="flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-[10px]">
+          <span className="flex bg-primary rounded h-5 w-5 items-center justify-center text-white text-[12px]">
             10
           </span>
-          View All Pending Request
+          <span className="text-[12px] underline font-semibold text-primary">View All Pending Request</span>
         </button>
+      </div>
+
+      <div className="-mx-5 mb-4 flex items-center px-5">
+        <div className="h-px flex-1 bg-[#E5E7EB]" />
+        <div className="mx-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#711E00]" />
+        <div className="h-px flex-1 bg-[#E5E7EB]" />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50/50 px-4 py-3">
         <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
-          <span className="font-semibold text-slate-900">Isaac Zacwurld</span>
-          <span className="text-slate-500">Requested to upgrade from</span>
-          <span className="inline-flex items-center gap-1">
-            <TierShield tier={1} />
-            <span className="font-medium">Tier 1</span>
-          </span>
+          <span className="font-medium text-[#4A5565]">Isaac Zacwurld</span>
+          <span className="text-[#101828] font-medium">Requested to upgrade from</span>
+          <svg width="76" height="24" viewBox="0 0 76 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_950_201471)">
+              <rect width="76" height="23.796" rx="4" fill="#F3F4F6" />
+              <rect width="35.9974" height="23.796" rx="4" fill="#E5E7EB" />
+              <g filter="url(#filter0_d_950_201471)">
+                <path d="M11.4209 8.11328L11.4209 13.069L6.9801 13.069L8.28338 10.5911L6.00034 8.11328L11.4209 8.11328Z" fill="#5A1800" />
+                <path d="M24.5767 8.11328L24.5767 13.069L29.0175 13.069L27.7142 10.5911L29.9972 8.11328L24.5767 8.11328Z" fill="#5A1800" />
+                <path d="M10.1333 9.04595L11.4205 8.11328V14.2274H10.1333V9.04595Z" fill="#441200" />
+                <path d="M25.8638 9.04595L24.5766 8.11328V14.2274H25.8638V9.04595Z" fill="#441200" />
+                <path d="M12.9331 9.04297L12.9331 14.7093L9.93067 14.7093C9.93067 14.7093 9.55511 14.7093 9.55511 11.8761C9.55511 9.04297 9.93067 9.04297 9.93067 9.04297L12.9331 9.04297Z" fill="#711E00" />
+                <path d="M22.9609 9.04297L22.9609 14.7093L26.0602 14.7093C26.0602 14.7093 26.4479 14.7093 26.4479 11.8761C26.4479 9.04297 26.0602 9.04297 26.0602 9.04297L22.9609 9.04297Z" fill="#711E00" />
+                <circle cx="18.0181" cy="11.898" r="5.89799" fill="url(#paint0_linear_950_201471)" />
+                <circle cx="17.9995" cy="11.9131" r="4.69823" fill="url(#paint1_linear_950_201471)" />
+                <mask id="mask0_950_201471" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="14" y="8" width="9" height="9">
+                  <circle cx="18.2071" cy="12.3233" r="4.03425" fill="#7D7D7D" />
+                </mask>
+                <g mask="url(#mask0_950_201471)">
+                  <circle cx="17.9913" cy="11.8936" r="4.03425" fill="#9CA1A3" />
+                </g>
+                <path d="M17.9976 7.48047C20.4442 7.4806 22.4312 9.44932 22.4312 11.8818C22.431 14.3143 20.4441 16.2831 17.9976 16.2832C15.5509 16.2832 13.5641 14.3143 13.564 11.8818C13.564 9.44924 15.5508 7.48047 17.9976 7.48047Z" fill="#616161" stroke="#9F9F9F" strokeWidth="0.500274" />
+                <mask id="mask1_950_201471" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="14" y="8" width="9" height="9">
+                  <circle cx="18.2279" cy="12.2982" r="4.18494" fill="#C28B37" />
+                </mask>
+                <g mask="url(#mask1_950_201471)">
+                  <circle cx="18.0062" cy="11.8529" r="4.18494" fill="url(#paint2_linear_950_201471)" />
+                  <path d="M18.6359 9.94719V14.6016H17.6519V10.8812H17.6246L16.5587 11.5494V10.6767L17.711 9.94719H18.6359Z" fill="white" />
+                </g>
+              </g>
+              <path d="M40.8959 9.57031V8.62571H46.5245V9.57031H44.2553V15.8984H43.1615V9.57031H40.8959ZM47.683 15.8984V10.4439H48.7448V15.8984H47.683ZM48.2192 9.60227C48.0346 9.60227 47.876 9.54072 47.7434 9.41761C47.6132 9.29214 47.5481 9.14299 47.5481 8.97017C47.5481 8.79498 47.6132 8.64583 47.7434 8.52273C47.876 8.39725 48.0346 8.33452 48.2192 8.33452C48.4039 8.33452 48.5613 8.39725 48.6915 8.52273C48.8241 8.64583 48.8904 8.79498 48.8904 8.97017C48.8904 9.14299 48.8241 9.29214 48.6915 9.41761C48.5613 9.54072 48.4039 9.60227 48.2192 9.60227ZM52.5241 16.0085C51.9867 16.0085 51.5239 15.8937 51.1356 15.6641C50.7497 15.4321 50.4514 15.1065 50.2407 14.6875C50.0324 14.2661 49.9282 13.7725 49.9282 13.2067C49.9282 12.648 50.0324 12.1555 50.2407 11.7294C50.4514 11.3033 50.745 10.9706 51.1214 10.7315C51.5002 10.4924 51.9429 10.3729 52.4495 10.3729C52.7573 10.3729 53.0556 10.4238 53.3444 10.5256C53.6332 10.6274 53.8925 10.7872 54.1221 11.005C54.3518 11.2228 54.5329 11.5057 54.6654 11.8537C54.798 12.1993 54.8643 12.6196 54.8643 13.1143V13.4908H50.5284V12.6953H53.8238C53.8238 12.416 53.767 12.1686 53.6534 11.9531C53.5397 11.7353 53.3799 11.5637 53.174 11.4382C52.9704 11.3127 52.7313 11.25 52.4566 11.25C52.1583 11.25 51.8979 11.3234 51.6754 11.4702C51.4552 11.6146 51.2848 11.804 51.164 12.0384C51.0456 12.2704 50.9865 12.5225 50.9865 12.7947V13.4162C50.9865 13.7808 51.0504 14.0909 51.1782 14.3466C51.3084 14.6023 51.4895 14.7976 51.7215 14.9325C51.9536 15.0651 52.2246 15.1314 52.5348 15.1314C52.736 15.1314 52.9195 15.103 53.0852 15.0462C53.2509 14.987 53.3941 14.8994 53.5149 14.7834C53.6356 14.6674 53.7279 14.5241 53.7919 14.3537L54.7968 14.5348C54.7163 14.8307 54.5719 15.09 54.3636 15.3125C54.1576 15.5327 53.8984 15.7043 53.5859 15.8274C53.2758 15.9482 52.9218 16.0085 52.5241 16.0085ZM56.0424 15.8984V10.4439H57.0687V11.3104H57.1255C57.2249 11.0168 57.4001 10.786 57.6511 10.6179C57.9044 10.4474 58.1908 10.3622 58.5104 10.3622C58.5767 10.3622 58.6548 10.3646 58.7448 10.3693C58.8371 10.3741 58.9093 10.38 58.9614 10.3871V11.4027C58.9188 11.3909 58.8431 11.3778 58.7342 11.3636C58.6253 11.3471 58.5164 11.3388 58.4074 11.3388C58.1565 11.3388 57.9328 11.392 57.7363 11.4986C57.5422 11.6027 57.3883 11.7483 57.2746 11.9354C57.161 12.12 57.1042 12.3307 57.1042 12.5675V15.8984H56.0424ZM65.2718 8.62571V15.8984H64.1709V9.72656H64.1283L62.3883 10.8629V9.81179L64.2029 8.62571H65.2718Z" fill="#711E00" />
+            </g>
+            <defs>
+              <filter id="filter0_d_950_201471" x="5.9221" y="5.92161" width="25.2509" height="13.0512" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                <feOffset dx="0.548749" dy="0.548749" />
+                <feGaussianBlur stdDeviation="0.313571" />
+                <feComposite in2="hardAlpha" operator="out" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" />
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_950_201471" />
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_950_201471" result="shape" />
+              </filter>
+              <linearGradient id="paint0_linear_950_201471" x1="18.0181" y1="6" x2="18.0181" y2="17.796" gradientUnits="userSpaceOnUse">
+                <stop stopColor="white" />
+                <stop offset="1" stopColor="#B1B1B1" />
+              </linearGradient>
+              <linearGradient id="paint1_linear_950_201471" x1="17.9995" y1="7.21484" x2="17.9995" y2="16.6113" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#898989" />
+                <stop offset="1" stopColor="#5F5F5F" />
+              </linearGradient>
+              <linearGradient id="paint2_linear_950_201471" x1="18.0062" y1="7.66797" x2="18.0062" y2="16.0378" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#7D7D7D" />
+                <stop offset="1" stopColor="#474747" />
+              </linearGradient>
+              <clipPath id="clip0_950_201471">
+                <rect width="76" height="23.796" rx="4" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+
           <span className="text-slate-500">to</span>
-          <span className="inline-flex items-center gap-1">
-            <TierShield tier={2} />
-            <span className="font-medium">Tier 2</span>
-          </span>
+          <svg width="76" height="24" viewBox="0 0 76 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_950_201494)">
+              <rect width="76.0013" height="23.796" rx="4" fill="#F3F4F6" />
+              <rect width="36.0013" height="23.796" rx="4" fill="#E5E7EB" />
+              <g filter="url(#filter0_d_950_201494)">
+                <path d="M11.4204 8.11328L11.4204 13.069L6.97961 13.069L8.28289 10.5911L5.99985 8.11328L11.4204 8.11328Z" fill="#5A1800" />
+                <path d="M24.5796 8.11328L24.5796 13.069L29.0204 13.069L27.7171 10.5911L30.0001 8.11328L24.5796 8.11328Z" fill="#5A1800" />
+                <path d="M10.1333 9.04595L11.4205 8.11328V14.2274H10.1333V9.04595Z" fill="#441200" />
+                <path d="M25.8667 9.04595L24.5795 8.11328V14.2274H25.8667V9.04595Z" fill="#441200" />
+                <path d="M13.083 9.04297L13.083 14.7093L9.98372 14.7093C9.98372 14.7093 9.59604 14.7093 9.59604 11.8761C9.59604 9.04297 9.98372 9.04297 9.98372 9.04297L13.083 9.04297Z" fill="#711E00" />
+                <path d="M23.2168 9.04297L23.2168 14.7093L26.1224 14.7093C26.1224 14.7093 26.4858 14.7093 26.4858 11.8761C26.4858 9.04297 26.1224 9.04297 26.1224 9.04297L23.2168 9.04297Z" fill="#711E00" />
+                <circle cx="18.0176" cy="11.898" r="5.89799" fill="url(#paint0_linear_950_201494)" />
+                <circle cx="17.999" cy="11.9131" r="4.69823" fill="url(#paint1_linear_950_201494)" />
+                <mask id="mask0_950_201494" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="14" y="8" width="9" height="9">
+                  <circle cx="18.2066" cy="12.3233" r="4.03425" fill="#7D7D7D" />
+                </mask>
+                <g mask="url(#mask0_950_201494)">
+                  <circle cx="17.9908" cy="11.8936" r="4.03425" fill="#9CA1A3" />
+                </g>
+                <path d="M17.9971 7.48047C20.4437 7.4806 22.4307 9.44932 22.4307 11.8818C22.4306 14.3143 20.4436 16.2831 17.9971 16.2832C15.5504 16.2832 13.5636 14.3143 13.5635 11.8818C13.5635 9.44924 15.5503 7.48047 17.9971 7.48047Z" fill="#644314" stroke="#FBBF4C" strokeWidth="0.500274" />
+                <mask id="mask1_950_201494" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="14" y="8" width="9" height="9">
+                  <circle cx="18.2274" cy="12.2982" r="4.18494" fill="#C28B37" />
+                </mask>
+                <g mask="url(#mask1_950_201494)">
+                  <circle cx="18.0057" cy="11.8529" r="4.18494" fill="url(#paint2_linear_950_201494)" />
+                  <path d="M16.3642 14V13.2909L18.0209 11.7569C18.1618 11.6205 18.28 11.4978 18.3754 11.3887C18.4724 11.2796 18.5459 11.1728 18.5959 11.0683C18.6459 10.9622 18.6709 10.8478 18.6709 10.7251C18.6709 10.5888 18.6398 10.4713 18.5777 10.3729C18.5156 10.2729 18.4307 10.1964 18.3232 10.1433C18.2156 10.0888 18.0936 10.0615 17.9573 10.0615C17.8149 10.0615 17.6906 10.0903 17.5846 10.1479C17.4785 10.2054 17.3967 10.288 17.3391 10.3956C17.2815 10.5032 17.2528 10.6312 17.2528 10.7797H16.3187C16.3187 10.4751 16.3876 10.2107 16.5255 9.98651C16.6634 9.76228 16.8566 9.5888 17.105 9.46608C17.3535 9.34336 17.6399 9.282 17.9641 9.282C18.2974 9.282 18.5876 9.34108 18.8345 9.45926C19.083 9.57592 19.2762 9.73804 19.414 9.94561C19.5519 10.1532 19.6208 10.391 19.6208 10.6592C19.6208 10.835 19.586 11.0084 19.5163 11.1797C19.4481 11.3509 19.3262 11.541 19.1504 11.7501C18.9747 11.9577 18.7269 12.2069 18.4073 12.4978L17.7277 13.1637V13.1955H19.6822V14H16.3642Z" fill="white" />
+                </g>
+              </g>
+              <path d="M40.6967 9.57031V8.62571H46.3252V9.57031H44.0561V15.8984H42.9623V9.57031H40.6967ZM47.4838 15.8984V10.4439H48.5456V15.8984H47.4838ZM48.02 9.60227C47.8354 9.60227 47.6767 9.54072 47.5442 9.41761C47.414 9.29214 47.3489 9.14299 47.3489 8.97017C47.3489 8.79498 47.414 8.64583 47.5442 8.52273C47.6767 8.39725 47.8354 8.33452 48.02 8.33452C48.2047 8.33452 48.3621 8.39725 48.4923 8.52273C48.6249 8.64583 48.6912 8.79498 48.6912 8.97017C48.6912 9.14299 48.6249 9.29214 48.4923 9.41761C48.3621 9.54072 48.2047 9.60227 48.02 9.60227ZM52.3249 16.0085C51.7875 16.0085 51.3246 15.8937 50.9364 15.6641C50.5505 15.4321 50.2522 15.1065 50.0415 14.6875C49.8332 14.2661 49.729 13.7725 49.729 13.2067C49.729 12.648 49.8332 12.1555 50.0415 11.7294C50.2522 11.3033 50.5458 10.9706 50.9222 10.7315C51.301 10.4924 51.7437 10.3729 52.2503 10.3729C52.5581 10.3729 52.8564 10.4238 53.1452 10.5256C53.434 10.6274 53.6933 10.7872 53.9229 11.005C54.1525 11.2228 54.3336 11.5057 54.4662 11.8537C54.5988 12.1993 54.6651 12.6196 54.6651 13.1143V13.4908H50.3291V12.6953H53.6246C53.6246 12.416 53.5678 12.1686 53.4541 11.9531C53.3405 11.7353 53.1807 11.5637 52.9747 11.4382C52.7711 11.3127 52.532 11.25 52.2574 11.25C51.9591 11.25 51.6987 11.3234 51.4762 11.4702C51.256 11.6146 51.0855 11.804 50.9648 12.0384C50.8464 12.2704 50.7872 12.5225 50.7872 12.7947V13.4162C50.7872 13.7808 50.8512 14.0909 50.979 14.3466C51.1092 14.6023 51.2903 14.7976 51.5223 14.9325C51.7543 15.0651 52.0254 15.1314 52.3355 15.1314C52.5368 15.1314 52.7202 15.103 52.886 15.0462C53.0517 14.987 53.1949 14.8994 53.3157 14.7834C53.4364 14.6674 53.5287 14.5241 53.5926 14.3537L54.5976 14.5348C54.5171 14.8307 54.3727 15.09 54.1644 15.3125C53.9584 15.5327 53.6992 15.7043 53.3867 15.8274C53.0765 15.9482 52.7226 16.0085 52.3249 16.0085ZM55.8432 15.8984V10.4439H56.8695V11.3104H56.9263C57.0257 11.0168 57.2009 10.786 57.4518 10.6179C57.7052 10.4474 57.9916 10.3622 58.3112 10.3622C58.3775 10.3622 58.4556 10.3646 58.5456 10.3693C58.6379 10.3741 58.7101 10.38 58.7622 10.3871V11.4027C58.7196 11.3909 58.6438 11.3778 58.5349 11.3636C58.426 11.3471 58.3171 11.3388 58.2082 11.3388C57.9573 11.3388 57.7336 11.392 57.5371 11.4986C57.3429 11.6027 57.1891 11.7483 57.0754 11.9354C56.9618 12.12 56.905 12.3307 56.905 12.5675V15.8984H55.8432ZM62.3133 15.8984V15.103L64.7743 12.5533C65.0371 12.2763 65.2537 12.0336 65.4241 11.8253C65.597 11.6146 65.726 11.4145 65.8112 11.2251C65.8964 11.0357 65.9391 10.8345 65.9391 10.6214C65.9391 10.38 65.8822 10.1716 65.7686 9.99645C65.655 9.81889 65.4999 9.68277 65.3034 9.58807C65.1069 9.491 64.8855 9.44247 64.6393 9.44247C64.3789 9.44247 64.1516 9.49574 63.9575 9.60227C63.7634 9.70881 63.6142 9.85914 63.5101 10.0533C63.4059 10.2474 63.3538 10.4747 63.3538 10.7351H62.3062C62.3062 10.2924 62.408 9.9053 62.6116 9.57386C62.8152 9.24242 63.0946 8.98556 63.4497 8.80327C63.8048 8.61861 64.2085 8.52628 64.6606 8.52628C65.1176 8.52628 65.52 8.61742 65.868 8.79972C66.2184 8.97964 66.4918 9.22585 66.6883 9.53835C66.8848 9.84848 66.9831 10.1989 66.9831 10.5895C66.9831 10.8594 66.9322 11.1233 66.8304 11.3814C66.731 11.6394 66.557 11.9271 66.3084 12.2443C66.0598 12.5592 65.7141 12.9415 65.2714 13.3913L63.8261 14.9041V14.9574H67.1003V15.8984H62.3133Z" fill="#711E00" />
+            </g>
+            <defs>
+              <filter id="filter0_d_950_201494" x="5.92161" y="5.92161" width="25.2543" height="13.0512" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                <feOffset dx="0.548749" dy="0.548749" />
+                <feGaussianBlur stdDeviation="0.313571" />
+                <feComposite in2="hardAlpha" operator="out" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" />
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_950_201494" />
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_950_201494" result="shape" />
+              </filter>
+              <linearGradient id="paint0_linear_950_201494" x1="18.0176" y1="6" x2="18.0176" y2="17.796" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#E0C04F" />
+                <stop offset="1" stopColor="#B16F07" />
+              </linearGradient>
+              <linearGradient id="paint1_linear_950_201494" x1="17.999" y1="7.21484" x2="17.999" y2="16.6113" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#898989" />
+                <stop offset="1" stopColor="#5F5F5F" />
+              </linearGradient>
+              <linearGradient id="paint2_linear_950_201494" x1="18.0057" y1="7.66797" x2="18.0057" y2="16.0378" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#A36D1D" />
+                <stop offset="1" stopColor="#744A0C" />
+              </linearGradient>
+              <clipPath id="clip0_950_201494">
+                <rect width="76.0013" height="23.796" rx="4" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+
         </div>
-        <button type="button" className="text-sm font-semibold text-[#FE915D] hover:text-[#711E00]">
+        <button type="button" className="text-sm underline font-medium text-primary hover:text-[#711E00]">
           View details
         </button>
       </div>

@@ -1,44 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { curveCardinal } from "d3-shape";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const data = [30, 45, 38, 55, 48, 62, 58, 70, 65, 78, 72, 85];
+const monthlyData = [
+  { name: "JAN", count: 180 },
+  { name: "FEB", count: 80 },
+  { name: "MAR", count: 280 },
+  { name: "APR", count: 180 },
+  { name: "MAY", count: 320 },
+  { name: "JUN", count: 380 },
+  { name: "JULY", count: 280 },
+  { name: "AUG", count: 180 },
+  { name: "SEPT", count: 380 },
+  { name: "OCT", count: 250 },
+  { name: "NOV", count: 180 },
+  { name: "DEC", count: 380 },
+];
+
+const weeklyData = [
+  { name: "W1", count: 120 },
+  { name: "W2", count: 60 },
+  { name: "W3", count: 200 },
+  { name: "W4", count: 140 },
+  { name: "W5", count: 260 },
+  { name: "W6", count: 320 },
+  { name: "W7", count: 220 },
+  { name: "W8", count: 150 },
+  { name: "W9", count: 340 },
+  { name: "W10", count: 210 },
+  { name: "W11", count: 160 },
+  { name: "W12", count: 360 },
+];
+
+const cardinal = curveCardinal.tension(0.2);
+
+const axisTickStyle = { fill: "#9CA3AF", fontSize: 11 };
 
 export function UserCountChart() {
   const [period, setPeriod] = useState<"Monthly" | "Weekly">("Monthly");
 
-  const width = 560;
-  const height = 200;
-  const padding = { top: 10, right: 10, bottom: 30, left: 10 };
-  const chartW = width - padding.left - padding.right;
-  const chartH = height - padding.top - padding.bottom;
-
-  const max = Math.max(...data);
-  const points = data.map((v, i) => {
-    const x = padding.left + (i / (data.length - 1)) * chartW;
-    const y = padding.top + chartH - (v / max) * chartH;
-    return { x, y };
-  });
-
-  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
-  const areaPath = `${linePath} L${points[points.length - 1].x},${padding.top + chartH} L${points[0].x},${padding.top + chartH} Z`;
+  const data = useMemo(
+    () => (period === "Monthly" ? monthlyData : weeklyData),
+    [period],
+  );
 
   return (
     <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-slate-900">User Count</h3>
-        <div className="flex rounded-lg border border-slate-200 p-0.5">
+      <div className="mb-5 flex items-center justify-between">
+        <h3 className="text-base font-semibold text-[#1F2937]">User Count</h3>
+        <div className="flex rounded-full bg-[#FDF3F0] p-1">
           {(["Monthly", "Weekly"] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                period === p
-                  ? "bg-[#FE915D] text-white"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${period === p
+                  ? "bg-[#FE915D] text-white shadow-sm"
+                  : "text-[#4B5563] hover:text-[#374151]"
+                }`}
             >
               {p}
             </button>
@@ -46,45 +67,70 @@ export function UserCountChart() {
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="xMidYMid meet">
+      <AreaChart
+        style={{ width: "100%", height: 280 }}
+        responsive
+        data={data}
+        margin={{ top: 8, right: 16, left: 4, bottom: 4 }}
+      >
         <defs>
-          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FE915D" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#FE915D" stopOpacity="0.02" />
+          <linearGradient id="userCountGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FE915D" stopOpacity={0.45} />
+            <stop offset="55%" stopColor="#FE915D" stopOpacity={0.12} />
+            <stop offset="100%" stopColor="#FE915D" stopOpacity={0} />
           </linearGradient>
         </defs>
 
-        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-          const y = padding.top + chartH * (1 - ratio);
-          return (
-            <line
-              key={ratio}
-              x1={padding.left}
-              y1={y}
-              x2={width - padding.right}
-              y2={y}
-              stroke="#f1f5f9"
-              strokeWidth="1"
-            />
-          );
-        })}
-
-        <path d={areaPath} fill="url(#areaGradient)" />
-        <path d={linePath} fill="none" stroke="#FE915D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-
-        {months.map((m, i) => (
-          <text
-            key={m}
-            x={padding.left + (i / (months.length - 1)) * chartW}
-            y={height - 8}
-            textAnchor="middle"
-            fill="#94a3b8"
-            fontSize="10"
-          >
-            {m}
-          </text>
-        ))}
-      </svg>
+        <CartesianGrid
+          stroke="#E5E7EB"
+          strokeDasharray="4 4"
+          vertical={false}
+        />
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={axisTickStyle}
+          dy={10}
+          interval={0}
+        />
+        <YAxis
+          domain={[0, 500]}
+          ticks={[0, 100, 200, 300, 400, 500]}
+          axisLine={false}
+          tickLine={false}
+          tick={axisTickStyle}
+          width={36}
+          label={{
+            angle: -90,
+            position: "insideLeft",
+            offset: 12,
+            style: {
+              fill: "#9CA3AF",
+              fontSize: 11,
+              textAnchor: "middle",
+            },
+          }}
+        />
+        <Tooltip
+          contentStyle={{
+            borderRadius: 8,
+            border: "1px solid #F3F4F6",
+            fontSize: 12,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+          }}
+          labelStyle={{ color: "#6B7280", fontWeight: 500 }}
+          itemStyle={{ color: "#711E00" }}
+        />
+        <Area
+          type={cardinal}
+          dataKey="count"
+          stroke="#711E00"
+          strokeWidth={2}
+          fill="url(#userCountGradient)"
+          activeDot={{ r: 4, fill: "#711E00", stroke: "#fff", strokeWidth: 2 }}
+        />
+      </AreaChart>
     </div>
   );
 }
