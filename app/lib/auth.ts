@@ -4,10 +4,22 @@ const ACCESS_TOKEN_KEY = "whipcare_access_token";
 const REFRESH_TOKEN_KEY = "whipcare_refresh_token";
 const ADMIN_KEY = "whipcare_admin";
 
+export type AdminPermission = {
+  name: string;
+  slug: string;
+};
+
+export type AdminRole = {
+  id: string;
+  name: string;
+  permissions: AdminPermission[];
+};
+
 export type AdminUser = {
   id: string;
   email: string;
-  fullname?: string;
+  fullname: string;
+  role: AdminRole;
 };
 
 export type LoginResponse = {
@@ -57,6 +69,10 @@ export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
+export function isAuthenticated(): boolean {
+  return !!getAccessToken();
+}
+
 export function getAdmin(): AdminUser | null {
   if (typeof window === "undefined") return null;
   const raw = localStorage.getItem(ADMIN_KEY);
@@ -66,4 +82,25 @@ export function getAdmin(): AdminUser | null {
   } catch {
     return null;
   }
+}
+
+export function getAdminInitials(admin: AdminUser | null): string {
+  if (!admin) return "NA";
+  const name = admin.fullname?.trim();
+  if (name) {
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  }
+  const local = admin.email.split("@")[0] ?? "";
+  return local.slice(0, 2).toUpperCase() || "NA";
+}
+
+export function isSuperAdmin(admin: AdminUser | null = getAdmin()): boolean {
+  if (!admin?.role?.permissions?.length) return false;
+  return admin.role.permissions.some(
+    (permission) =>
+      permission.slug === "super_admin" ||
+      permission.name.toLowerCase() === "super admin",
+  );
 }

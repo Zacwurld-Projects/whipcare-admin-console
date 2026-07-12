@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, FormEvent, InputHTMLAttributes } from "react";
+import toast from "react-hot-toast";
+import { getAdmin, getAdminInitials, isSuperAdmin } from "@/app/lib/auth";
 import { ChevronDownIcon } from "./icons";
+import { fetchAdmins, inviteAdmin, type Admin } from "@/app/lib/api";
 
-const tabs = ["Profile", "Accessibility", "Notification"] as const;
+const allTabs = ["Profile", "Accessibility", "Notification"] as const;
+type SettingsTab = (typeof allTabs)[number];
 
-const MEMBER_ROLES = ["Admin", "Analyst", "Co-founder", "Marketer", "Admin Manager", "Editor", "Viewer"] as const;
+const ADMIN_ROLES = [
+  { id: "6a53feb3888b310ad0a26ccd", name: "Super Admin" },
+] as const;
 
 const PERMISSIONS = [
   "Vehicle Owners",
@@ -120,12 +126,14 @@ function FloatingPasswordInput({ label, id, ...props }: FloatingInputProps) {
 }
 
 function ProfileTab() {
-  const [fullName, setFullName] = useState("Zacworld");
-  const [email, setEmail] = useState("admin@whipcare.com");
-  const [role, setRole] = useState("Admin");
+  const admin = getAdmin();
+  const [fullName, setFullName] = useState(admin?.fullname ?? "");
+  const [email, setEmail] = useState(admin?.email ?? "");
+  const [role, setRole] = useState(admin?.role?.name ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const initials = getAdminInitials(admin);
 
   function handleSaveProfile(e: FormEvent) {
     e.preventDefault();
@@ -147,7 +155,7 @@ function ProfileTab() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
             <div className="flex shrink-0 flex-col items-start gap-4">
               <div className="flex h-[120px] w-[120px] items-center justify-center rounded-full bg-[#FDE8D8] text-[32px] font-semibold text-[#C2410C]">
-                ZI
+                {initials}
               </div>
               <button
                 type="button"
@@ -335,10 +343,11 @@ function RoleSelect({
   onChange,
 }: {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (roleId: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const selected = ADMIN_ROLES.find((role) => role.id === value);
 
   useEffect(() => {
     if (!open) return;
@@ -356,8 +365,8 @@ function RoleSelect({
         onClick={() => setOpen((v) => !v)}
         className="flex h-12 w-full items-center justify-between rounded-xl border border-[#E5E7EB] bg-white px-4 text-left text-sm transition-colors hover:border-[#D1D5DB]"
       >
-        <span className={value ? "text-[#1E2939]" : "text-[#9CA3AF]"}>
-          {value || "Enter role"}
+        <span className={selected ? "text-[#1E2939]" : "text-[#9CA3AF]"}>
+          {selected?.name || "Enter role"}
         </span>
         <ChevronDownIcon
           className={`text-[#9CA3AF] transition-transform ${open ? "rotate-180" : ""}`}
@@ -366,19 +375,19 @@ function RoleSelect({
 
       {open && (
         <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white py-1 shadow-lg">
-          {MEMBER_ROLES.map((option) => (
+          {ADMIN_ROLES.map((option) => (
             <button
-              key={option}
+              key={option.id}
               type="button"
               onClick={() => {
-                onChange(option);
+                onChange(option.id);
                 setOpen(false);
               }}
               className={`flex w-full px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#FFF1E8] ${
-                value === option ? "font-medium text-[#711E00]" : "text-[#4B5563]"
+                value === option.id ? "font-medium text-[#711E00]" : "text-[#4B5563]"
               }`}
             >
-              {option}
+              {option.name}
             </button>
           ))}
         </div>
@@ -387,12 +396,21 @@ function RoleSelect({
   );
 }
 
+type InvitePayload = {
+  email: string;
+  fullname: string;
+  roleId: string;
+};
+
 function AddMemberForm({
   onSubmit,
+  submitting,
 }: {
-  onSubmit: (member: Omit<Member, "id" | "addedAt" | "initials" | "name"> & { email: string; role: string }) => void;
+  onSubmit: (member: InvitePayload) => Promise<void>;
+  submitting?: boolean;
 }) {
-  const [role, setRole] = useState("");
+  const [roleId, setRoleId] = useState("");
+  const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [permissions, setPermissions] = useState<Set<string>>(() => new Set());
 
@@ -405,17 +423,22 @@ function AddMemberForm({
     });
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !role) return;
-    onSubmit({
-      email: email.trim(),
-      role,
-      permissions: [...permissions],
-    });
-    setEmail("");
-    setRole("");
-    setPermissions(new Set());
+    if (!email.trim() || !fullname.trim() || !roleId || submitting) return;
+    try {
+      await onSubmit({
+        email: email.trim(),
+        fullname: fullname.trim(),
+        roleId,
+      });
+      setEmail("");
+      setFullname("");
+      setRoleId("");
+      setPermissions(new Set());
+    } catch {
+      // Toast handled by parent
+    }
   }
 
   return (
@@ -429,7 +452,21 @@ function AddMemberForm({
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-[#6B7280]">Role</label>
-        <RoleSelect value={role} onChange={setRole} />
+        <RoleSelect value={roleId} onChange={setRoleId} />
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="add-member-fullname" className="text-sm font-medium text-[#6B7280]">
+          Full name
+        </label>
+        <input
+          id="add-member-fullname"
+          type="text"
+          value={fullname}
+          onChange={(e) => setFullname(e.target.value)}
+          placeholder="Enter full name"
+          className="h-12 w-full rounded-xl border border-[#E5E7EB] bg-white px-4 text-sm text-[#1E2939] placeholder:text-[#9CA3AF] outline-none transition-colors focus:border-[#711E00]"
+        />
       </div>
 
       <div className="space-y-1.5">
@@ -459,9 +496,10 @@ function AddMemberForm({
 
       <button
         type="submit"
-        className="flex h-12 w-full items-center justify-center rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800]"
+        disabled={submitting}
+        className="flex h-12 w-full items-center justify-center rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Send Invite Links
+        {submitting ? "Sending…" : "Send Invite Links"}
       </button>
     </form>
   );
@@ -549,8 +587,8 @@ function MembersTable({
                   </td>
 
                   <td className="px-5 py-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="inline-flex rounded-lg bg-[#FFF1E8] px-3 py-1.5 text-xs font-medium text-[#9A3412]">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-[#FFF1E8] px-2.5 py-1 text-xs font-medium text-[#9A3412]">
                         {member.role}
                       </span>
                       <button
@@ -577,12 +615,15 @@ function InviteMemberModal({
   open,
   onClose,
   onInvite,
+  submitting,
 }: {
   open: boolean;
   onClose: () => void;
-  onInvite: (data: { email: string; role: string; permissions: string[] }) => void;
+  onInvite: (data: InvitePayload) => Promise<void>;
+  submitting?: boolean;
 }) {
-  const [role, setRole] = useState("");
+  const [roleId, setRoleId] = useState("");
+  const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [permissions, setPermissions] = useState<Set<string>>(() => new Set());
 
@@ -610,14 +651,23 @@ function InviteMemberModal({
     });
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!email.trim() || !role) return;
-    onInvite({ email: email.trim(), role, permissions: [...permissions] });
-    setEmail("");
-    setRole("");
-    setPermissions(new Set());
-    onClose();
+    if (!email.trim() || !fullname.trim() || !roleId || submitting) return;
+    try {
+      await onInvite({
+        email: email.trim(),
+        fullname: fullname.trim(),
+        roleId,
+      });
+      setEmail("");
+      setFullname("");
+      setRoleId("");
+      setPermissions(new Set());
+      onClose();
+    } catch {
+      // Toast handled by parent
+    }
   }
 
   return (
@@ -653,7 +703,21 @@ function InviteMemberModal({
           <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-[#6B7280]">Role</label>
-              <RoleSelect value={role} onChange={setRole} />
+              <RoleSelect value={roleId} onChange={setRoleId} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="invite-fullname" className="text-sm font-medium text-[#6B7280]">
+                Full name
+              </label>
+              <input
+                id="invite-fullname"
+                type="text"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                placeholder="Enter full name"
+                className="h-12 w-full rounded-xl border border-[#E5E7EB] bg-white px-4 text-sm text-[#1E2939] placeholder:text-[#9CA3AF] outline-none transition-colors focus:border-[#711E00]"
+              />
             </div>
 
             <div className="space-y-1.5">
@@ -685,9 +749,10 @@ function InviteMemberModal({
           <div className="shrink-0 px-5 pb-5 pt-2">
             <button
               type="submit"
-              className="flex h-12 w-full items-center justify-center rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800]"
+              disabled={submitting}
+              className="flex h-12 w-full items-center justify-center rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Send Invite Links
+              {submitting ? "Sending…" : "Send Invite Links"}
             </button>
           </div>
         </form>
@@ -696,57 +761,84 @@ function InviteMemberModal({
   );
 }
 
+function initialsFromName(name: string, email: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  if (parts.length === 1 && parts[0].length >= 2) return parts[0].slice(0, 2).toUpperCase();
+  const local = email.split("@")[0] ?? "";
+  return local.slice(0, 2).toUpperCase() || "NA";
+}
+
+function mapAdminToMember(admin: Admin): Member {
+  const isSuperAdmin = admin.role.permissions.some(
+    (p) => p.slug === "super_admin" || p.name.toLowerCase() === "super admin",
+  );
+
+  return {
+    id: admin.id,
+    name: admin.fullname || admin.email,
+    email: admin.email,
+    initials: initialsFromName(admin.fullname || "", admin.email),
+    addedAt: "—",
+    role: admin.role.name,
+    permissions: isSuperAdmin ? [...PERMISSIONS] : admin.role.permissions.map((p) => p.name),
+  };
+}
+
 function AccessibilityTab() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [inviting, setInviting] = useState(false);
 
-  function initialsFromEmail(email: string) {
-    const local = email.split("@")[0] ?? "";
-    const parts = local.split(/[._-]/).filter(Boolean);
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return local.slice(0, 2).toUpperCase() || "NA";
-  }
+  useEffect(() => {
+    let cancelled = false;
 
-  function nameFromEmail(email: string) {
-    const local = email.split("@")[0] ?? "Member";
-    return local
-      .split(/[._-]/)
-      .filter(Boolean)
-      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-      .join(" ");
-  }
+    async function loadAdmins() {
+      setLoading(true);
+      try {
+        const res = await fetchAdmins();
+        if (cancelled) return;
+        setMembers(res.data.map(mapAdminToMember));
+      } catch (err) {
+        if (cancelled) return;
+        toast.error(err instanceof Error ? err.message : "Failed to load members");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
 
-  function addMember(data: { email: string; role: string; permissions: string[] }) {
-    const now = new Date();
-    const datePart = now.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    const timePart = now
-      .toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(" ", "");
+    void loadAdmins();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
 
-    setMembers((prev) => [
-      ...prev,
-      {
-        id: String(Date.now()),
-        name: nameFromEmail(data.email),
-        email: data.email,
-        initials: initialsFromEmail(data.email),
-        addedAt: `${datePart} | ${timePart}`,
-        role: data.role,
-        permissions: data.permissions,
-      },
-    ]);
+  async function addMember(data: InvitePayload) {
+    setInviting(true);
+    try {
+      const res = await inviteAdmin(data);
+      toast.success(res.message || "Member invited successfully");
+      setReloadKey((k) => k + 1);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to invite member");
+      throw err;
+    } finally {
+      setInviting(false);
+    }
   }
 
   function deleteMember(id: string) {
     setMembers((prev) => prev.filter((m) => m.id !== id));
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[480px] items-center justify-center px-6 py-16">
+        <p className="text-sm text-[#9CA3AF]">Loading members…</p>
+      </div>
+    );
   }
 
   if (members.length === 0) {
@@ -769,6 +861,7 @@ function AccessibilityTab() {
           open={inviteOpen}
           onClose={() => setInviteOpen(false)}
           onInvite={addMember}
+          submitting={inviting}
         />
       </>
     );
@@ -776,7 +869,7 @@ function AccessibilityTab() {
 
   return (
     <div className="space-y-10 px-6 py-8 sm:px-8 lg:px-10">
-      <AddMemberForm onSubmit={addMember} />
+      <AddMemberForm onSubmit={addMember} submitting={inviting} />
       <div className="border-t border-[#F3F4F6]" />
       <MembersTable members={members} onDelete={deleteMember} />
     </div>
@@ -885,7 +978,20 @@ function NotificationTab() {
 }
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("Profile");
+  const [activeTab, setActiveTab] = useState<SettingsTab>("Profile");
+  const [canAccessAccessibility, setCanAccessAccessibility] = useState(false);
+
+  useEffect(() => {
+    const superAdmin = isSuperAdmin();
+    setCanAccessAccessibility(superAdmin);
+    if (!superAdmin) {
+      setActiveTab((tab) => (tab === "Accessibility" ? "Profile" : tab));
+    }
+  }, []);
+
+  const visibleTabs = canAccessAccessibility
+    ? allTabs
+    : allTabs.filter((tab) => tab !== "Accessibility");
 
   return (
     <div className="space-y-5">
@@ -894,7 +1000,7 @@ export function SettingsPage() {
       <div className="rounded-xl border border-slate-100 bg-white shadow-sm">
         <div className="border-b border-slate-100 px-6 pt-4 sm:px-8 lg:px-10">
           <div className="flex gap-8">
-            {tabs.map((tab) => (
+            {visibleTabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -913,7 +1019,7 @@ export function SettingsPage() {
 
         {activeTab === "Profile" && <ProfileTab />}
 
-        {activeTab === "Accessibility" && <AccessibilityTab />}
+        {canAccessAccessibility && activeTab === "Accessibility" && <AccessibilityTab />}
 
         {activeTab === "Notification" && <NotificationTab />}
       </div>

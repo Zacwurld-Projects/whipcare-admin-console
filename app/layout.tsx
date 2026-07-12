@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AppToaster } from "@/app/components/AppToaster";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col font-sans antialiased">
+        <AppToaster />
         {children}
       </body>
     </html>

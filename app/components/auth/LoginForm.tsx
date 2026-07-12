@@ -1,19 +1,25 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { WhipcareLogo } from "./WhipcareLogo";
 import { AuthInput } from "./AuthInput";
 import { PasswordInput } from "./PasswordInput";
 import { IOSSpinner } from "./IOSSpinner";
-import { login, persistSession } from "@/app/lib/auth";
+import { isAuthenticated, login, persistSession } from "@/app/lib/auth";
 
 export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.replace("/dashboard");
+    }
+  }, [router]);
 
   const isValid = email.trim().length > 0 && password.trim().length > 0;
 
@@ -22,14 +28,14 @@ export function LoginForm() {
     if (!isValid) return;
 
     setIsLoading(true);
-    setError(null);
 
     try {
       const res = await login(email.trim(), password);
       persistSession(res.data);
-      router.push("/dashboard");
+      toast.success(res.message || "Login successful");
+      router.replace("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      toast.error(err instanceof Error ? err.message : "Login failed");
       setIsLoading(false);
     }
   }
@@ -72,12 +78,6 @@ export function LoginForm() {
               autoComplete="current-password"
               required
             />
-
-            {error ? (
-              <p className="text-sm font-medium text-red-600" role="alert">
-                {error}
-              </p>
-            ) : null}
 
             <button
               type="submit"

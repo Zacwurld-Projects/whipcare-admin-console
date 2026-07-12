@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SearchIcon, BellIcon, SettingsIcon, ChevronDownIcon, LogOutIcon } from "./icons";
-import { clearSession } from "@/app/lib/auth";
+import { clearSession, getAdmin, getAdminInitials } from "@/app/lib/auth";
 
 function NigeriaFlagIcon() {
   return (
@@ -30,17 +30,20 @@ const iconButtonClass =
 const selectorButtonClass =
   "flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#F3F4F6] px-3 text-sm font-medium text-[#4B5563] transition-colors hover:bg-[#ECEEF2]";
 
-const USER = {
-  name: "ZacWurld",
-  role: "Admin Manager",
-  email: "admin@whipcare.com",
-  initials: "ZI",
-};
-
 function ProfileDropdown() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [admin, setAdmin] = useState<ReturnType<typeof getAdmin>>(null);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setAdmin(getAdmin());
+  }, []);
+
+  const name = admin?.fullname || admin?.email || "Admin";
+  const role = admin?.role?.name || "Admin";
+  const email = admin?.email || "";
+  const initials = getAdminInitials(admin);
 
   useEffect(() => {
     if (!open) return;
@@ -71,12 +74,12 @@ function ProfileDropdown() {
         </div>
         <div className="hidden text-left sm:block">
           <div className="flex items-center gap-1">
-            <p className="text-sm font-semibold leading-tight text-[#1E2939]">{USER.name}</p>
+            <p className="text-sm font-semibold leading-tight text-[#1E2939]">{name}</p>
             <ChevronDownIcon
               className={`text-[#9CA3AF] transition-transform ${open ? "rotate-180" : ""}`}
             />
           </div>
-          <p className="text-xs leading-tight text-[#6A7282]">{USER.role}</p>
+          <p className="text-xs leading-tight text-[#6A7282]">{role}</p>
         </div>
       </button>
 
@@ -87,11 +90,11 @@ function ProfileDropdown() {
         >
           <div className="flex items-center gap-3 px-4 py-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FDE8D8] text-sm font-semibold text-[#C2410C]">
-              {USER.initials}
+              {initials}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[#1E2939]">{USER.name}</p>
-              <p className="truncate text-xs text-[#9CA3AF]">{USER.email}</p>
+              <p className="truncate text-sm font-semibold text-[#1E2939]">{name}</p>
+              <p className="truncate text-xs text-[#9CA3AF]">{email}</p>
             </div>
           </div>
 
