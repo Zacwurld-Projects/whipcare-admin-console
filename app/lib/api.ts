@@ -185,3 +185,141 @@ export async function fetchUsers(params: FetchUsersParams = {}): Promise<UsersRe
 
   return apiRequest<UsersResponse>(`/api/v1/user?${query}`, { method: "GET" });
 }
+
+export type TierUpgradeStatus = "pending" | "approved" | "rejected";
+
+export type TierUpgradeGuarantor = {
+  name: string;
+  phoneNumber: string;
+};
+
+export type TierUpgradeWorker = {
+  name?: string;
+  phoneNumber?: string;
+  documentType?: string | null;
+  nationalId?: string | null;
+  selfie?: string | null;
+  skillTestScore?: number | string | null;
+  document?: string | null;
+};
+
+export type TierUpgradeUser = {
+  id: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  phone: string;
+  type: string;
+  tier: number | null;
+};
+
+export type TierUpgradeApplication = {
+  id: string;
+  user: TierUpgradeUser;
+  fromTier: number;
+  toTier: number;
+  status: TierUpgradeStatus | string;
+  providerSelfie?: string | null;
+  workShopVideo?: string | null;
+  documentType?: string | null;
+  document?: string | null;
+  guarantor: TierUpgradeGuarantor[];
+  workers: TierUpgradeWorker[];
+  workersCapacity?: number | null;
+  cac?: string | null;
+  cacUrl?: string | null;
+  cacNumber?: string | null;
+  test?: string | null;
+  testScore?: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TierUpgradesResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: TierUpgradeApplication[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchTierUpgradesParams = {
+  status?: TierUpgradeStatus;
+  page?: number;
+  limit?: number;
+};
+
+export function getTierUpgradeDisplayName(app: TierUpgradeApplication): string {
+  const fullName = `${app.user.firstname} ${app.user.lastname}`.trim();
+  if (fullName) return fullName;
+  return app.user.email;
+}
+
+export function asTierLevel(value: number): 1 | 2 | 3 | null {
+  return value === 1 || value === 2 || value === 3 ? value : null;
+}
+
+export function normalizeMediaUrl(url: string | null | undefined): string | null {
+  if (!url?.trim()) return null;
+  const trimmed = url.trim();
+  if (/example\.com/i.test(trimmed)) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (trimmed.startsWith("www.")) return `https://${trimmed}`;
+  return trimmed;
+}
+
+export async function fetchTierUpgrades(
+  params: FetchTierUpgradesParams = {},
+): Promise<TierUpgradesResponse> {
+  const { status = "pending", page = 1, limit = 10 } = params;
+  const query = new URLSearchParams({
+    status,
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return apiRequest<TierUpgradesResponse>(`/api/v1/tier-upgrade?${query}`, {
+    method: "GET",
+  });
+}
+
+export type ReviewTierUpgradePayload = {
+  status: "approved" | "rejected";
+  reason?: string;
+};
+
+export type ReviewTierUpgradeResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    id: string;
+    user: string | TierUpgradeUser;
+    fromTier: number;
+    toTier: number;
+    status: TierUpgradeStatus | string;
+    providerSelfie?: string | null;
+    workShopVideo?: string | null;
+    documentType?: string | null;
+    document?: string | null;
+    guarantor: TierUpgradeGuarantor[];
+    workers: TierUpgradeWorker[];
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export async function reviewTierUpgrade(
+  id: string,
+  payload: ReviewTierUpgradePayload,
+): Promise<ReviewTierUpgradeResponse> {
+  return apiRequest<ReviewTierUpgradeResponse>(`/api/v1/tier-upgrade/${id}/review`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
