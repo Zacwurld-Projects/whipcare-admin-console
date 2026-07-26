@@ -323,3 +323,251 @@ export async function reviewTierUpgrade(
     body: JSON.stringify(payload),
   });
 }
+
+export type BlogStatus = "draft" | "published";
+
+export type Blog = {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  pageTitle: string;
+  pageDescription: string;
+  categories: string[];
+  status: BlogStatus | string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string | null;
+  coverImage?: string | null;
+};
+
+export type CreateBlogPayload = {
+  title: string;
+  content: string;
+  excerpt: string;
+  pageTitle: string;
+  pageDescription: string;
+  categories: string[];
+  status?: BlogStatus;
+  slug?: string;
+  coverImage?: File | null;
+};
+
+export type UpdateBlogPayload = CreateBlogPayload & {
+  regenerateSlug?: boolean;
+};
+
+export type CreateBlogResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: Blog;
+};
+
+export type UpdateBlogResponse = CreateBlogResponse;
+
+function buildBlogFormData(
+  payload: CreateBlogPayload,
+  options?: { regenerateSlug?: boolean },
+): FormData {
+  const formData = new FormData();
+  formData.append("title", payload.title.trim());
+  formData.append("content", payload.content);
+  formData.append("excerpt", payload.excerpt.trim());
+  formData.append("pageTitle", payload.pageTitle.trim() || payload.title.trim());
+  formData.append("pageDescription", payload.pageDescription.trim());
+  formData.append("status", payload.status ?? "draft");
+
+  const categories = payload.categories.map(toBlogCategorySlug).filter(Boolean);
+
+  if (categories.length === 0) {
+    throw new Error("Add at least one category");
+  }
+
+  formData.append("categories", categories.join(","));
+
+  if (payload.slug?.trim()) {
+    formData.append("slug", payload.slug.trim().replace(/^\//, ""));
+  }
+
+  if (options?.regenerateSlug !== undefined) {
+    formData.append("regenerateSlug", String(options.regenerateSlug));
+  }
+
+  if (payload.coverImage) {
+    formData.append("coverImage", payload.coverImage);
+  }
+
+  return formData;
+}
+
+export function toBlogCategorySlug(label: string): string {
+  return label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+async function apiFormRequest<T>(
+  path: string,
+  formData: FormData,
+  method: "POST" | "PUT" = "POST",
+): Promise<T> {
+  if (!isSessionValid()) {
+    handleUnauthorized();
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      ...getAuthHeaders(),
+    },
+    body: formData,
+  });
+
+  const data = (await res.json()) as T & ApiEnvelope;
+
+  if (res.status === 401) {
+    handleUnauthorized();
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  if (!res.ok || data.status === false) {
+    throw new Error(data.message || "Request failed");
+  }
+
+  return data;
+}
+
+export type BlogListItem = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  categories: string[];
+  status: BlogStatus | string;
+  createdAt: string;
+  publishedAt?: string | null;
+  coverImage?: string | null;
+};
+
+export type BlogsResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: BlogListItem[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchBlogsParams = {
+  page?: number;
+  limit?: number;
+  sort?: "newest" | "oldest";
+  status?: BlogStatus;
+  category?: string;
+  search?: string;
+};
+
+export function formatBlogCategoryLabel(slug: string): string {
+  return slug
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+export async function fetchBlogs(
+  params: FetchBlogsParams = {},
+): Promise<BlogsResponse> {
+  const { page = 1, limit = 20, sort = "newest", status, category, search } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    sort,
+  });
+
+  if (status) query.set("status", status);
+  if (category) query.set("category", category);
+  if (search?.trim()) query.set("search", search.trim());
+
+  return apiRequest<BlogsResponse>(`/api/v1/admin/blogs?${query}`, {
+    method: "GET",
+  });
+}
+
+export type BlogResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: Blog;
+};
+
+export async function fetchBlog(id: string): Promise<BlogResponse> {
+  return apiRequest<BlogResponse>(`/api/v1/admin/blogs/${id}`, {
+    method: "GET",
+  });
+}
+
+export async function createBlog(
+  payload: CreateBlogPayload,
+): Promise<CreateBlogResponse> {
+  return apiFormRequest<CreateBlogResponse>(
+    "/api/v1/admin/blogs",
+    buildBlogFormData({ ...payload, status: payload.status ?? "draft" }),
+  );
+}
+
+export async function updateBlog(
+  id: string,
+  payload: UpdateBlogPayload,
+): Promise<UpdateBlogResponse> {
+  const { regenerateSlug = false, ...rest } = payload;
+  return apiFormRequest<UpdateBlogResponse>(
+    `/api/v1/admin/blogs/${id}`,
+    buildBlogFormData({ ...rest, status: rest.status ?? "draft" }, { regenerateSlug }),
+    "PUT",
+  );
+}
+
+export type PublishBlogResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: Blog;
+};
+
+export async function publishBlog(id: string): Promise<PublishBlogResponse> {
+  return apiRequest<PublishBlogResponse>(`/api/v1/admin/blogs/${id}/publish`, {
+    method: "PATCH",
+  });
+}
+
+export type UnpublishBlogResponse = PublishBlogResponse;
+
+export async function unpublishBlog(id: string): Promise<UnpublishBlogResponse> {
+  return apiRequest<UnpublishBlogResponse>(`/api/v1/admin/blogs/${id}/unpublish`, {
+    method: "PATCH",
+  });
+}
+
+export type DeleteBlogResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data?: unknown;
+};
+
+export async function deleteBlog(id: string): Promise<DeleteBlogResponse> {
+  return apiRequest<DeleteBlogResponse>(`/api/v1/admin/blogs/${id}`, {
+    method: "DELETE",
+  });
+}
