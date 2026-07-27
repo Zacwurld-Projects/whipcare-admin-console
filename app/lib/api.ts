@@ -571,3 +571,86 @@ export async function deleteBlog(id: string): Promise<DeleteBlogResponse> {
     method: "DELETE",
   });
 }
+
+export type ContactUsEntry = {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  message: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ContactUsResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: ContactUsEntry[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchContactUsParams = {
+  page?: number;
+  limit?: number;
+};
+
+export async function fetchContactUs(
+  params: FetchContactUsParams = {},
+): Promise<ContactUsResponse> {
+  const { page = 1, limit = 20 } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return apiRequest<ContactUsResponse>(
+    `/api/v1/admin/website/contact-us?${query}`,
+    { method: "GET" },
+  );
+}
+
+export type EmailListEntry = {
+  id: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EmailListResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: EmailListEntry[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchEmailListParams = {
+  page?: number;
+  limit?: number;
+};
+
+export async function fetchEmailList(
+  params: FetchEmailListParams = {},
+): Promise<EmailListResponse> {
+  const { page = 1, limit = 20 } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return apiRequest<EmailListResponse>(
+    `/api/v1/admin/website/email-list?${query}`,
+    { method: "GET" },
+  );
+}

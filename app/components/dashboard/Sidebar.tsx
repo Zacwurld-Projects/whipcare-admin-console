@@ -14,6 +14,7 @@ import {
   MarketingIcon,
   FinancialIcon,
   AdsIcon,
+  WebsiteIcon,
 } from "./icons";
 
 type NavItem = {
@@ -52,6 +53,7 @@ const navGroups: NavGroup[] = [
   [
     { label: "Financials", href: "/dashboard/financials", icon: FinancialIcon },
     { label: "Ads and Blog", href: "/dashboard/ads", icon: AdsIcon, available: true },
+    { label: "Website", href: "/dashboard/website", icon: WebsiteIcon, available: true },
   ],
 ];
 
