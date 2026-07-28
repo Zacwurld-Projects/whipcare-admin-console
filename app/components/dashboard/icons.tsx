@@ -172,6 +172,20 @@ export function FinancialIcon({ className }: { className?: string }) {
   );
 }
 
+export function WebsiteIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} {...iconProps}>
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.25" />
+      <path
+        d="M2.5 10h15M10 2.5c2 2.5 3 4.5 3 7.5s-1 5-3 7.5M10 2.5c-2 2.5-3 4.5-3 7.5s1 5 3 7.5"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function AdsIcon({ className }: { className?: string }) {
   return (
     <svg className={className} {...iconProps}>

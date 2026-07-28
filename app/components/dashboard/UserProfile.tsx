@@ -1,7 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useId, useMemo, useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import {
+  fetchUserActivities,
+  fetchUserBookings,
+  fetchUserProfile,
+  fetchUserReviews,
+  type UserActivity,
+  type UserBooking,
+  type UserProfileData,
+  type UserReview,
+} from "@/app/lib/api";
 import {
   TierShield,
   MoreVerticalIcon,
@@ -16,23 +27,6 @@ const bookingSubTabs = ["Bookings", "Single Vehicle", "Fleets"] as const;
 
 type BookingCategory = "Completed" | "Ongoing" | "Cancelled";
 
-const bookings = Array.from({ length: 10 }, (_, i) => ({
-  id: "123467WXYZ",
-  vehicle: "BMW M6 Coupe",
-  services: "Inspection +2",
-  category: (["Completed", "Ongoing", "Cancelled"] as const)[i % 3] as BookingCategory,
-  location: "Lekki Lagos",
-  amount: "₦300,000",
-  fee: "₦30,000",
-  date: "17-Apr-2026",
-}));
-
-const activities = Array.from({ length: 13 }, () => ({
-  type: "Accepted a Service",
-  description: "Accepted a booking request For car repair",
-  datetime: "Nov 12, 2024 . 09:32AM",
-}));
-
 const categoryClass: Record<BookingCategory, string> = {
   Completed: "text-emerald-600",
   Ongoing: "text-[#FE915D]",
@@ -41,23 +35,131 @@ const categoryClass: Record<BookingCategory, string> = {
 
 type StatIcon = "bookings" | "rating" | "revenue" | "whip" | "default";
 
-const stats = [
-  { title: "Total Bookings", value: "100", change: "30.2%", trend: "up" as const, icon: "bookings" as const },
-  { title: "Ongoing Bookings", value: "4", change: "12.8%", trend: "down" as const, icon: "bookings" as const },
-  { title: "Completed Bookings", value: "250", change: "30.2%", trend: "up" as const, icon: "bookings" as const },
-  { title: "Avg Ratings", value: "4.2", change: "12.8%", trend: "down" as const, suffix: "Stars", icon: "rating" as const },
-  { title: "Total Revenue", value: "₦1.3M", change: "24.8%", trend: "up" as const, icon: "revenue" as const },
-  { title: "Avg ERT", value: "10", change: "12.8%", trend: "down" as const, suffix: "Hours", trendGood: true, icon: "revenue" as const },
-  { title: "Total Vehicles", value: "50", change: "12.8%", trend: "down" as const, icon: "bookings" as const },
-  { title: "Whip Point", value: "50", change: "12.8%", trend: "down" as const, suffix: "= ₦50k", icon: "whip" as const },
-];
+const na = "N/A";
 
-const services = Array.from({ length: 8 }, (_, i) => ({
-  id: i + 1,
-  name: "Brake Installation",
-}));
+function withNa(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return na;
+  if (typeof value === "string" && value.trim().length === 0) return na;
+  return String(value);
+}
 
-const carBrands = ["BMW", "Toyota", "Honda", "Benz"];
+function formatDate(dateValue?: string | null): string {
+  if (!dateValue) return na;
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return na;
+  return new Intl.DateTimeFormat("en-GB").format(date);
+}
+
+function formatNaira(value?: number | null): string {
+  if (value === null || value === undefined) return na;
+  return new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function buildPageNumbers(current: number, totalPages: number): (number | "...")[] {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const pages: (number | "...")[] = [1];
+  if (current > 3) pages.push("...");
+  for (let p = Math.max(2, current - 1); p <= Math.min(totalPages - 1, current + 1); p++) {
+    pages.push(p);
+  }
+  if (current < totalPages - 2) pages.push("...");
+  pages.push(totalPages);
+  return pages;
+}
+
+function getBookingCategory(status?: string | null, paidOut?: boolean | null): BookingCategory | typeof na {
+  const normalized = status?.trim().toLowerCase() ?? "";
+  if (!normalized) return na;
+  if (/cancel/.test(normalized)) return "Cancelled";
+  if (paidOut || /complete|completed|finished|delivered|closed|paid/.test(normalized)) {
+    return "Completed";
+  }
+  if (/accept|ongoing|received|progress|pending|active/.test(normalized)) return "Ongoing";
+  return "Ongoing";
+}
+
+function getBookingVehicleName(cars?: UserBooking["cars"]): string {
+  const car = cars?.[0];
+  if (!car) return na;
+  const name = [car.brand, car.carModel].filter(Boolean).join(" ").trim();
+  return name || na;
+}
+
+function getBookingServicesLabel(booking: UserBooking): string {
+  const serviceType = booking.serviceType?.trim();
+  const extraCount =
+    (booking.materials?.length ?? 0) + (booking.preferredServices?.length ?? 0);
+
+  if (!serviceType && extraCount === 0) return na;
+  if (!serviceType) return `+${extraCount}`;
+  if (extraCount === 0) return serviceType;
+  return `${serviceType} +${extraCount}`;
+}
+
+function mapBookingRow(booking: UserBooking) {
+  const category = getBookingCategory(booking.status, booking.paidOut);
+
+  return {
+    id: withNa(booking.id),
+    vehicle: getBookingVehicleName(booking.cars),
+    services: getBookingServicesLabel(booking),
+    category,
+    location: withNa(booking.tripLocations?.[0]?.pickupLocation?.address),
+    amount: formatNaira(booking.agreedAmount),
+    fee: formatNaira(booking.serviceProviderCut),
+    date: formatDate(booking.createdAt),
+  };
+}
+
+function getReviewText(review?: UserReview | null): string {
+  const text = review?.comment ?? review?.review ?? review?.message ?? review?.text;
+  return withNa(text);
+}
+
+function formatReviewDate(dateValue?: string | null): string {
+  if (!dateValue) return na;
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return na;
+
+  const diffMs = Date.now() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "1 day ago";
+  return `${diffDays} days ago`;
+}
+
+function formatActivityDateTime(dateValue?: string | null): string {
+  if (!dateValue) return na;
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return na;
+
+  const datePart = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+  const timePart = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  })
+    .format(date)
+    .toUpperCase();
+
+  return `${datePart} . ${timePart}`;
+}
+
+function getReviewRating(review?: UserReview | null): number {
+  if (review?.rating === null || review?.rating === undefined) return 0;
+  return Math.max(0, Math.min(5, Math.round(review.rating)));
+}
 
 function BookingStatIcon() {
   const uid = useId().replace(/:/g, "");
@@ -337,8 +439,40 @@ function BackIcon({ className }: { className?: string }) {
 }
 
 function BookingsTab() {
+  const params = useParams<{ id?: string }>();
   const [subTab, setSubTab] = useState<(typeof bookingSubTabs)[number]>("Bookings");
   const [page, setPage] = useState(1);
+  const [bookings, setBookings] = useState<UserBooking[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 20;
+
+  useEffect(() => {
+    const userId = params?.id;
+    if (!userId || subTab !== "Bookings") return;
+
+    let isMounted = true;
+    const loadBookings = async () => {
+      try {
+        const payload = await fetchUserBookings(userId, { page, limit });
+        if (!isMounted) return;
+        setBookings(payload.data ?? []);
+        setTotalPages(Math.max(1, payload.meta?.totalPages ?? 1));
+      } catch {
+        if (isMounted) {
+          setBookings([]);
+          setTotalPages(1);
+        }
+      }
+    };
+
+    loadBookings();
+    return () => {
+      isMounted = false;
+    };
+  }, [params?.id, page, subTab]);
+
+  const bookingRows = useMemo(() => bookings.map(mapBookingRow), [bookings]);
+  const pages = buildPageNumbers(page, totalPages);
 
   return (
     <div>
@@ -396,12 +530,18 @@ function BookingsTab() {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking, i) => (
+                {bookingRows.map((booking, i) => (
                   <tr key={`${booking.id}-${i}`} className="border-b border-slate-50 hover:bg-slate-50/50">
                     <td className="px-5 py-4 font-medium text-slate-900">{booking.id}</td>
                     <td className="px-5 py-4 text-slate-600">{booking.vehicle}</td>
                     <td className="px-5 py-4 text-slate-600">{booking.services}</td>
-                    <td className={`px-5 py-4 font-medium ${categoryClass[booking.category]}`}>
+                    <td
+                      className={`px-5 py-4 font-medium ${
+                        booking.category === na
+                          ? "text-slate-600"
+                          : categoryClass[booking.category]
+                      }`}
+                    >
                       {booking.category}
                     </td>
                     <td className="px-5 py-4 text-slate-600">{booking.location}</td>
@@ -417,36 +557,36 @@ function BookingsTab() {
           <div className="flex flex-wrap items-center justify-end gap-1 px-5 py-4">
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+              disabled={page <= 1}
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-40"
               aria-label="Previous page"
             >
               <BackIcon />
             </button>
-            {[1, 2, 3, 4].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={() => setPage(n)}
-                className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
-                  page === n ? "bg-[#FE915D] text-white" : "text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <span className="px-1 text-sm text-slate-400">…</span>
+            {pages.map((n, index) =>
+              n === "..." ? (
+                <span key={`ellipsis-${index}`} className="px-1 text-sm text-slate-400">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setPage(n)}
+                  className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
+                    page === n ? "bg-[#FE915D] text-white" : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {n}
+                </button>
+              ),
+            )}
             <button
               type="button"
-              onClick={() => setPage(10)}
-              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
-                page === 10 ? "bg-[#FE915D] text-white" : "text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              10
-            </button>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+              disabled={page >= totalPages}
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-40"
               aria-label="Next page"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -469,16 +609,54 @@ function BookingsTab() {
 }
 
 function ActivitiesTab() {
+  const params = useParams<{ id?: string }>();
   const [page, setPage] = useState(1);
+  const [activities, setActivities] = useState<UserActivity[]>([]);
+  const [totalActivities, setTotalActivities] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const limit = 20;
+
+  useEffect(() => {
+    const userId = params?.id;
+    if (!userId) return;
+
+    let isMounted = true;
+    const loadActivities = async () => {
+      try {
+        const payload = await fetchUserActivities(userId, { page, limit });
+        if (!isMounted) return;
+        setActivities(payload.data ?? []);
+        setTotalActivities(payload.meta?.total ?? 0);
+        setTotalPages(payload.meta?.totalPages ?? 0);
+      } catch {
+        if (isMounted) {
+          setActivities([]);
+          setTotalActivities(0);
+          setTotalPages(0);
+        }
+      }
+    };
+
+    loadActivities();
+    return () => {
+      isMounted = false;
+    };
+  }, [params?.id, page]);
+
+  const pages = buildPageNumbers(page, Math.max(totalPages, 1));
+  const rangeStart = totalActivities === 0 ? 0 : (page - 1) * limit + 1;
+  const rangeEnd = totalActivities === 0 ? 0 : Math.min(page * limit, totalActivities);
 
   return (
     <div>
       <div className="px-5 pt-5">
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-sm font-semibold text-[#1E2939]">Activities</h3>
-          <button type="button" className="text-xs font-semibold text-primary underline">
-            View All
-          </button>
+          {totalActivities > 0 && (
+            <button type="button" className="text-xs font-semibold text-primary underline">
+              View All
+            </button>
+          )}
         </div>
 
         <div className="mt-3 flex items-center">
@@ -498,73 +676,239 @@ function ActivitiesTab() {
             </tr>
           </thead>
           <tbody>
-            {activities.map((activity, i) => (
-              <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50">
-                <td className="px-5 py-4 font-medium text-slate-900">{activity.type}</td>
-                <td className="px-5 py-4 text-slate-600">{activity.description}</td>
-                <td className="px-5 py-4 text-slate-600">{activity.datetime}</td>
+            {activities.length > 0 ? (
+              activities.map((activity) => (
+                <tr key={activity.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <td className="px-5 py-4 font-medium text-slate-900">
+                    {withNa(activity.activityType)}
+                  </td>
+                  <td className="px-5 py-4 text-slate-600">{withNa(activity.description)}</td>
+                  <td className="px-5 py-4 text-slate-600">
+                    {formatActivityDateTime(activity.createdAt)}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3} className="px-5 py-8 text-center text-sm text-[#6A7282]">
+                  No activities
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-        <p className="text-sm text-slate-500">Showing data 1 to 13 of 800 entries</p>
+      {totalActivities > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+          <p className="text-sm text-slate-500">
+            Showing data {rangeStart} to {rangeEnd} of {totalActivities} entries
+          </p>
 
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
-            aria-label="Previous page"
-          >
-            <BackIcon />
-          </button>
-          {[1, 2, 3, 4].map((n) => (
+          <div className="flex items-center gap-1">
             <button
-              key={n}
               type="button"
-              onClick={() => setPage(n)}
-              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
-                page === n ? "bg-[#FE915D] text-white" : "text-slate-600 hover:bg-slate-100"
-              }`}
+              disabled={page <= 1}
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-40"
+              aria-label="Previous page"
             >
-              {n}
+              <BackIcon />
             </button>
-          ))}
-          <span className="px-1 text-sm text-slate-400">…</span>
-          <button
-            type="button"
-            onClick={() => setPage(10)}
-            className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
-              page === 10 ? "bg-[#FE915D] text-white" : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            10
-          </button>
-          <button
-            type="button"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
-            aria-label="Next page"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M7.5 5L12.5 10L7.5 15"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+            {pages.map((n, index) =>
+              n === "..." ? (
+                <span key={`ellipsis-${index}`} className="px-1 text-sm text-slate-400">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setPage(n)}
+                  className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
+                    page === n ? "bg-[#FE915D] text-white" : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {n}
+                </button>
+              ),
+            )}
+            <button
+              type="button"
+              disabled={page >= totalPages}
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:opacity-40"
+              aria-label="Next page"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path
+                  d="M7.5 5L12.5 10L7.5 15"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 export function UserProfile() {
   const [activeTab, setActiveTab] = useState<(typeof profileTabs)[number]>("User Information");
+  const params = useParams<{ id?: string }>();
+  const [profileData, setProfileData] = useState<UserProfileData>();
+  const [reviewsData, setReviewsData] = useState<UserReview[]>([]);
+  const [totalReviews, setTotalReviews] = useState(0);
+
+  useEffect(() => {
+    const serviceProviderId = params?.id;
+    if (!serviceProviderId) return;
+
+    let isMounted = true;
+    const fetchProfile = async () => {
+      try {
+        const payload = await fetchUserProfile(serviceProviderId);
+        if (isMounted) setProfileData(payload.data);
+      } catch {
+        // Keep UI stable with fallback values on errors.
+      }
+    };
+
+    fetchProfile();
+    return () => {
+      isMounted = false;
+    };
+  }, [params?.id]);
+
+  useEffect(() => {
+    const serviceProviderId = params?.id;
+    if (!serviceProviderId) return;
+
+    let isMounted = true;
+    const loadReviews = async () => {
+      try {
+        const payload = await fetchUserReviews(serviceProviderId, { page: 1, limit: 20 });
+        if (!isMounted) return;
+        setReviewsData(payload.data?.reviews ?? []);
+        setTotalReviews(payload.data?.summary?.totalReviews ?? payload.meta?.total ?? 0);
+      } catch {
+        if (isMounted) {
+          setReviewsData([]);
+          setTotalReviews(0);
+        }
+      }
+    };
+
+    loadReviews();
+    return () => {
+      isMounted = false;
+    };
+  }, [params?.id]);
+
+  const featuredReview = reviewsData[0];
+  const featuredReviewRating = getReviewRating(featuredReview);
+
+  const user = profileData?.user;
+  const metrics = profileData?.metrics;
+  const address = profileData?.addresses?.[0]?.address;
+  const profileServices = profileData?.typeData?.services ?? [];
+  const primaryService = profileServices[0];
+
+  const fullName = withNa([user?.firstname, user?.lastname].filter(Boolean).join(" "));
+  const tierValue = user?.tier ?? null;
+  const safeTier = tierValue === 1 || tierValue === 2 || tierValue === 3 ? tierValue : 1;
+  const tierLabel = tierValue === null || tierValue === undefined ? na : `Tier ${tierValue}`;
+  const userEmail = withNa(user?.email);
+  const userPhone = withNa(user?.phone);
+
+  const profileStats = useMemo(
+    () => [
+      {
+        title: "Total Bookings",
+        value: withNa(metrics?.totalBookings),
+        change: na,
+        trend: "down" as const,
+        icon: "bookings" as const,
+      },
+      {
+        title: "Ongoing Bookings",
+        value: withNa(metrics?.ongoingBookings),
+        change: na,
+        trend: "down" as const,
+        icon: "bookings" as const,
+      },
+      {
+        title: "Completed Bookings",
+        value: withNa(metrics?.completedBookings),
+        change: na,
+        trend: "down" as const,
+        icon: "bookings" as const,
+      },
+      {
+        title: "Avg Ratings",
+        value: withNa(metrics?.averageRating),
+        change: na,
+        trend: "down" as const,
+        suffix: "Stars",
+        icon: "rating" as const,
+      },
+      {
+        title: "Total Revenue",
+        value: formatNaira(metrics?.totalRevenue),
+        change: na,
+        trend: "down" as const,
+        icon: "revenue" as const,
+      },
+      {
+        title: "Avg ERT",
+        value: withNa(metrics?.averageErt),
+        change: na,
+        trend: "down" as const,
+        suffix: "Hours",
+        trendGood: true,
+        icon: "revenue" as const,
+      },
+      {
+        title: "Total Vehicles",
+        value: withNa(metrics?.totalVehicles),
+        change: na,
+        trend: "down" as const,
+        icon: "bookings" as const,
+      },
+      {
+        title: "Whip Point",
+        value: withNa(metrics?.whipPoints),
+        change: na,
+        trend: "down" as const,
+        suffix: "= ₦50k",
+        icon: "whip" as const,
+      },
+    ],
+    [metrics]
+  );
+
+  const serviceTags = useMemo(() => {
+    const preferred = primaryService?.preferredCarBrand;
+    if (!preferred || preferred === "All") return [na];
+    return preferred.split(",").map((brand) => brand.trim()).filter(Boolean);
+  }, [primaryService?.preferredCarBrand]);
+
+  const galleryImageStyle = useMemo(() => {
+    const serviceImage = primaryService?.images?.[0];
+    if (!serviceImage) {
+      return {
+        backgroundImage: "linear-gradient(135deg, #2d3748 0%, #4a5568 40%, #718096 100%)",
+      };
+    }
+
+    return {
+      backgroundImage: `url(${serviceImage})`,
+    };
+  }, [primaryService?.images]);
 
   return (
     <div className="space-y-5">
@@ -602,17 +946,17 @@ export function UserProfile() {
           </div>
 
           <div className="mt-3 inline-flex items-center gap-1 rounded-[18px] bg-[#F3F4F6] pr-2">
-            <TierShield tier={2} />
-            <span className="text-xs font-medium text-primary">Tier 2</span>
+            <TierShield tier={safeTier} />
+            <span className="text-xs font-medium text-primary">{tierLabel}</span>
           </div>
 
-          <h2 className="mt-3 text-base font-semibold text-[#1E2939]">Isaac Zacwurld</h2>
-          <p className="mt-1 text-xs text-[#6A7282]">isaaczac@gmail.com</p>
-          <p className="mt-0.5 text-xs text-[#6A7282]">+1 453 6780 690</p>
+          <h2 className="mt-3 text-base font-semibold text-[#1E2939]">{fullName}</h2>
+          <p className="mt-1 text-xs text-[#6A7282]">{userEmail}</p>
+          <p className="mt-0.5 text-xs text-[#6A7282]">{userPhone}</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat) => (
+          {profileStats.map((stat) => (
             <ProfileStatCard key={stat.title} {...stat} />
           ))}
         </div>
@@ -665,10 +1009,10 @@ export function UserProfile() {
                 <h3 className="mb-4 text-sm font-semibold text-[#1E2939]">Personal Information</h3>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {[
-                    ["Sign up date", "01/08/2024"],
-                    ["Last login date", "01/08/2024"],
-                    ["Nationality", "Nigeria"],
-                    ["Language", "English"],
+                    ["Sign up date", formatDate(user?.createdAt)],
+                    ["Last login date", formatDate(user?.lastLogin)],
+                    ["Nationality", withNa(user?.nationality)],
+                    ["Language", withNa(user?.language)],
                   ].map(([label, value]) => (
                     <div key={label}>
                       <p className="text-xs text-[#6A7282]">{label}</p>
@@ -681,7 +1025,7 @@ export function UserProfile() {
                   <p className="text-xs text-[#6A7282]">Address</p>
                   <p className="mt-1 flex items-start gap-1.5 text-sm font-medium text-[#1E2939]">
                     <MapPinIcon className="mt-0.5 shrink-0 text-[#FE915D]" />
-                    290 m near Grand Play Lekki Lagos
+                    {withNa(address)}
                   </p>
                 </div>
               </section>
@@ -692,21 +1036,29 @@ export function UserProfile() {
                   <div className="overflow-hidden rounded-xl border border-slate-100">
                     <div
                       className="h-40 bg-cover bg-center"
-                      style={{
-                        backgroundImage:
-                          "linear-gradient(135deg, #2d3748 0%, #4a5568 40%, #718096 100%)",
-                      }}
+                      style={galleryImageStyle}
                     />
                     <div className="p-3">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <p className="text-sm font-semibold text-[#1E2939]">Brake Installation</p>
-                          <p className="text-xs text-[#6A7282]">Mechanic</p>
+                          <p className="text-sm font-semibold text-[#1E2939]">
+                            {withNa(primaryService?.serviceType)}
+                          </p>
+                          <p className="text-xs text-[#6A7282]">{withNa(user?.kycStatus)}</p>
                         </div>
-                        <p className="text-sm font-semibold text-[#1E2939]">₦8,500 - 15,000</p>
+                        <p className="text-sm font-semibold text-[#1E2939]">
+                          {withNa(
+                            primaryService?.minPrice !== null &&
+                              primaryService?.minPrice !== undefined &&
+                              primaryService?.maxPrice !== null &&
+                              primaryService?.maxPrice !== undefined
+                              ? `${formatNaira(primaryService.minPrice)} - ${formatNaira(primaryService.maxPrice)}`
+                              : null
+                          )}
+                        </p>
                       </div>
                       <div className="mt-3 flex flex-wrap gap-1.5">
-                        {carBrands.map((brand) => (
+                        {serviceTags.map((brand) => (
                           <span
                             key={brand}
                             className="rounded-md bg-[#F3F4F6] px-2 py-0.5 text-[11px] font-medium text-[#4B5563]"
@@ -719,14 +1071,14 @@ export function UserProfile() {
                   </div>
 
                   <div className="max-h-56 space-y-1 overflow-y-auto rounded-xl border border-slate-100 p-2">
-                    {services.map((service) => (
+                    {(profileServices.length ? profileServices : [{ id: "na", serviceType: na }]).map((service) => (
                       <button
-                        key={service.id}
+                        key={service.id ?? na}
                         type="button"
                         className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-[#1E2939] hover:bg-[#FFF1E8]"
                       >
                         <CarIcon className="text-[#6A7282]" />
-                        {service.name}
+                        {withNa(service.serviceType)}
                       </button>
                     ))}
                   </div>
@@ -737,34 +1089,41 @@ export function UserProfile() {
             <div className="space-y-5">
               <section className="rounded-xl border border-slate-100 p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-[#1E2939]">Reviews (10)</h3>
-                  <div className="flex items-center gap-3">
-                    <MiniPager />
-                    <Link href="#" className="text-xs font-semibold text-primary underline">
-                      View All
-                    </Link>
-                  </div>
+                  <h3 className="text-sm font-semibold text-[#1E2939]">Reviews ({totalReviews})</h3>
+                  {totalReviews > 0 && (
+                    <div className="flex items-center gap-3">
+                      <MiniPager />
+                      <Link href="#" className="text-xs font-semibold text-primary underline">
+                        View All
+                      </Link>
+                    </div>
+                  )}
                 </div>
 
                 <div className="rounded-xl border border-slate-100 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-0.5">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <StarIcon key={n} filled={n <= 4} />
-                      ))}
-                    </div>
-                    <span className="text-[11px] text-[#6A7282]">2 days ago</span>
-                  </div>
-                  <p className="mt-2 text-sm text-[#364153]">
-                    John was fantastic! He arrived on time and fixed my AC quickly. Highly
-                    recommend.
-                  </p>
-                  <button
-                    type="button"
-                    className="mt-3 text-xs font-semibold text-primary hover:underline"
-                  >
-                    See Bookings →
-                  </button>
+                  {featuredReview ? (
+                    <>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <StarIcon key={n} filled={n <= featuredReviewRating} />
+                          ))}
+                        </div>
+                        <span className="text-[11px] text-[#6A7282]">
+                          {formatReviewDate(featuredReview.createdAt)}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm text-[#364153]">{getReviewText(featuredReview)}</p>
+                      <button
+                        type="button"
+                        className="mt-3 text-xs font-semibold text-primary hover:underline"
+                      >
+                        See Bookings →
+                      </button>
+                    </>
+                  ) : (
+                    <p className="py-2 text-sm text-[#6A7282]">No reviews</p>
+                  )}
                 </div>
               </section>
 
