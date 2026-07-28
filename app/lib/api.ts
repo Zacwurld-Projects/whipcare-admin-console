@@ -159,6 +159,56 @@ export type FetchUsersParams = {
   type?: string;
 };
 
+export type UserProfileService = {
+  id?: string;
+  serviceType?: string | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  images?: string[] | null;
+  preferredCarBrand?: string | null;
+};
+
+export type UserProfileData = {
+  user?: {
+    id?: string;
+    email?: string | null;
+    image?: string | null;
+    phone?: string | null;
+    firstname?: string | null;
+    lastname?: string | null;
+    nationality?: string | null;
+    language?: string | null;
+    kycStatus?: string | null;
+    tier?: number | null;
+    whipPoints?: number | null;
+    createdAt?: string | null;
+    lastLogin?: string | null;
+  };
+  addresses?: Array<{
+    address?: string | null;
+  }>;
+  metrics?: {
+    totalBookings?: number | null;
+    ongoingBookings?: number | null;
+    completedBookings?: number | null;
+    totalVehicles?: number | null;
+    whipPoints?: number | null;
+    averageRating?: number | null;
+    totalRevenue?: number | null;
+    averageErt?: number | null;
+  };
+  typeData?: {
+    services?: UserProfileService[];
+  };
+};
+
+export type UserProfileResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: UserProfileData;
+};
+
 export function getUserDisplayName(user: User): string {
   const fullName = `${user.firstname} ${user.lastname}`.trim();
   if (fullName) return fullName;
@@ -184,6 +234,175 @@ export async function fetchUsers(params: FetchUsersParams = {}): Promise<UsersRe
   });
 
   return apiRequest<UsersResponse>(`/api/v1/user?${query}`, { method: "GET" });
+}
+
+export async function fetchUserProfile(userId: string): Promise<UserProfileResponse> {
+  return apiRequest<UserProfileResponse>(
+    `/api/v1/user/${encodeURIComponent(userId)}/profile`,
+    { method: "GET" },
+  );
+}
+
+export type UserBookingCar = {
+  brand?: string | null;
+  carModel?: string | null;
+  id?: string;
+};
+
+export type UserBooking = {
+  id: string;
+  serviceType?: string | null;
+  status?: string | null;
+  agreedAmount?: number | null;
+  serviceProviderCut?: number | null;
+  platformCut?: number | null;
+  preferredServices?: string[];
+  materials?: Array<{ name?: string | null; price?: number | null; id?: string }>;
+  cars?: UserBookingCar[];
+  tripLocations?: Array<{
+    pickupLocation?: { address?: string | null };
+    dropoffLocation?: { address?: string | null };
+  }>;
+  createdAt?: string | null;
+  paidOut?: boolean | null;
+};
+
+export type UserBookingsResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: UserBooking[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchUserBookingsParams = {
+  page?: number;
+  limit?: number;
+};
+
+export async function fetchUserBookings(
+  userId: string,
+  params: FetchUserBookingsParams = {},
+): Promise<UserBookingsResponse> {
+  const { page = 1, limit = 20 } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return apiRequest<UserBookingsResponse>(
+    `/api/v1/user/${encodeURIComponent(userId)}/bookings?${query}`,
+    { method: "GET" },
+  );
+}
+
+export type UserReview = {
+  id?: string;
+  rating?: number | null;
+  comment?: string | null;
+  review?: string | null;
+  message?: string | null;
+  text?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  booking?: string | null;
+  bookingId?: string | null;
+};
+
+export type UserReviewsData = {
+  reviews: UserReview[];
+  summary: {
+    averageRating?: number | null;
+    totalReviews?: number | null;
+  };
+  ratingDistribution?: Array<{
+    rating: number;
+    count: number;
+    percentage: number;
+  }>;
+};
+
+export type UserReviewsResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: UserReviewsData;
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchUserReviewsParams = {
+  page?: number;
+  limit?: number;
+};
+
+export async function fetchUserReviews(
+  userId: string,
+  params: FetchUserReviewsParams = {},
+): Promise<UserReviewsResponse> {
+  const { page = 1, limit = 20 } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return apiRequest<UserReviewsResponse>(
+    `/api/v1/user/${encodeURIComponent(userId)}/reviews?${query}`,
+    { method: "GET" },
+  );
+}
+
+export type UserActivity = {
+  id?: string;
+  activityType?: string | null;
+  description?: string | null;
+  email?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  data?: Record<string, unknown>;
+};
+
+export type UserActivitiesResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: UserActivity[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type FetchUserActivitiesParams = {
+  page?: number;
+  limit?: number;
+};
+
+export async function fetchUserActivities(
+  userId: string,
+  params: FetchUserActivitiesParams = {},
+): Promise<UserActivitiesResponse> {
+  const { page = 1, limit = 20 } = params;
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  return apiRequest<UserActivitiesResponse>(
+    `/api/v1/user/${encodeURIComponent(userId)}/activities?${query}`,
+    { method: "GET" },
+  );
 }
 
 export type TierUpgradeStatus = "pending" | "approved" | "rejected";
