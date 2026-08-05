@@ -482,7 +482,7 @@ export function AdsAndBlogPage() {
                           fill
                           priority={index === 0}
                           unoptimized={Boolean(blog.coverImage)}
-                          className="object-cover"
+                          className="object-contain"
                           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         />
                       </div>
@@ -599,7 +599,7 @@ export function AdsAndBlogPage() {
                       src={ad.image}
                       alt={ad.title}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                       sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
                     />
                   </div>
