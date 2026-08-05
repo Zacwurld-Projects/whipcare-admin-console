@@ -65,7 +65,7 @@ export function BlogContentEditor({
       }),
       Image.configure({
         HTMLAttributes: {
-          class: "max-w-full rounded-lg",
+          class: "max-h-[32rem] w-full max-w-full rounded-lg object-contain",
         },
       }),
       Placeholder.configure({
