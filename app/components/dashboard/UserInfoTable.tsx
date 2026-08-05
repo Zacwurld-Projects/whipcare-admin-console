@@ -126,11 +126,10 @@ export function UserInfoTable() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`pb-2 text-sm font-medium transition-colors ${
-                activeTab === tab
+              className={`pb-2 text-sm font-medium transition-colors ${activeTab === tab
                   ? "border-b-2 border-[#FE915D] text-[#711E00]"
                   : "text-slate-500 hover:text-slate-700"
-              }`}
+                }`}
             >
               {tab}
             </button>
