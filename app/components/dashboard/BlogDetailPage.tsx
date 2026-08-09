@@ -194,11 +194,10 @@ export function BlogDetailPage({ blogId }: BlogDetailPageProps) {
         </Link>
         <div className="flex flex-wrap items-center gap-3">
           <span
-            className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
-              isPublished
+            className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${isPublished
                 ? "bg-emerald-50 text-emerald-700"
                 : "bg-[#F3F4F6] text-[#667085]"
-            }`}
+              }`}
           >
             {blog.status}
           </span>
@@ -242,6 +241,23 @@ export function BlogDetailPage({ blogId }: BlogDetailPageProps) {
         {blog.excerpt && (
           <p className="text-base leading-7 text-[#667085]">{blog.excerpt}</p>
         )}
+        {blog.authorName && (
+          <p className="pt-1 text-sm text-[#667085]">
+            By{" "}
+            {blog.authorLink ? (
+              <a
+                href={blog.authorLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-[#711E00] underline-offset-2 hover:underline"
+              >
+                {blog.authorName}
+              </a>
+            ) : (
+              <span className="font-medium text-[#101828]">{blog.authorName}</span>
+            )}
+          </p>
+        )}
       </header>
 
       <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl bg-[#F3F4F6]">
@@ -267,11 +283,10 @@ export function BlogDetailPage({ blogId }: BlogDetailPageProps) {
                     key={item.id}
                     href={`#${item.id}`}
                     onClick={() => setActiveId(item.id)}
-                    className={`relative block py-2 pl-4 text-sm leading-5 transition-colors ${
-                      active
+                    className={`relative block py-2 pl-4 text-sm leading-5 transition-colors ${active
                         ? "font-medium text-[#101828]"
                         : "text-[#667085] hover:text-[#344054]"
-                    }`}
+                      }`}
                     style={{ paddingLeft: `${12 + (item.level - 1) * 8}px` }}
                   >
                     {active && (

@@ -124,11 +124,10 @@ function Pagination({
               key={page}
               type="button"
               onClick={() => onPageChange(page)}
-              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${
-                currentPage === page
+              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${currentPage === page
                   ? "bg-[#FE915D] text-white"
                   : "text-slate-600 hover:bg-slate-100"
-              }`}
+                }`}
             >
               {page}
             </button>
@@ -250,6 +249,8 @@ export function AdsAndBlogPage() {
       pageTitle: blog.title,
       pageDescription: "",
       categories: blog.categories.map(formatBlogCategoryLabel),
+      authorName: blog.authorName ?? "",
+      authorLink: blog.authorLink ?? "",
       coverImageUrl: blog.coverImage ?? undefined,
     });
     setDrawerOpen(true);
@@ -265,6 +266,8 @@ export function AdsAndBlogPage() {
         pageTitle: res.data.pageTitle,
         pageDescription: res.data.pageDescription,
         categories: res.data.categories.map(formatBlogCategoryLabel),
+        authorName: res.data.authorName ?? "",
+        authorLink: res.data.authorLink ?? "",
         coverImageUrl: res.data.coverImage ?? undefined,
       });
     } catch (err) {
@@ -290,6 +293,8 @@ export function AdsAndBlogPage() {
         status: "draft" as const,
         slug: values.slug.trim().replace(/^\//, "") || undefined,
         coverImage: values.coverFile ?? null,
+        authorName: values.authorName?.trim() || undefined,
+        authorLink: values.authorLink?.trim() || undefined,
       };
 
       let blogId = values.id;
@@ -399,11 +404,10 @@ export function AdsAndBlogPage() {
             key={tab}
             type="button"
             onClick={() => setMainTab(tab)}
-            className={`pb-2 text-sm font-medium transition-colors ${
-              mainTab === tab
+            className={`pb-2 text-sm font-medium transition-colors ${mainTab === tab
                 ? "border-b-2 border-[#FE915D] text-[#711E00]"
                 : "text-slate-500 hover:text-slate-700"
-            }`}
+              }`}
           >
             {tab}
           </button>
@@ -450,11 +454,10 @@ export function AdsAndBlogPage() {
                     setBlogCategory(category);
                     setBlogPage(1);
                   }}
-                  className={`pb-2 text-sm font-medium transition-colors ${
-                    blogCategory === category
+                  className={`pb-2 text-sm font-medium transition-colors ${blogCategory === category
                       ? "border-b-2 border-[#FE915D] text-[#711E00]"
                       : "text-slate-500 hover:text-slate-700"
-                  }`}
+                    }`}
                 >
                   {category === "All" ? "All" : formatBlogCategoryLabel(category)}
                 </button>
@@ -498,11 +501,10 @@ export function AdsAndBlogPage() {
                     </Link>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 pb-4 pt-2">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${
-                          blog.status === "published"
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${blog.status === "published"
                             ? "bg-emerald-50 text-emerald-700"
                             : "bg-[#F3F4F6] text-[#667085]"
-                        }`}
+                          }`}
                       >
                         {blog.status}
                       </span>
