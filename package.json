@@ -11,9 +11,12 @@
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.19.8",
     "@recharts/devtools": "^0.0.14",
+    "@tiptap/extension-color": "^3.29.0",
+    "@tiptap/extension-font-family": "^3.29.0",
     "@tiptap/extension-image": "^3.29.0",
     "@tiptap/extension-placeholder": "^3.29.0",
     "@tiptap/extension-text-align": "^3.29.0",
+    "@tiptap/extension-text-style": "^3.29.0",
     "@tiptap/pm": "^3.29.0",
     "@tiptap/react": "^3.29.0",
     "@tiptap/starter-kit": "^3.29.0",

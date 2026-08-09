@@ -560,6 +560,8 @@ export type Blog = {
   updatedAt: string;
   publishedAt?: string | null;
   coverImage?: string | null;
+  authorName?: string | null;
+  authorLink?: string | null;
 };
 
 export type CreateBlogPayload = {
@@ -572,6 +574,8 @@ export type CreateBlogPayload = {
   status?: BlogStatus;
   slug?: string;
   coverImage?: File | null;
+  authorName?: string;
+  authorLink?: string;
 };
 
 export type UpdateBlogPayload = CreateBlogPayload & {
@@ -617,6 +621,14 @@ function buildBlogFormData(
 
   if (payload.coverImage) {
     formData.append("coverImage", payload.coverImage);
+  }
+
+  if (payload.authorName?.trim()) {
+    formData.append("authorName", payload.authorName.trim());
+  }
+
+  if (payload.authorLink?.trim()) {
+    formData.append("authorLink", payload.authorLink.trim());
   }
 
   return formData;
@@ -672,6 +684,8 @@ export type BlogListItem = {
   createdAt: string;
   publishedAt?: string | null;
   coverImage?: string | null;
+  authorName?: string | null;
+  authorLink?: string | null;
 };
 
 export type BlogsResponse = {

@@ -13,6 +13,8 @@ export type BlogFormValues = {
   pageTitle: string;
   pageDescription: string;
   categories: string[];
+  authorName: string;
+  authorLink: string;
   coverImageName?: string;
   coverImageSize?: string;
   coverImageDate?: string;
@@ -46,6 +48,8 @@ const emptyValues: BlogFormValues = {
   pageTitle: "",
   pageDescription: "",
   categories: [],
+  authorName: "",
+  authorLink: "",
 };
 
 function CloseIcon() {
@@ -146,20 +150,33 @@ export function BlogFormDrawer({
   useEffect(() => {
     if (!open) return;
 
-    const next = initialValues
+    const merged = initialValues
       ? { ...emptyValues, ...initialValues }
       : {
-        ...emptyValues,
-        ...(mode === "create"
-          ? {}
-          : {
-            title: "Boring Newsletter",
-            categories: ["Car Tips"],
-            coverImageName: "Image",
-            coverImageDate: "11 Sep, 2023 · 12:24pm",
-            coverImageSize: "1.3MB",
-          }),
-      };
+          ...emptyValues,
+          ...(mode === "create"
+            ? {}
+            : {
+                title: "Boring Newsletter",
+                categories: ["Car Tips"],
+                coverImageName: "Image",
+                coverImageDate: "11 Sep, 2023 · 12:24pm",
+                coverImageSize: "1.3MB",
+              }),
+        };
+
+    const next: BlogFormValues = {
+      ...merged,
+      title: merged.title ?? "",
+      content: merged.content ?? "",
+      excerpt: merged.excerpt ?? "",
+      slug: merged.slug ?? "",
+      pageTitle: merged.pageTitle ?? "",
+      pageDescription: merged.pageDescription ?? "",
+      categories: merged.categories ?? [],
+      authorName: merged.authorName ?? "",
+      authorLink: merged.authorLink ?? "",
+    };
 
     setValues(next);
     setCategoryQuery("");
@@ -385,6 +402,45 @@ export function BlogFormDrawer({
                 placeholder="Enter blog title"
                 className="h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="blog-author-name"
+                className="mb-2 block text-sm font-semibold text-[#1E2939]"
+              >
+                Author Name
+              </label>
+              <input
+                id="blog-author-name"
+                value={values.authorName ?? ""}
+                onChange={(e) => updateField("authorName", e.target.value)}
+                placeholder="e.g. Ezele Emmanuel"
+                className="h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
+              />
+              <p className="mt-1.5 text-xs text-[#667085]">
+                Name shown on the blog post
+              </p>
+            </div>
+
+            <div>
+              <label
+                htmlFor="blog-author-link"
+                className="mb-2 block text-sm font-semibold text-[#1E2939]"
+              >
+                Author Intro Link
+              </label>
+              <input
+                id="blog-author-link"
+                type="url"
+                value={values.authorLink ?? ""}
+                onChange={(e) => updateField("authorLink", e.target.value)}
+                placeholder="https://example.com/authors/ezele"
+                className="h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
+              />
+              <p className="mt-1.5 text-xs text-[#667085]">
+                Link to a brief intro about the author
+              </p>
             </div>
 
             <div>
