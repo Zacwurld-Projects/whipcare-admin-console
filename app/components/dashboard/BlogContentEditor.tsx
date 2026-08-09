@@ -3,15 +3,55 @@
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
+import {
+  Color,
+  FontFamily,
+  FontSize,
+  TextStyle,
+} from "@tiptap/extension-text-style";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type BlogContentEditorProps = {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
 };
+
+const FONT_OPTIONS = [
+  { label: "Default", value: "" },
+  { label: "Arial", value: "Arial, Helvetica, sans-serif" },
+  { label: "Georgia", value: "Georgia, serif" },
+  { label: "Times New Roman", value: '"Times New Roman", Times, serif' },
+  { label: "Verdana", value: "Verdana, Geneva, sans-serif" },
+  { label: "Courier New", value: '"Courier New", Courier, monospace' },
+  { label: "Trebuchet MS", value: '"Trebuchet MS", Helvetica, sans-serif' },
+] as const;
+
+const FONT_SIZE_OPTIONS = [
+  "12px",
+  "14px",
+  "16px",
+  "18px",
+  "20px",
+  "24px",
+  "28px",
+  "32px",
+] as const;
+
+const COLOR_PRESETS = [
+  "#1E2939",
+  "#667085",
+  "#711E00",
+  "#FE915D",
+  "#B42318",
+  "#027A48",
+  "#175CD3",
+  "#7A5AF8",
+  "#FFFFFF",
+  "#000000",
+] as const;
 
 function ToolbarButton({
   label,
@@ -41,6 +81,49 @@ function ToolbarButton({
   );
 }
 
+function ToolbarSelect({
+  label,
+  value,
+  onChange,
+  children,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <label className={`relative inline-flex items-center ${className}`}>
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 max-w-[9.5rem] appearance-none rounded-md border border-[#E5E7EB] bg-white py-1 pl-2 pr-6 text-xs text-[#1E2939] outline-none focus:border-[#FE915D]"
+      >
+        {children}
+      </select>
+      <svg
+        className="pointer-events-none absolute right-1.5 text-[#6A7282]"
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        aria-hidden
+      >
+        <path
+          d="M3 4.5L6 7.5L9 4.5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </label>
+  );
+}
+
 export function BlogContentEditor({
   value,
   onChange,
@@ -48,6 +131,7 @@ export function BlogContentEditor({
 }: BlogContentEditorProps) {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const lastEmitted = useRef(value);
+  const [, setToolbarTick] = useState(0);
 
   const editor = useEditor({
     extensions: [
@@ -60,6 +144,10 @@ export function BlogContentEditor({
           },
         },
       }),
+      TextStyle,
+      Color,
+      FontFamily,
+      FontSize,
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
@@ -96,6 +184,17 @@ export function BlogContentEditor({
     lastEmitted.current = value;
   }, [editor, value]);
 
+  useEffect(() => {
+    if (!editor) return;
+    const refreshToolbar = () => setToolbarTick((tick) => tick + 1);
+    editor.on("selectionUpdate", refreshToolbar);
+    editor.on("transaction", refreshToolbar);
+    return () => {
+      editor.off("selectionUpdate", refreshToolbar);
+      editor.off("transaction", refreshToolbar);
+    };
+  }, [editor]);
+
   if (!editor) {
     return (
       <div className="min-h-[188px] animate-pulse rounded-xl border border-[#E5E7EB] bg-[#F9FAFB]" />
@@ -120,9 +219,110 @@ export function BlogContentEditor({
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }
 
+  const currentFont =
+    (editor.getAttributes("textStyle").fontFamily as string | undefined) ?? "";
+  const currentSize =
+    (editor.getAttributes("textStyle").fontSize as string | undefined) ?? "";
+  const currentColor =
+    (editor.getAttributes("textStyle").color as string | undefined) ?? "#1E2939";
+
+  const sizeIndex = FONT_SIZE_OPTIONS.findIndex((size) => size === currentSize);
+  const effectiveSizeIndex = sizeIndex >= 0 ? sizeIndex : 2;
+
+  function bumpFontSize(delta: number) {
+    if (!editor) return;
+    const nextIndex = Math.min(
+      FONT_SIZE_OPTIONS.length - 1,
+      Math.max(0, effectiveSizeIndex + delta),
+    );
+    editor.chain().focus().setFontSize(FONT_SIZE_OPTIONS[nextIndex]).run();
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border border-[#E5E7EB]">
       <div className="flex flex-wrap items-center gap-0.5 border-b border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1.5">
+        <ToolbarSelect
+          label="Font family"
+          value={currentFont}
+          onChange={(next) => {
+            if (!next) {
+              editor.chain().focus().unsetFontFamily().run();
+              return;
+            }
+            editor.chain().focus().setFontFamily(next).run();
+          }}
+          className="mr-1"
+        >
+          {FONT_OPTIONS.map((font) => (
+            <option key={font.label} value={font.value} style={{ fontFamily: font.value || undefined }}>
+              {font.label}
+            </option>
+          ))}
+        </ToolbarSelect>
+
+        <ToolbarSelect
+          label="Font size"
+          value={currentSize || "16px"}
+          onChange={(next) => {
+            editor.chain().focus().setFontSize(next).run();
+          }}
+          className="mr-0.5"
+        >
+          {FONT_SIZE_OPTIONS.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </ToolbarSelect>
+
+        <ToolbarButton label="Decrease text size" onClick={() => bumpFontSize(-1)}>
+          <span className="text-xs font-semibold">A−</span>
+        </ToolbarButton>
+        <ToolbarButton label="Increase text size" onClick={() => bumpFontSize(1)}>
+          <span className="text-sm font-semibold">A+</span>
+        </ToolbarButton>
+
+        <div className="mx-1 flex items-center gap-1">
+          <label className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-md hover:bg-[#F3F4F6]">
+            <span className="sr-only">Text color</span>
+            <span className="flex flex-col items-center leading-none">
+              <span className="text-sm font-semibold text-[#1E2939]">A</span>
+              <span
+                className="mt-0.5 h-1 w-4 rounded-sm border border-[#E5E7EB]"
+                style={{ backgroundColor: currentColor }}
+              />
+            </span>
+            <input
+              type="color"
+              value={/^#[0-9A-Fa-f]{6}$/.test(currentColor) ? currentColor : "#1E2939"}
+              onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+              className="absolute inset-0 cursor-pointer opacity-0"
+            />
+          </label>
+          <div className="hidden items-center gap-0.5 sm:flex">
+            {COLOR_PRESETS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                aria-label={`Set color ${color}`}
+                onClick={() => editor.chain().focus().setColor(color).run()}
+                className={`h-4 w-4 rounded-full border ${
+                  currentColor.toLowerCase() === color.toLowerCase()
+                    ? "border-[#711E00] ring-1 ring-[#711E00]"
+                    : "border-[#E5E7EB]"
+                }`}
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+          <ToolbarButton
+            label="Reset text color"
+            onClick={() => editor.chain().focus().unsetColor().run()}
+          >
+            <span className="text-[10px] font-semibold">✕</span>
+          </ToolbarButton>
+        </div>
+
         <ToolbarButton
           label="Bold"
           active={editor.isActive("bold")}
