@@ -21,12 +21,17 @@ type BlogContentEditorProps = {
 
 const FONT_OPTIONS = [
   { label: "Default", value: "" },
-  { label: "Arial", value: "Arial, Helvetica, sans-serif" },
-  { label: "Georgia", value: "Georgia, serif" },
-  { label: "Times New Roman", value: '"Times New Roman", Times, serif' },
-  { label: "Verdana", value: "Verdana, Geneva, sans-serif" },
-  { label: "Courier New", value: '"Courier New", Courier, monospace' },
-  { label: "Trebuchet MS", value: '"Trebuchet MS", Helvetica, sans-serif' },
+  { label: "Arial", value: "Arial" },
+  { label: "Helvetica", value: "Helvetica" },
+  { label: "Georgia", value: "Georgia" },
+  { label: "Times New Roman", value: "Times New Roman" },
+  { label: "Verdana", value: "Verdana" },
+  { label: "Tahoma", value: "Tahoma" },
+  { label: "Trebuchet MS", value: "Trebuchet MS" },
+  { label: "Courier New", value: "Courier New" },
+  { label: "Palatino", value: "Palatino Linotype" },
+  { label: "Garamond", value: "Garamond" },
+  { label: "Comic Sans", value: "Comic Sans MS" },
 ] as const;
 
 const FONT_SIZE_OPTIONS = [
@@ -87,39 +92,47 @@ function ToolbarSelect({
   onChange,
   children,
   className = "",
+  showLabel = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
   className?: string;
+  showLabel?: boolean;
 }) {
   return (
-    <label className={`relative inline-flex items-center ${className}`}>
-      <span className="sr-only">{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-8 max-w-[9.5rem] appearance-none rounded-md border border-[#E5E7EB] bg-white py-1 pl-2 pr-6 text-xs text-[#1E2939] outline-none focus:border-[#FE915D]"
-      >
-        {children}
-      </select>
-      <svg
-        className="pointer-events-none absolute right-1.5 text-[#6A7282]"
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
-        fill="none"
-        aria-hidden
-      >
-        <path
-          d="M3 4.5L6 7.5L9 4.5"
-          stroke="currentColor"
-          strokeWidth="1.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+    <label className={`inline-flex items-center gap-1 ${className}`}>
+      {showLabel ? (
+        <span className="whitespace-nowrap text-[11px] font-medium text-[#6A7282]">{label}</span>
+      ) : (
+        <span className="sr-only">{label}</span>
+      )}
+      <span className="relative inline-flex items-center">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-8 min-w-[7.5rem] max-w-[11rem] appearance-none rounded-md border border-[#E5E7EB] bg-white py-1 pl-2 pr-6 text-xs text-[#1E2939] outline-none focus:border-[#FE915D]"
+        >
+          {children}
+        </select>
+        <svg
+          className="pointer-events-none absolute right-1.5 text-[#6A7282]"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          aria-hidden
+        >
+          <path
+            d="M3 4.5L6 7.5L9 4.5"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
     </label>
   );
 }
@@ -219,8 +232,14 @@ export function BlogContentEditor({
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }
 
-  const currentFont =
+  const currentFontRaw =
     (editor.getAttributes("textStyle").fontFamily as string | undefined) ?? "";
+  const currentFont =
+    FONT_OPTIONS.find(
+      (font) =>
+        font.value &&
+        currentFontRaw.replace(/['"]/g, "").toLowerCase().includes(font.value.toLowerCase()),
+    )?.value ?? "";
   const currentSize =
     (editor.getAttributes("textStyle").fontSize as string | undefined) ?? "";
   const currentColor =
@@ -240,9 +259,10 @@ export function BlogContentEditor({
 
   return (
     <div className="overflow-hidden rounded-xl border border-[#E5E7EB]">
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1.5">
+      <div className="flex flex-wrap items-center gap-1 border-b border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1.5">
         <ToolbarSelect
-          label="Font family"
+          label="Font"
+          showLabel
           value={currentFont}
           onChange={(next) => {
             if (!next) {
@@ -261,7 +281,8 @@ export function BlogContentEditor({
         </ToolbarSelect>
 
         <ToolbarSelect
-          label="Font size"
+          label="Size"
+          showLabel
           value={currentSize || "16px"}
           onChange={(next) => {
             editor.chain().focus().setFontSize(next).run();
