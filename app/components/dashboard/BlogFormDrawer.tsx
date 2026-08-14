@@ -141,6 +141,7 @@ export function BlogFormDrawer({
   submitting = false,
 }: BlogFormDrawerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [toolbarSlotEl, setToolbarSlotEl] = useState<HTMLDivElement | null>(null);
   const [values, setValues] = useState<BlogFormValues>(emptyValues);
   const [categoryQuery, setCategoryQuery] = useState("");
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -449,6 +450,7 @@ export function BlogFormDrawer({
                 key={editorKey}
                 value={values.content}
                 onChange={(html) => updateField("content", html)}
+                toolbarContainer={toolbarSlotEl}
               />
             </div>
 
@@ -601,23 +603,26 @@ export function BlogFormDrawer({
           </section>
         </div>
 
-        <div className="shrink-0 space-y-3 border-t border-[#E5E7EB] px-5 py-4">
-          <button
-            type="button"
-            onClick={() => void handleSubmit("publish")}
-            disabled={!canSubmit}
-            className="h-12 w-full rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {submitting && pendingAction === "publish" ? "Publishing…" : "Publish"}
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleSubmit("draft")}
-            disabled={!canSubmit}
-            className="h-12 w-full rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {submitting && pendingAction === "draft" ? "Saving…" : "Save as Draft"}
-          </button>
+        <div className="shrink-0 border-t border-[#E5E7EB]">
+          <div ref={setToolbarSlotEl} />
+          <div className="space-y-3 px-5 py-4">
+            <button
+              type="button"
+              onClick={() => void handleSubmit("publish")}
+              disabled={!canSubmit}
+              className="h-12 w-full rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting && pendingAction === "publish" ? "Publishing…" : "Publish"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleSubmit("draft")}
+              disabled={!canSubmit}
+              className="h-12 w-full rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting && pendingAction === "draft" ? "Saving…" : "Save as Draft"}
+            </button>
+          </div>
         </div>
       </aside>
     </div>
