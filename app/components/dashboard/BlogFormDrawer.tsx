@@ -12,6 +12,7 @@ export type BlogFormValues = {
   slug: string;
   pageTitle: string;
   pageDescription: string;
+  seoKeywords: string;
   categories: string[];
   authorName: string;
   authorLink: string;
@@ -47,6 +48,7 @@ const emptyValues: BlogFormValues = {
   slug: "",
   pageTitle: "",
   pageDescription: "",
+  seoKeywords: "",
   categories: [],
   authorName: "",
   authorLink: "",
@@ -174,6 +176,7 @@ export function BlogFormDrawer({
       slug: merged.slug ?? "",
       pageTitle: merged.pageTitle ?? "",
       pageDescription: merged.pageDescription ?? "",
+      seoKeywords: merged.seoKeywords ?? "",
       categories: merged.categories ?? [],
       authorName: merged.authorName ?? "",
       authorLink: merged.authorLink ?? "",
@@ -522,6 +525,25 @@ export function BlogFormDrawer({
                 rows={4}
                 className="w-full resize-none rounded-xl border border-[#E5E7EB] bg-white px-3 py-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="blog-seo-keywords"
+                className="mb-2 block text-sm font-semibold text-[#1E2939]"
+              >
+                SEO Keywords
+              </label>
+              <input
+                id="blog-seo-keywords"
+                value={values.seoKeywords}
+                onChange={(e) => updateField("seoKeywords", e.target.value)}
+                placeholder="cars,maintenance,engine"
+                className="h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
+              />
+              <p className="mt-1.5 text-xs text-[#667085]">
+                Comma-separated keywords for search engines
+              </p>
             </div>
           </section>
 
