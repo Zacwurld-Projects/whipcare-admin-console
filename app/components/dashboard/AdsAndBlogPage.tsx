@@ -248,6 +248,7 @@ export function AdsAndBlogPage() {
       slug: blog.slug,
       pageTitle: blog.title,
       pageDescription: "",
+      seoKeywords: "",
       categories: blog.categories.map(formatBlogCategoryLabel),
       authorName: blog.authorName ?? "",
       authorLink: blog.authorLink ?? "",
@@ -265,6 +266,7 @@ export function AdsAndBlogPage() {
         slug: res.data.slug,
         pageTitle: res.data.pageTitle,
         pageDescription: res.data.pageDescription,
+        seoKeywords: (res.data.seoKeywords ?? []).join(","),
         categories: res.data.categories.map(formatBlogCategoryLabel),
         authorName: res.data.authorName ?? "",
         authorLink: res.data.authorLink ?? "",
@@ -283,12 +285,18 @@ export function AdsAndBlogPage() {
   ) {
     setSubmitting(true);
     try {
+      const seoKeywords = values.seoKeywords
+        .split(",")
+        .map((keyword) => keyword.trim())
+        .filter(Boolean);
+
       const payload = {
         title: values.title,
         content: values.content,
         excerpt: values.excerpt,
         pageTitle: values.pageTitle || values.title,
         pageDescription: values.pageDescription,
+        seoKeywords,
         categories: values.categories,
         status: "draft" as const,
         slug: values.slug.trim().replace(/^\//, "") || undefined,

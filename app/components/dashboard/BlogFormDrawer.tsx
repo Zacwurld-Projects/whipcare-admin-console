@@ -12,6 +12,7 @@ export type BlogFormValues = {
   slug: string;
   pageTitle: string;
   pageDescription: string;
+  seoKeywords: string;
   categories: string[];
   authorName: string;
   authorLink: string;
@@ -47,6 +48,7 @@ const emptyValues: BlogFormValues = {
   slug: "",
   pageTitle: "",
   pageDescription: "",
+  seoKeywords: "",
   categories: [],
   authorName: "",
   authorLink: "",
@@ -141,6 +143,7 @@ export function BlogFormDrawer({
   submitting = false,
 }: BlogFormDrawerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [toolbarSlotEl, setToolbarSlotEl] = useState<HTMLDivElement | null>(null);
   const [values, setValues] = useState<BlogFormValues>(emptyValues);
   const [categoryQuery, setCategoryQuery] = useState("");
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -173,6 +176,7 @@ export function BlogFormDrawer({
       slug: merged.slug ?? "",
       pageTitle: merged.pageTitle ?? "",
       pageDescription: merged.pageDescription ?? "",
+      seoKeywords: merged.seoKeywords ?? "",
       categories: merged.categories ?? [],
       authorName: merged.authorName ?? "",
       authorLink: merged.authorLink ?? "",
@@ -449,6 +453,7 @@ export function BlogFormDrawer({
                 key={editorKey}
                 value={values.content}
                 onChange={(html) => updateField("content", html)}
+                toolbarContainer={toolbarSlotEl}
               />
             </div>
 
@@ -520,6 +525,25 @@ export function BlogFormDrawer({
                 rows={4}
                 className="w-full resize-none rounded-xl border border-[#E5E7EB] bg-white px-3 py-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="blog-seo-keywords"
+                className="mb-2 block text-sm font-semibold text-[#1E2939]"
+              >
+                SEO Keywords
+              </label>
+              <input
+                id="blog-seo-keywords"
+                value={values.seoKeywords}
+                onChange={(e) => updateField("seoKeywords", e.target.value)}
+                placeholder="cars,maintenance,engine"
+                className="h-11 w-full rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm text-[#1E2939] outline-none placeholder:text-[#9CA3AF] focus:border-[#711E00]"
+              />
+              <p className="mt-1.5 text-xs text-[#667085]">
+                Comma-separated keywords for search engines
+              </p>
             </div>
           </section>
 
@@ -601,23 +625,26 @@ export function BlogFormDrawer({
           </section>
         </div>
 
-        <div className="shrink-0 space-y-3 border-t border-[#E5E7EB] px-5 py-4">
-          <button
-            type="button"
-            onClick={() => void handleSubmit("publish")}
-            disabled={!canSubmit}
-            className="h-12 w-full rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {submitting && pendingAction === "publish" ? "Publishing…" : "Publish"}
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleSubmit("draft")}
-            disabled={!canSubmit}
-            className="h-12 w-full rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {submitting && pendingAction === "draft" ? "Saving…" : "Save as Draft"}
-          </button>
+        <div className="shrink-0 border-t border-[#E5E7EB]">
+          <div ref={setToolbarSlotEl} />
+          <div className="space-y-3 px-5 py-4">
+            <button
+              type="button"
+              onClick={() => void handleSubmit("publish")}
+              disabled={!canSubmit}
+              className="h-12 w-full rounded-xl bg-[#711E00] text-sm font-semibold text-white transition-colors hover:bg-[#5A1800] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting && pendingAction === "publish" ? "Publishing…" : "Publish"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleSubmit("draft")}
+              disabled={!canSubmit}
+              className="h-12 w-full rounded-xl border border-[#E5E7EB] bg-white text-sm font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting && pendingAction === "draft" ? "Saving…" : "Save as Draft"}
+            </button>
+          </div>
         </div>
       </aside>
     </div>

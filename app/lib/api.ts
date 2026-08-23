@@ -553,6 +553,7 @@ export type Blog = {
   excerpt: string;
   pageTitle: string;
   pageDescription: string;
+  seoKeywords?: string[];
   categories: string[];
   status: BlogStatus | string;
   createdBy: string;
@@ -570,6 +571,7 @@ export type CreateBlogPayload = {
   excerpt: string;
   pageTitle: string;
   pageDescription: string;
+  seoKeywords?: string[];
   categories: string[];
   status?: BlogStatus;
   slug?: string;
@@ -630,6 +632,12 @@ function buildBlogFormData(
   if (payload.authorLink?.trim()) {
     formData.append("authorLink", payload.authorLink.trim());
   }
+
+  const seoKeywords = (payload.seoKeywords ?? [])
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+
+  formData.append("seoKeywords", seoKeywords.join(","));
 
   return formData;
 }
