@@ -556,6 +556,7 @@ export type Blog = {
   seoKeywords?: string[];
   categories: string[];
   status: BlogStatus | string;
+  viewCount?: number;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -689,6 +690,7 @@ export type BlogListItem = {
   excerpt: string;
   categories: string[];
   status: BlogStatus | string;
+  viewCount?: number;
   createdAt: string;
   publishedAt?: string | null;
   coverImage?: string | null;

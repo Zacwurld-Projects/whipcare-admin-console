@@ -72,9 +72,9 @@ function BackIcon({ className }: { className?: string }) {
 
 function SectionDivider() {
   return (
-    <div className="-mx-5 mb-5 flex items-center px-5">
+    <div className="-mx-4 mb-3 flex items-center px-4 sm:-mx-5 sm:mb-5 sm:px-5">
       <div className="h-px flex-1 bg-[#E5E7EB]" />
-      <div className="mx-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#711E00]" />
+      <div className="mx-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#711E00] sm:mx-2.5" />
       <div className="h-px flex-1 bg-[#E5E7EB]" />
     </div>
   );
@@ -98,17 +98,17 @@ function Pagination({
   const pages = buildPageNumbers(currentPage, totalPages);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 px-5 py-4">
-      <p className="text-sm text-slate-500">
+    <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:py-4">
+      <p className="text-xs text-slate-500 sm:text-sm">
         Showing data {startEntry} to {endEntry} of {total} entries
       </p>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 overflow-x-auto">
         <button
           type="button"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 sm:h-8 sm:w-8"
           aria-label="Previous page"
         >
           <BackIcon />
@@ -116,7 +116,7 @@ function Pagination({
 
         {pages.map((page, index) =>
           page === "..." ? (
-            <span key={`ellipsis-${index}`} className="px-2 text-sm text-slate-400">
+            <span key={`ellipsis-${index}`} className="px-1 text-xs text-slate-400 sm:px-2 sm:text-sm">
               …
             </span>
           ) : (
@@ -124,7 +124,7 @@ function Pagination({
               key={page}
               type="button"
               onClick={() => onPageChange(page)}
-              className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium ${currentPage === page
+              className={`flex h-7 min-w-7 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs font-medium sm:h-8 sm:min-w-8 sm:px-2 sm:text-sm ${currentPage === page
                   ? "bg-[#FE915D] text-white"
                   : "text-slate-600 hover:bg-slate-100"
                 }`}
@@ -138,7 +138,7 @@ function Pagination({
           type="button"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 sm:h-8 sm:w-8"
           aria-label="Next page"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -403,16 +403,16 @@ export function AdsAndBlogPage() {
   const adEnd = Math.min(safeAdPage * PAGE_LIMIT, adItems.length);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-[28px] font-normal text-[#1D2739]">Ads and Blog</h1>
+    <div className="space-y-4 px-3 sm:space-y-6 sm:px-0">
+      <h1 className="text-xl font-normal text-[#1D2739] sm:text-[28px]">Ads and Blog</h1>
 
-      <div className="flex gap-6 border-b border-slate-100">
+      <div className="flex gap-4 border-b border-slate-100 sm:gap-6">
         {mainTabs.map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setMainTab(tab)}
-            className={`pb-2 text-sm font-medium transition-colors ${mainTab === tab
+            className={`pb-2 text-xs font-medium transition-colors sm:text-sm ${mainTab === tab
                 ? "border-b-2 border-[#FE915D] text-[#711E00]"
                 : "text-slate-500 hover:text-slate-700"
               }`}
@@ -424,7 +424,7 @@ export function AdsAndBlogPage() {
 
       {mainTab === "Blogs" ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
             <StatCard
               title="Total Blog Posted"
               value={blogTotal}
@@ -442,18 +442,18 @@ export function AdsAndBlogPage() {
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-white">
-            <div className="flex flex-wrap items-center justify-between gap-4 px-5 pt-5">
-              <h3 className="text-[14px] font-semibold text-[#364153]">Published Blogs</h3>
+            <div className="flex flex-col gap-3 px-4 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:pt-5">
+              <h3 className="text-sm font-semibold text-[#364153] sm:text-[14px]">Published Blogs</h3>
               <button
                 type="button"
                 onClick={openCreateBlog}
-                className="text-sm font-semibold text-primary hover:text-[#711E00]"
+                className="text-xs font-semibold text-primary hover:text-[#711E00] sm:text-sm"
               >
                 Create New Blog
               </button>
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-6 px-5">
+            <div className="mt-3 flex flex-wrap gap-3 overflow-x-auto px-4 pb-2 sm:mt-4 sm:gap-6 sm:px-5 sm:pb-0">
               {categoryTabs.map((category) => (
                 <button
                   key={category}
@@ -462,7 +462,7 @@ export function AdsAndBlogPage() {
                     setBlogCategory(category);
                     setBlogPage(1);
                   }}
-                  className={`pb-2 text-sm font-medium transition-colors ${blogCategory === category
+                  className={`whitespace-nowrap pb-2 text-xs font-medium transition-colors sm:text-sm ${blogCategory === category
                       ? "border-b-2 border-[#FE915D] text-[#711E00]"
                       : "text-slate-500 hover:text-slate-700"
                     }`}
@@ -475,15 +475,15 @@ export function AdsAndBlogPage() {
             <SectionDivider />
 
             {loadingBlogs ? (
-              <p className="px-5 pb-5 text-sm text-slate-400">Loading blogs…</p>
+              <p className="px-4 pb-4 text-xs text-slate-400 sm:px-5 sm:pb-5 sm:text-sm">Loading blogs…</p>
             ) : blogs.length === 0 ? (
-              <p className="px-5 pb-5 text-sm text-slate-400">No blogs published yet.</p>
+              <p className="px-4 pb-4 text-xs text-slate-400 sm:px-5 sm:pb-5 sm:text-sm">No blogs published yet.</p>
             ) : (
-              <div className="grid gap-4 px-5 pb-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-3 px-4 pb-4 sm:gap-4 sm:px-5 sm:pb-5 sm:grid-cols-2 lg:grid-cols-3">
                 {blogs.map((blog, index) => (
                   <article
                     key={blog.id}
-                    className="overflow-hidden rounded-xl border border-slate-100 bg-white"
+                    className="overflow-hidden rounded-lg border border-slate-100 bg-white sm:rounded-xl"
                   >
                     <Link href={`/dashboard/ads/blogs/${blog.id}`} className="block">
                       <div className="relative aspect-[16/10] w-full overflow-hidden">
@@ -494,32 +494,48 @@ export function AdsAndBlogPage() {
                           priority={index === 0}
                           unoptimized={Boolean(blog.coverImage)}
                           className="object-contain"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         />
                       </div>
-                      <div className="space-y-1.5 p-4 pb-0">
+                      <div className="space-y-1 p-3 pb-0 sm:space-y-1.5 sm:p-4 sm:pb-0">
                         <p className="text-xs font-medium text-primary">
                           {blog.categories.map(formatBlogCategoryLabel).join(", ")}
                         </p>
-                        <h4 className="text-base font-semibold text-[#1E2939]">{blog.title}</h4>
-                        <p className="line-clamp-2 text-sm leading-5 text-[#6A7282]">
+                        <h4 className="line-clamp-2 text-sm font-semibold text-[#1E2939] sm:text-base">{blog.title}</h4>
+                        <p className="line-clamp-2 text-xs leading-4 text-[#6A7282] sm:text-sm sm:leading-5">
                           {blog.excerpt}
                         </p>
                       </div>
                     </Link>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 pb-4 pt-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-2 px-3 pb-3 pt-1.5 sm:gap-x-3 sm:px-4 sm:pb-4 sm:pt-2">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${blog.status === "published"
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize sm:text-[11px] ${blog.status === "published"
                             ? "bg-emerald-50 text-emerald-700"
                             : "bg-[#F3F4F6] text-[#667085]"
                           }`}
                       >
                         {blog.status}
                       </span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#667085] sm:text-[11px]">
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          className="h-3.5 w-3.5"
+                        >
+                          <path
+                            d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8s-2.5 4.5-6.5 4.5S1.5 8 1.5 8Z"
+                            stroke="currentColor"
+                            strokeWidth="1.2"
+                          />
+                          <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2" />
+                        </svg>
+                        {(blog.viewCount ?? 0).toLocaleString()} views
+                      </span>
                       <button
                         type="button"
                         onClick={() => void openEditBlog(blog)}
-                        className="text-sm font-medium text-primary hover:text-[#711E00]"
+                        className="text-xs font-medium text-primary hover:text-[#711E00] sm:text-sm"
                       >
                         Edit →
                       </button>
@@ -528,7 +544,7 @@ export function AdsAndBlogPage() {
                           type="button"
                           disabled={actionId === blog.id}
                           onClick={() => void handleUnpublishBlog(blog.id)}
-                          className="text-sm font-medium text-[#667085] hover:text-[#344054] disabled:opacity-50"
+                          className="text-xs font-medium text-[#667085] hover:text-[#344054] disabled:opacity-50 sm:text-sm"
                         >
                           Unpublish
                         </button>
@@ -537,7 +553,7 @@ export function AdsAndBlogPage() {
                           type="button"
                           disabled={actionId === blog.id}
                           onClick={() => void handlePublishBlog(blog.id)}
-                          className="text-sm font-medium text-[#667085] hover:text-[#344054] disabled:opacity-50"
+                          className="text-xs font-medium text-[#667085] hover:text-[#344054] disabled:opacity-50 sm:text-sm"
                         >
                           Publish
                         </button>
@@ -546,7 +562,7 @@ export function AdsAndBlogPage() {
                         type="button"
                         disabled={actionId === blog.id}
                         onClick={() => void handleDeleteBlog(blog.id, blog.title)}
-                        className="text-sm font-medium text-[#F04438] hover:text-[#D92D20] disabled:opacity-50"
+                        className="text-xs font-medium text-[#F04438] hover:text-[#D92D20] disabled:opacity-50 sm:text-sm"
                       >
                         Delete
                       </button>
@@ -568,7 +584,7 @@ export function AdsAndBlogPage() {
         </>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
             <StatCard
               title="Total Ads Posted"
               value={18}
@@ -586,11 +602,11 @@ export function AdsAndBlogPage() {
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-white">
-            <div className="flex flex-wrap items-center justify-between gap-4 px-5 pt-5">
-              <h3 className="text-[14px] font-semibold text-[#364153]">Published Ads</h3>
+            <div className="flex flex-col gap-3 px-4 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:pt-5">
+              <h3 className="text-sm font-semibold text-[#364153] sm:text-[14px]">Published Ads</h3>
               <button
                 type="button"
-                className="text-sm font-semibold text-primary hover:text-[#711E00]"
+                className="text-xs font-semibold text-primary hover:text-[#711E00] sm:text-sm"
               >
                 Create New Ad
               </button>
@@ -598,11 +614,11 @@ export function AdsAndBlogPage() {
 
             <SectionDivider />
 
-            <div className="grid gap-4 px-5 pb-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-3 px-4 pb-4 sm:gap-4 sm:px-5 sm:pb-5 sm:grid-cols-2 lg:grid-cols-3">
               {pagedAds.map((ad) => (
                 <article
                   key={ad.id}
-                  className="overflow-hidden rounded-xl border border-slate-100 bg-white"
+                  className="overflow-hidden rounded-lg border border-slate-100 bg-white sm:rounded-xl"
                 >
                   <div className="relative aspect-[16/10] w-full overflow-hidden">
                     <Image
@@ -610,16 +626,16 @@ export function AdsAndBlogPage() {
                       alt={ad.title}
                       fill
                       className="object-contain"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   </div>
-                  <div className="space-y-1.5 p-4">
+                  <div className="space-y-1 p-3 sm:space-y-1.5 sm:p-4">
                     <p className="text-xs font-medium text-primary">{ad.category}</p>
-                    <h4 className="text-base font-semibold text-[#1E2939]">{ad.title}</h4>
-                    <p className="line-clamp-2 text-sm leading-5 text-[#6A7282]">{ad.excerpt}</p>
+                    <h4 className="line-clamp-2 text-sm font-semibold text-[#1E2939] sm:text-base">{ad.title}</h4>
+                    <p className="line-clamp-2 text-xs leading-4 text-[#6A7282] sm:text-sm sm:leading-5">{ad.excerpt}</p>
                     <button
                       type="button"
-                      className="pt-2 text-sm font-medium text-primary hover:text-[#711E00]"
+                      className="pt-1.5 text-xs font-medium text-primary hover:text-[#711E00] sm:pt-2 sm:text-sm"
                     >
                       Edit Ad →
                     </button>
