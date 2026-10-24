@@ -27,33 +27,49 @@ type NavItem = {
 type NavGroup = NavItem[] | "divider";
 
 const navGroups: NavGroup[] = [
-  [{ label: "Overview", href: "/dashboard", icon: OverviewIcon }],
+  [{ label: "Overview", href: "/dashboard", icon: OverviewIcon, available: true }],
   "divider",
   [
-    { label: "Vehicle Owners", href: "/dashboard/vehicle-owners", icon: CarFrontIcon },
+    {
+      label: "Vehicle Owners",
+      href: "/dashboard/vehicle-owners",
+      icon: CarFrontIcon,
+      available: true,
+    },
     {
       label: "Service Providers",
       href: "/dashboard/service-providers",
       icon: ServiceProviderIcon,
       available: true,
     },
-    { label: "Fleets Managers", href: "/dashboard/fleet-managers", icon: FleetIcon },
-    { label: "Service Bookings", href: "/dashboard/service-bookings", icon: BookingIcon },
+    {
+      label: "Fleets Managers",
+      href: "/dashboard/fleet-managers",
+      icon: FleetIcon,
+      available: true,
+    },
+    {
+      label: "Service Bookings",
+      href: "/dashboard/service-bookings",
+      icon: BookingIcon,
+      available: true,
+    },
     {
       label: "Vehicle Management",
       href: "/dashboard/vehicle-management",
       icon: VehicleManagementIcon,
+      available: true,
     },
   ],
   "divider",
   [
-    { label: "Activities", href: "/dashboard/activities", icon: ActivityIcon },
-    { label: "Feedbacks and Dispute", href: "/dashboard/feedbacks", icon: FeedbackIcon },
-    { label: "Marketings and Points", href: "/dashboard/marketing", icon: MarketingIcon },
+    { label: "Activities", href: "/dashboard/activities", icon: ActivityIcon, available: true },
+    { label: "Feedbacks and Dispute", href: "/dashboard/feedbacks", icon: FeedbackIcon, available: true },
+    { label: "Marketings and Points", href: "/dashboard/marketing", icon: MarketingIcon, available: true },
   ],
   "divider",
   [
-    { label: "Financials", href: "/dashboard/financials", icon: FinancialIcon },
+    { label: "Financials", href: "/dashboard/financials", icon: FinancialIcon, available: true },
     { label: "Ads and Blog", href: "/dashboard/ads", icon: AdsIcon, available: true },
     { label: "Website", href: "/dashboard/website", icon: WebsiteIcon, available: true },
   ],
