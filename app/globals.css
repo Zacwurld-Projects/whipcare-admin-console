@@ -95,3 +95,37 @@ body {
   border-radius: 0.75rem;
   margin: 1rem 0;
 }
+
+.notification-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #711e00 #f3f4f6;
+}
+
+.notification-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.notification-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb {
+  background: #711e00;
+  border-radius: 4px;
+}
+
+@keyframes notification-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.notification-popover {
+  animation: notification-pop 160ms ease-out;
+}

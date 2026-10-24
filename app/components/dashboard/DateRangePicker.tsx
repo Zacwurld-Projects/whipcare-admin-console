@@ -36,12 +36,14 @@ type DateRangePickerProps = {
   value?: DateRange;
   onChange?: (range: DateRange) => void;
   className?: string;
+  buttonClassName?: string;
 };
 
 export function DateRangePicker({
   value,
   onChange,
   className = "",
+  buttonClassName = "",
 }: DateRangePickerProps) {
   const [open, setOpen] = useState(false);
   const [from, setFrom] = useState(value?.from ?? "2026-01-01");
@@ -77,7 +79,7 @@ export function DateRangePicker({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
+        className={`flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 ${buttonClassName}`}
       >
         <CalendarIcon className="text-slate-400" />
         <span className="whitespace-nowrap">{label}</span>

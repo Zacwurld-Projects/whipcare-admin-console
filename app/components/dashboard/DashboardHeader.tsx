@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SearchIcon, BellIcon, SettingsIcon, ChevronDownIcon, LogOutIcon } from "./icons";
 import { clearSession, getAdmin, getAdminInitials } from "@/app/lib/auth";
+import { NotificationPanel } from "./NotificationPanel";
 
 function NigeriaFlagIcon() {
   return (
@@ -128,6 +129,48 @@ function ProfileDropdown() {
   );
 }
 
+function NotificationBell() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: PointerEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        className={`${iconButtonClass} relative ${open ? "bg-[#ECEEF2] ring-2 ring-[#711E00]/20" : ""}`}
+        aria-label="Notifications"
+      >
+        <BellIcon />
+        <span className="absolute right-2 top-2 flex h-2 w-2 items-center justify-center rounded-full bg-[#FE915D]">
+          <span className="h-1 w-1 rounded-full bg-white" />
+        </span>
+      </button>
+      {open && (
+        <div className="notification-popover absolute right-[-12px] top-full z-50 mt-4 origin-top-right">
+          {/* Pointer arrow aimed at the bell (button is 40px wide, so its centre is 20px from its right edge). */}
+          <span
+            aria-hidden="true"
+            className="absolute -top-1.5 right-[26px] size-3 rotate-45 rounded-[2px] bg-white shadow-[-2px_-2px_4px_-2px_rgba(0,0,0,0.16)]"
+          />
+          <NotificationPanel onClose={() => setOpen(false)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function DashboardHeader() {
   return (
     <div className="flex min-w-0 flex-1 items-center justify-between gap-6 px-6">
@@ -151,12 +194,7 @@ export function DashboardHeader() {
           <ChevronDownIcon className="text-[#9CA3AF]" />
         </button>
 
-        <button type="button" className={`${iconButtonClass} relative`} aria-label="Notifications">
-          <BellIcon />
-          <span className="absolute right-2 top-2 flex h-2 w-2 items-center justify-center rounded-full bg-[#FE915D]">
-            <span className="h-1 w-1 rounded-full bg-white" />
-          </span>
-        </button>
+        <NotificationBell />
 
         <ProfileDropdown />
       </div>
